@@ -5,3 +5,8 @@ TRIM_simulation
 other
 run/*
 *.root
+macro/__pycache__/
+macro/utils/__pycache__/
+macro/__pycache__/*
+macro/utils/__pycache__/*
+.DS_Store

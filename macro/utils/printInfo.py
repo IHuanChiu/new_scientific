@@ -28,8 +28,8 @@ def checkTree(tree, ori_tree):
     totalevent  = tree.GetEntries()
     totalxhit, totalyhit, totalhit = 0,0,0
     for e in tree:     
-       totalxhit += e.nhitx
-       totalyhit += e.nhity
+       totalxhit += e.nsignalx_lv1
+       totalyhit += e.nsignaly_lv1
        totalhit += e.nhit
 
     print("=========== Results ===========")

@@ -19,7 +19,7 @@ from multiprocessing import Pool, cpu_count
 from array import array
 from random import gauss
 #import numpy as np
-from HitChannel import prehitchannel, hitphoton
+from HitChannel import level1hitchannel, hitphoton
 import heapq 
 
 def SetWeight(adcx, adcy, a, b):
@@ -30,57 +30,83 @@ def SetWeight(adcx, adcy, a, b):
 
 def isAdjacent(i, _hit):
     if (i-1) is 0 : return False # first
-    if _hit[i].position - _hit[i-1].position is 1 : return True
+    if _hit[i].channel - _hit[i-1].channel is 1 : return True
     else: return False
 
-def mergehit(_nx, _ny, _hitx, _hity):   
-    pre_signal_list = {}
+def resetPosition(index ,_lv1hit, flag):
+    if flag is 2:  
+       if _lv1hit[index].energy > _lv1hit[index -1].energy: return _lv1hit[index].position
+       else: return _lv1hit[index-1].position      
+    else:
+       dic = {}
+       for i in range(flag):
+           new_index = index-i 
+           dic.update({new_index:_lv1hit[new_index].energy})
+       _index = heapq.nlargest(1,dic)
+       return _lv1hit[_index[0]].position
+          
+def Level2Hit(_hitx, _hity):  
+    # merge 
     merge_xhit, merge_yhit = {}, {}
-    m_nx, m_ny = 0, 0    
-    _nhit = 0
-    _weight = 1.0
+    merge_nx, merge_ny = {}, {}
+    m_nx, m_ny = 0, 0   
+    n_adx, n_ady = 1, 1 
     
-    for ix in range(1, 1+_nx):
+    for ix in range(1, 1+len(_hitx)):
        if(isAdjacent(ix, _hitx)): 
+          n_adx += 1
+          _hitx[ix].position = resetPosition(ix, _hitx, n_adx)
           _hitx[ix].energy += _hitx[ix -1].energy
           _hitx[ix].adc += _hitx[ix -1].adc 
           merge_xhit.update({m_nx:_hitx[ix]})
+          merge_nx.update({m_nx:n_adx})
        else:
+          n_adx = 1
           m_nx += 1
-          merge_xhit.update({m_nx:_hitx[ix]})
-   
-    for iy in range(1, 1+_ny):
-       if(isAdjacent(iy, _hity)): 
+          merge_xhit.update({m_nx:_hitx[ix]})   
+          merge_nx.update({m_nx:n_adx})
+    for iy in range(1, 1+len(_hity)):
+       if(isAdjacent(iy, _hity)):
+          n_ady += 1
+          _hity[iy].position = resetPosition(iy, _hity, n_ady)
           _hity[iy].energy += _hity[iy -1].energy
           _hity[iy].adc += _hity[iy -1].adc
           merge_yhit.update({m_ny:_hity[iy]})
+          merge_ny.update({m_ny:n_ady})
        else:
+          n_ady = 1
           m_ny += 1
           merge_yhit.update({m_ny:_hity[iy]})
+          merge_ny.update({m_ny:n_ady})
+    
+    return merge_xhit, merge_yhit, merge_nx, merge_ny
 
-    for ix in range(1, 1+m_nx):
-       for iy in range(1, 1+m_ny):
+def findpoint(_hitx_lv2, _hity_lv2, _mhitx, _mhity):
+    point_list = {}
+    _nhit = 0
+    for ix in range(1, 1+len(_hitx_lv2)):
+       for iy in range(1, 1+len(_hity_lv2)):
           _nhit += 1
-          delta_energy = math.fabs(merge_xhit[ix].energy - merge_yhit[iy].energy)
-          pre_signal_list.update({_nhit:SetphotonInfo(_nhit, merge_xhit[ix].energy, merge_yhit[iy].energy, merge_xhit[ix].adc, merge_yhit[iy].adc, merge_xhit[ix].position, merge_yhit[iy].position, _weight, delta_energy)})
-    return m_nx, m_ny, _nhit, pre_signal_list                          
+          delta_energy = math.fabs(_hitx_lv2[ix].energy - _hity_lv2[iy].energy)
+          point_list.update({_nhit:SetphotonInfo(_nhit, _hitx_lv2[ix].energy, _hity_lv2[iy].energy, _hitx_lv2[ix].adc, _hity_lv2[iy].adc, _hitx_lv2[ix].position, _hity_lv2[iy].position, delta_energy, _mhitx[ix], _mhity[iy])})
+    return point_list                          
 
-def matchhit(_nx, _ny, _npoint, _s):   
+def matchhit(_nx, _ny, _p):   
     list_signal = {}
     dic = {}
 
-    for ip in range(1, 1+_npoint):
-       dic.update({ip:_s[ip].deltaE})
+    for ip in range(1, 1+len(_p)):
+       dic.update({ip:_p[ip].deltaE})
 
     maxpoint = min(_nx, _ny)
     _id = heapq.nlargest(maxpoint,dic)
     _nhit = 0#should be same with maxpoint
     for _ip in _id:
        _nhit += 1
-       list_signal.update({_nhit:_s[_ip]})
-    return _nhit, list_signal
+       list_signal.update({_nhit:_p[_ip]})
+    return list_signal
 
-def SetphotonInfo(index, _ep, _en, _ap, _an, _x, _y, _weight, _delta):
+def SetphotonInfo(index, _ep, _en, _ap, _an, _x, _y, _delta, _nx, _ny):
     _signal = hitphoton()     
     _signal.index = index
     _signal.energy_p = _ep
@@ -89,12 +115,13 @@ def SetphotonInfo(index, _ep, _en, _ap, _an, _x, _y, _weight, _delta):
     _signal.adc_n = _an
     _signal.x = _x
     _signal.y = _y
-    _signal.weight = _weight
+    _signal.mergehit_x = _nx
+    _signal.mergehit_y = _ny
     _signal.deltaE = _delta
     return _signal 
 
 def SetHitInfo(index, adc, energy, poi, ch, asic):
-    _hit = prehitchannel()
+    _hit = level1hitchannel()
     _hit.index = index
     _hit.adc = adc
     _hit.energy = energy
@@ -103,7 +130,7 @@ def SetHitInfo(index, adc, energy, poi, ch, asic):
     _hit.asic = asic
     return _hit    
 
-def defineHit(tree, Eline, adccut_p, adccut_n, coef_a, coef_b, coef_R):
+def Level1Hit(tree, Eline, adccut_p, adccut_n, coef_R):
     adc_hitcut = 1000
     n_hit_x = 0
     n_hit_y = 0
@@ -171,5 +198,5 @@ def defineHit(tree, Eline, adccut_p, adccut_n, coef_a, coef_b, coef_R):
              signaly.update({n_hit_y:signal_hity})               
 
       
-    return n_hit_x, n_hit_y, signalx, signaly
+    return signalx, signaly
         

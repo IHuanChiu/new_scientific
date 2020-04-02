@@ -14,7 +14,7 @@ import sys,os,random,math,ROOT
 from ROOT import TFile, TTree, gROOT
 ROOT.gROOT.SetBatch(1)
 
-class prehitchannel:
+class level1hitchannel:
       def __init__(self): 
           self.options = list()
           self.declare_option("index", 0)
@@ -42,6 +42,8 @@ class hitphoton:
           self.declare_option("y")
           self.declare_option("weight",0)
           self.declare_option("deltaE",0.0)
+          self.declare_option("mergehit_x",0)
+          self.declare_option("mergehit_y",0)
 
       def declare_option(self, optName, defaultVal = None):
            self.options.append(optName)

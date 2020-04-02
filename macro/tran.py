@@ -24,29 +24,44 @@ import logging
 from random import gauss
 #import numpy as np
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
-from countHit import defineHit, matchhit, mergehit
+from countHit import Level1Hit, Level2Hit, findpoint, matchhit
 from printInfo import checkTree
 from slimming import DisableBranch
+from div import createRatioCanvas 
 
 gROOT.ProcessLine(
 "struct RootStruct {\
    Int_t      trigger;\
+   Int_t      nsignalx_lv1;\
+   Int_t      nsignaly_lv1;\
+   Int_t      nsignalx_lv2;\
+   Int_t      nsignaly_lv2;\
+   Int_t      npoint;\
    Int_t      nhit;\
-   Int_t      nhitx;\
-   Int_t      nhity;\
-   Int_t      nmergehitx;\
-   Int_t      nmergehity;\
-   Double_t  energy_p[2048];\
-   Double_t  energy_n[2048];\
-   Double_t     adc_p[2048];\
-   Double_t     adc_n[2048];\
-   Int_t       axis_x[2048];\
-   Int_t       axis_y[2048];\
-   Double_t    weight[2048];\
+   Double_t  energy_p[512];\
+   Double_t  energy_n[512];\
+   Double_t     adc_p[512];\
+   Double_t     adc_n[512];\
+   Int_t       axis_x[512];\
+   Int_t       axis_y[512];\
+   Int_t    mergehit_x[512];\
+   Int_t    mergehit_y[512];\
+   Double_t    weight[512];\
 };" 
+"struct RootPoint {\
+   Int_t      npoint;\
+   Double_t  E_p[512];\
+   Double_t  E_n[512];\
+   Int_t       Poi_x[512];\
+   Int_t       Poi_y[512];\
+   Double_t    DeltaE[512];\
+};"
 ); 
+
 from ROOT import RootStruct
+from ROOT import RootPoint
 struct = RootStruct()
+pointstruct = RootPoint()
 
 def getSpline(energyFile, channel): 
     return energyFile.Get('spline_%s'%(channel))
@@ -55,23 +70,33 @@ def array2tree(name, tree):
     a = "adc{}"[0].format(0) 
     print(e.GetBranch(a))
 
-def PreEventSelection(tree):
-#    cut = TCut("integral_livetime > 500 && integral_livetime < 1500")
+def PreEventSelection(args, tree):
     cut = TCut("1")
+    if "test" in args.input : cut = TCut("integral_livetime > 500 && integral_livetime < 1500")
     cv = ROOT.TCanvas("","")
     tree.Draw(">>elist", cut) 
     elist = gROOT.FindObject("elist")
     return elist
+
+def makepointtree(signal):
+    for n in range(1,len(signal)+1):          
+       pointstruct.E_p[n-1]        = signal[n].energy_p
+       pointstruct.E_n[n-1]        = signal[n].energy_n
+       pointstruct.Poi_x[n-1]      = signal[n].x
+       pointstruct.Poi_y[n-1]      = signal[n].y
+       pointstruct.DeltaE[n-1]     = signal[n].deltaE
     
-def makentuple(nhit, signal):
-    for n in range(1,nhit+1):          
-       struct.adc_p[n-1]    = signal[n].adc_p
-       struct.adc_n[n-1]    = signal[n].adc_n
-       struct.energy_p[n-1] = signal[n].energy_p
-       struct.energy_n[n-1] = signal[n].energy_n
-       struct.axis_x[n-1]   = signal[n].x
-       struct.axis_y[n-1]   = signal[n].y
-       struct.weight[n-1]   = signal[n].weight
+def makentuple(signal):
+    for n in range(1,len(signal)+1):          
+       struct.adc_p[n-1]        = signal[n].adc_p
+       struct.adc_n[n-1]        = signal[n].adc_n
+       struct.energy_p[n-1]     = signal[n].energy_p
+       struct.energy_n[n-1]     = signal[n].energy_n
+       struct.axis_x[n-1]       = signal[n].x
+       struct.axis_y[n-1]       = signal[n].y
+       struct.weight[n-1]       = signal[n].weight
+       struct.mergehit_x[n-1]   = signal[n].mergehit_x
+       struct.mergehit_y[n-1]   = signal[n].mergehit_y
 
 def findx2yshift(h_x, h_y):
     g1x = ROOT.TF1("g1x","gaus",100,300)
@@ -90,9 +115,8 @@ def findx2yshift(h_x, h_y):
 
     return a, b
          
-def findadccut(line):
+def findadccut(line, energycut = 10.):
     adccut_p, adccut_n = [],[]
-    energycut = 10.
     for ch in range(0, 128): 
        cut_flag = 0
        for iadc in range(20,500):
@@ -121,6 +145,29 @@ def tran(args, IsRandom = False):
     tree = f.Get("eventtree")
     slinename = "../run/auxfile/spline_calibration.root"
     Efile = ROOT.TFile(slinename, 'read') # not always open
+
+    h2_lv1 = ROOT.TH2D("hist_level1","level1 hit channel",20,0,20,20,0,20)
+    h2_lv1.GetXaxis().SetTitle("X")
+    h2_lv1.GetYaxis().SetTitle("Y")
+    h2_lv2 = ROOT.TH2D("hist_level2","level2 hit channel",20,0,20,20,0,20)
+    h2_lv2.GetXaxis().SetTitle("X")
+    h2_lv2.GetYaxis().SetTitle("Y")
+    hx = ROOT.TH1D("hist_cmn_pside","p-side adc - cmn",1024,-50.5,973.5)
+    hy = ROOT.TH1D("hist_cmn_nside","n-side adc - cmn",1024,-50.5,973.5)
+    h2_cutflow_x = ROOT.TH2D("hist_cutflow_x","remained hit after the selections",3,0,3,128,0,128)
+    h2_cutflow_y = ROOT.TH2D("hist_cutflow_y","remained hit after the selections",3,0,3,128,0,128)
+    h2_Label = ["Raw","Level 1","Level 2"]
+    h2_cutflow_x.GetYaxis().SetTitle("number of hits")
+    h2_cutflow_y.GetYaxis().SetTitle("number of hits")
+    for i in range(len(h2_Label)): 
+       h2_cutflow_x.GetXaxis().SetBinLabel(i+1,h2_Label[i])
+       h2_cutflow_y.GetXaxis().SetBinLabel(i+1,h2_Label[i])
+    h1_event_cutflow = ROOT.TH1D("hist_event_cutflow","events after the selections",5,0,5)
+    h1_Label = ["Raw","trigger","Level 1","Level 2", "photon"]
+    for i in range(len(h1_Label)):
+       h1_event_cutflow.GetXaxis().SetBinLabel(i+1,h1_Label[i])
+   
+
     
     coef_R = 1 # random to ADC to avoid quantum phenomenon
     if not IsRandom : coef_R = 0
@@ -130,56 +177,89 @@ def tran(args, IsRandom = False):
 
     fout.cd()
     tout = TTree('tree','tree') 
-    tout.Branch( 'trigger', struct, 'trigger/I:nhit:nhitx:nhity:nmergehitx:nmergehity' ) 
-    tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ), 'energy_p[nhit]/D' )#max hit : 128
-    tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ), 'energy_n[nhit]/D' )
-    tout.Branch( 'adc_p', AddressOf( struct, 'adc_p' ),       'adc_p[nhit]/D' )
-    tout.Branch( 'adc_n', AddressOf( struct, 'adc_n' ),       'adc_n[nhit]/D' )
-    tout.Branch( 'x', AddressOf( struct, 'axis_x' ),          'x[nhit]/I' )
-    tout.Branch( 'y', AddressOf( struct, 'axis_y' ),          'y[nhit]/I' )
-    tout.Branch( 'weight', AddressOf( struct, 'weight' ),       'weight[nhit]/D' )
+    tout.Branch( 'trigger', struct, 'trigger/I:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2:npoint:nhit' ) 
+    tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),    'energy_p[nhit]/D' )
+    tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ),    'energy_n[nhit]/D' )
+    tout.Branch( 'adc_p', AddressOf( struct, 'adc_p' ),          'adc_p[nhit]/D' )
+    tout.Branch( 'adc_n', AddressOf( struct, 'adc_n' ),          'adc_n[nhit]/D' )
+    tout.Branch( 'x', AddressOf( struct, 'axis_x' ),             'x[nhit]/I' )
+    tout.Branch( 'y', AddressOf( struct, 'axis_y' ),             'y[nhit]/I' )
+    tout.Branch( 'mergehit_x', AddressOf( struct, 'mergehit_x' ),'mergehit_x[nhit]/I' )
+    tout.Branch( 'mergehit_y', AddressOf( struct, 'mergehit_y' ),'mergehit_y[nhit]/I' )
+    tout.Branch( 'weight', AddressOf( struct, 'weight' ),        'weight[nhit]/D' )
+
+    tout_p = TTree('pointtree','pointtree') 
+    tout_p.Branch( 'npoint', pointstruct, 'npoint/I' ) 
+    tout_p.Branch( 'energy_p', AddressOf( pointstruct, 'E_p' ),    'energy_p[npoint]/D' )
+    tout_p.Branch( 'energy_n', AddressOf( pointstruct, 'E_n' ),    'energy_n[npoint]/D' )
+    tout_p.Branch( 'x', AddressOf( pointstruct, 'Poi_x' ),        'x[npoint]/I' )
+    tout_p.Branch( 'y', AddressOf( pointstruct, 'Poi_y' ),        'y[npoint]/I' )
+    tout_p.Branch( 'DeltaE', AddressOf( pointstruct, 'DeltaE' ),   'DeltaE[npoint]/D' )
 
     line = list()
-    hx = ROOT.TH1D()
-    hy = ROOT.TH1D()
     for ch in range(0, 256): 
        line.append(getSpline(Efile, ch))
+
        if ch < 128:#x
           if ch < 10: hist_name = "hist_cmn" + "00" + str(ch) 
           elif ch < 100:  hist_name = "hist_cmn" + "0" + str(ch) 
           else : hist_name = "hist_cmn" + str(ch)
           hist = f.Get(hist_name) 
-          if(ch is 0): hx = hist.Clone()
-          else: hx.Add(hist)
+          hx.Add(hist)
        else:#y
           hist_name = "hist_cmn" + str(ch)
           hist = f.Get(hist_name) 
-          if(ch is 128): hy = hist.Clone()
-          else: hy.Add(hist)
-    cut_p, cut_n = findadccut(line)
-    coef_a, coef_b = findx2yshift(hx, hy)
+          hy.Add(hist)
+
+    cut_p, cut_n = findadccut(line, 10)
+#    coef_a, coef_b = findx2yshift(hx, hy)
 
     tree = DisableBranch(tree)
-    skimmingtree = PreEventSelection(tree)
+    skimmingtree = PreEventSelection(args, tree)
     
     print("total events : ",skimmingtree.GetN(), " / ", tree.GetEntries(), " (by PreEventSelection)")
+    h1_event_cutflow.Fill(0,tree.GetEntries())
+    h1_event_cutflow.Fill(1,skimmingtree.GetN())
+
     for ie in range(skimmingtree.GetN()):
        if ie%5000 is 0 : print("event running : ", ie , " time : ", time.time() - ti)
        tree.GetEntry(skimmingtree.GetEntry(ie))
-       n_hit_x, n_hit_y, hitx, hity = defineHit(tree, line, cut_p, cut_n, coef_a, coef_b, coef_R)
-       if n_hit_x is 0 or n_hit_y is 0: continue
-       m_nx, m_ny, n_hit_all, pre_signal = mergehit(n_hit_x, n_hit_y, hitx, hity)
-       n_hit, signal = matchhit(m_nx, m_ny, n_hit_all, pre_signal)
-       if n_hit > 2048: continue # huge hit channel (over max size of leaf)     
+       h2_cutflow_x.Fill(0, 128)
+       h2_cutflow_y.Fill(0, 128)
 
+       hitx_lv1, hity_lv1 = Level1Hit(tree, line, cut_p, cut_n, coef_R) # cut adc & save info.
+       h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
+       h2_cutflow_x.Fill(1, len(hitx_lv1))
+       h2_cutflow_y.Fill(1, len(hity_lv1))
+       if len(hitx_lv1) is 0 or len(hity_lv1) is 0: continue
+       h1_event_cutflow.Fill(2)
+
+       hitx_lv2, hity_lv2, madx, mady = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
+       h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
+       h2_cutflow_x.Fill(2, len(hitx_lv2))
+       h2_cutflow_y.Fill(2, len(hity_lv2))
+       if len(hitx_lv2) is 0 or len(hity_lv2) is 0: continue
+       h1_event_cutflow.Fill(3)
+      
+       point = findpoint(hitx_lv2, hity_lv2, madx, mady)
+       hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
+       if len(hit_signal) > 512: continue # huge hit channel (over max size of leaf)     
+       h1_event_cutflow.Fill(4)
+
+       # ntuple for each point
+       pointstruct.npoint = len(hitx_lv2)*len(hity_lv2)
+       makepointtree(point)
+       tout_p.Fill()
+       
        # varaibles of ntuple 
-       struct.nhitx = n_hit_x
-       struct.nhity = n_hit_y
-       struct.nmergehitx = m_nx
-       struct.nmergehity = m_ny
-       struct.nhit = n_hit
+       struct.nsignalx_lv1 = len(hitx_lv1)
+       struct.nsignaly_lv1 = len(hity_lv1)
+       struct.nsignalx_lv2 = len(hitx_lv2)
+       struct.nsignaly_lv2 = len(hity_lv2)
+       struct.npoint = len(hitx_lv2)*len(hity_lv2)
+       struct.nhit = len(hit_signal)
        struct.trigger = tree.integral_livetime
-       makentuple(n_hit, signal)
+       makentuple(hit_signal)
        tout.Fill()
 
     tf = time.time()
@@ -187,8 +267,25 @@ def tran(args, IsRandom = False):
     print("Ntuple processing time: %.1f s"%(dt))
     checkTree(tout,tree)
     print("Info. processing time: %.1f s"%(dt))
-
+    
+    cv = createRatioCanvas("cv",1600,800)
+    cv.Divide(2,1)
+    cv.cd(1).SetRightMargin(0.18)
+    h2_cutflow_x.Draw("colz TEXT0")
+    cv.cd(2).SetRightMargin(0.18)
+    h2_cutflow_y.Draw("colz TEXT0")
+    
+    cv.Write()
+    hx.Write()
+    hy.Write()
+    h2_lv1.Write()
+    h2_lv2.Write()
+    h2_cutflow_x.Write()
+    h2_cutflow_y.Write()
+    h1_event_cutflow.Write()
     tout.Write()
+    tout_p.Write()
+
     fout.Close()
     Efile.Close()
 
