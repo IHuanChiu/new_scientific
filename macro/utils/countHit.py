@@ -30,51 +30,60 @@ def SetWeight(adcx, adcy, a, b):
 
 def isAdjacent(i, _hit):
     if (i-1) is 0 : return False # first
+    if(_hit[i].energy + _hit[i-1].energy) > 100 : return False # over Si max range
     if _hit[i].channel - _hit[i-1].channel is 1 : return True
     else: return False
 
 def resetPosition(index ,_lv1hit, flag):
-    if flag is 2:  
-       if _lv1hit[index].energy > _lv1hit[index -1].energy: return _lv1hit[index].position
-       else: return _lv1hit[index-1].position      
+    if flag is 1:  
+       if _lv1hit[index].energy > _lv1hit[index -1].energy: return _lv1hit[index].channel, _lv1hit[index].position
+       else: return _lv1hit[index-1].channel, _lv1hit[index-1].position      
     else:
        dic = {}
-       for i in range(flag):
+       for i in range(flag+1):
            new_index = index-i 
            dic.update({new_index:_lv1hit[new_index].energy})
        _index = heapq.nlargest(1,dic)
-       return _lv1hit[_index[0]].position
+       return _lv1hit[_index[0]].channel, _lv1hit[_index[0]].position
+
+def resetEnergyADC(index ,_lv1hit, nad):
+    energy = 0
+    adc = 0
+    for i in range(nad+1):
+       energy += _lv1hit[index-i].energy
+       adc += _lv1hit[index-i].adc
+    return energy, adc
           
 def Level2Hit(_hitx, _hity):  
     # merge 
     merge_xhit, merge_yhit = {}, {}
     merge_nx, merge_ny = {}, {}
     m_nx, m_ny = 0, 0   
-    n_adx, n_ady = 1, 1 
+    n_adx, n_ady = 0, 0
     
     for ix in range(1, 1+len(_hitx)):
-       if(isAdjacent(ix, _hitx)): 
+       if(isAdjacent(ix, _hitx)):
           n_adx += 1
-          _hitx[ix].position = resetPosition(ix, _hitx, n_adx)
-          _hitx[ix].energy += _hitx[ix -1].energy
-          _hitx[ix].adc += _hitx[ix -1].adc 
-          merge_xhit.update({m_nx:_hitx[ix]})
+          _newmergehit = level1hitchannel()
+          _newmergehit.channel, _newmergehit.position = resetPosition(ix, _hitx, n_adx)
+          _newmergehit.energy, _newmergehit.adc = resetEnergyADC(ix, _hitx, n_adx)
+          merge_xhit.update({m_nx:_newmergehit})
           merge_nx.update({m_nx:n_adx})
        else:
-          n_adx = 1
+          n_adx = 0
           m_nx += 1
           merge_xhit.update({m_nx:_hitx[ix]})   
           merge_nx.update({m_nx:n_adx})
     for iy in range(1, 1+len(_hity)):
        if(isAdjacent(iy, _hity)):
           n_ady += 1
-          _hity[iy].position = resetPosition(iy, _hity, n_ady)
-          _hity[iy].energy += _hity[iy -1].energy
-          _hity[iy].adc += _hity[iy -1].adc
-          merge_yhit.update({m_ny:_hity[iy]})
+          _newmergehit = level1hitchannel()
+          _newmergehit.channel, _newmergehit.position = resetPosition(iy, _hity, n_ady)
+          _newmergehit.energy, _newmergehit.adc = resetEnergyADC(iy, _hity, n_ady)
+          merge_yhit.update({m_ny:_newmergehit})
           merge_ny.update({m_ny:n_ady})
        else:
-          n_ady = 1
+          n_ady = 0
           m_ny += 1
           merge_yhit.update({m_ny:_hity[iy]})
           merge_ny.update({m_ny:n_ady})

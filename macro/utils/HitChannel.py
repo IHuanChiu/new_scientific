@@ -18,11 +18,11 @@ class level1hitchannel:
       def __init__(self): 
           self.options = list()
           self.declare_option("index", 0)
-          self.declare_option("adc")
-          self.declare_option("energy")
-          self.declare_option("position")
-          self.declare_option("channel")
-          self.declare_option("asic")
+          self.declare_option("adc", 0)
+          self.declare_option("energy", 0)
+          self.declare_option("position", 0)
+          self.declare_option("channel", 0)
+          self.declare_option("asic", 0)
 
       def declare_option(self, optName, defaultVal = None):
            self.options.append(optName)

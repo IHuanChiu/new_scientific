@@ -19,6 +19,9 @@ import math
 from multiprocessing import Pool, cpu_count
 from array import array
 from random import gauss
+import logging
+from logger import log
+sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/')
 
 def test():
     print(__name__)
@@ -32,9 +35,9 @@ def checkTree(tree, ori_tree):
        totalyhit += e.nsignaly_lv1
        totalhit += e.nhit
 
-    print("=========== Results ===========")
-    print("Total passed events : ", totalevent,"/",ori_tree.GetEntries())
-    print("Total passed hits (average) =>  ", " X : ", totalxhit, "(", totalxhit/totalevent ,"); "," Y : ", totalyhit, "(", totalyhit/totalevent ,"); "," Point : ", totalhit, "(", totalhit/totalevent ,");")
+    log().info("=========== Results ===========")
+    log().info("Total passed events : %s / %s"%(totalevent, ori_tree.GetEntries()))
+    log().info("Total passed hits (average) =>   X : %s (%s);  Y : %s (%s);  Point : %s (%s);"%(totalxhit, totalxhit/totalevent, totalyhit, totalyhit/totalevent, totalhit, totalhit/totalevent))
         
 if __name__ == "__main__":
     f = ROOT.TFile("../run/root/tranadc_dsd_temp.root","read") 

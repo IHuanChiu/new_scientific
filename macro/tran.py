@@ -18,12 +18,14 @@ import argparse
 import math
 from multiprocessing import Pool, cpu_count
 import time
+from time import localtime, asctime
 from array import array
-#from logger import log
 import logging
+from logger import log
 from random import gauss
 #import numpy as np
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
+sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
 from countHit import Level1Hit, Level2Hit, findpoint, matchhit
 from printInfo import checkTree
 from slimming import DisableBranch
@@ -168,10 +170,10 @@ def tran(args, IsRandom = False):
        h1_event_cutflow.GetXaxis().SetBinLabel(i+1,h1_Label[i])
    
 
-    
+    log().info("Starting Job: %s"%(asctime(localtime()))) 
+
     coef_R = 1 # random to ADC to avoid quantum phenomenon
     if not IsRandom : coef_R = 0
-    print("Random number setting : ", coef_R) 
 
     ti = time.time()
 
@@ -217,7 +219,7 @@ def tran(args, IsRandom = False):
     tree = DisableBranch(tree)
     skimmingtree = PreEventSelection(args, tree)
     
-    print("total events : ",skimmingtree.GetN(), " / ", tree.GetEntries(), " (by PreEventSelection)")
+    log().info("total events : %s / %s (by PreEventSelection)"%(skimmingtree.GetN(),tree.GetEntries()))
     h1_event_cutflow.Fill(0,tree.GetEntries())
     h1_event_cutflow.Fill(1,skimmingtree.GetN())
 
@@ -264,9 +266,9 @@ def tran(args, IsRandom = False):
 
     tf = time.time()
     dt = tf - ti
-    print("Ntuple processing time: %.1f s"%(dt))
+    log().info("Ntuple processing time: %.1f s"%(dt))
     checkTree(tout,tree)
-    print("Info. processing time: %.1f s"%(dt))
+    log().info("Info. processing time: %.1f s"%(dt))
     
     cv = createRatioCanvas("cv",1600,800)
     cv.Divide(2,1)
