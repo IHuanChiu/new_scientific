@@ -18,9 +18,10 @@ import math
 from multiprocessing import Pool, cpu_count
 from array import array
 from random import gauss
-#import numpy as np
+import numpy as np
 from HitChannel import level1hitchannel, hitphoton
 import heapq 
+import enums
 
 def SetWeight(adcx, adcy, a, b):
     # ============ find hit point of photon (2D) ===========
@@ -30,7 +31,8 @@ def SetWeight(adcx, adcy, a, b):
 
 def isAdjacent(i, _hit):
     if (i-1) is 0 : return False # first
-    if(_hit[i].energy + _hit[i-1].energy) > 100 : return False # over Si max range
+    if(_hit[i].energy + _hit[i-1].energy) > enums.MaxSumRange : return False # over Si max range
+    if _hit[i].energy > enums.SiEnergyRange and math.fabs(_hit[i].energy - _hit[i-1].energy) < enums.DeltaNoise : return False # same noise
     if _hit[i].channel - _hit[i-1].channel is 1 : return True
     else: return False
 
@@ -65,8 +67,8 @@ def Level2Hit(_hitx, _hity):
        if(isAdjacent(ix, _hitx)):
           n_adx += 1
           _newmergehit = level1hitchannel()
-          _newmergehit.channel, _newmergehit.position = resetPosition(ix, _hitx, n_adx)
           _newmergehit.energy, _newmergehit.adc = resetEnergyADC(ix, _hitx, n_adx)
+          _newmergehit.channel, _newmergehit.position = resetPosition(ix, _hitx, n_adx)
           merge_xhit.update({m_nx:_newmergehit})
           merge_nx.update({m_nx:n_adx})
        else:
@@ -109,10 +111,13 @@ def matchhit(_nx, _ny, _p):
 
     maxpoint = min(_nx, _ny)
     _id = heapq.nlargest(maxpoint,dic)
-    _nhit = 0#should be same with maxpoint
+    _nhit = 0#number of real photons
+
     for _ip in _id:
+       if _p[_ip].deltaE > 10: continue#drop photon with large deltaE
        _nhit += 1
        list_signal.update({_nhit:_p[_ip]})
+
     return list_signal
 
 def SetphotonInfo(index, _ep, _en, _ap, _an, _x, _y, _delta, _nx, _ny):

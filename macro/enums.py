@@ -2,7 +2,10 @@
 IsRandom = True
 
 #keV
-EnergyCut = 10
+EnergyCut      = 10
+MaxSumRange    = 100
+SiEnergyRange  = 70
+DeltaNoise     = 10
 
 DEFAULT  = u'\x1b[39;49m'
 BLUE     = u'\x1b[34m'

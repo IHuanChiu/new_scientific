@@ -23,7 +23,7 @@ from array import array
 import logging
 from logger import log
 from random import gauss
-#import numpy as np
+import numpy as np
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
 from countHit import Level1Hit, Level2Hit, findpoint, matchhit
@@ -203,7 +203,7 @@ def tran(args):
       
        point = findpoint(hitx_lv2, hity_lv2, madx, mady)
        hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
-       if len(hit_signal) > 512: continue # huge hit channel (over max size of leaf)     
+       if len(hit_signal) > 512 or len(hit_signal) is 0: continue # huge hit channel (over max size of leaf) or no signal   
        h1_event_cutflow.Fill(4)
 
        # ntuple for each point
