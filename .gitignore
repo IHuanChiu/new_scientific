@@ -5,6 +5,7 @@ TRIM_simulation
 other
 run/*
 *.root
+*.pyc
 macro/__pycache__/
 macro/utils/__pycache__/
 macro/__pycache__/*

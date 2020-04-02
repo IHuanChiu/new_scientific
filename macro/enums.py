@@ -1,4 +1,9 @@
 # - - - - - - - - - - - enum defs  - - - - - - - - - - - - #
+IsRandom = True
+
+#keV
+EnergyCut = 10
+
 DEFAULT  = u'\x1b[39;49m'
 BLUE     = u'\x1b[34m'
 BLUEBOLD = u'\x1b[1;34m'

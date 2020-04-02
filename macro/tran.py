@@ -29,7 +29,9 @@ sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
 from countHit import Level1Hit, Level2Hit, findpoint, matchhit
 from printInfo import checkTree
 from slimming import DisableBranch
-from div import createRatioCanvas 
+from div import createRatioCanvas
+from utils.cuts import PreEventSelection, findx2yshift, findadccut
+import enums
 
 gROOT.ProcessLine(
 "struct RootStruct {\
@@ -72,14 +74,6 @@ def array2tree(name, tree):
     a = "adc{}"[0].format(0) 
     print(e.GetBranch(a))
 
-def PreEventSelection(args, tree):
-    cut = TCut("1")
-    if "test" in args.input : cut = TCut("integral_livetime > 500 && integral_livetime < 1500")
-    cv = ROOT.TCanvas("","")
-    tree.Draw(">>elist", cut) 
-    elist = gROOT.FindObject("elist")
-    return elist
-
 def makepointtree(signal):
     for n in range(1,len(signal)+1):          
        pointstruct.E_p[n-1]        = signal[n].energy_p
@@ -100,43 +94,7 @@ def makentuple(signal):
        struct.mergehit_x[n-1]   = signal[n].mergehit_x
        struct.mergehit_y[n-1]   = signal[n].mergehit_y
 
-def findx2yshift(h_x, h_y):
-    g1x = ROOT.TF1("g1x","gaus",100,300)
-    g2x = ROOT.TF1("g2x","gaus",650,800)
-    g1y = ROOT.TF1("g1y","gaus",100,300)
-    g2y = ROOT.TF1("g2y","gaus",650,850)
-    h_x.Fit("g1x","QR")
-    h_x.Fit("g2x","QR+")
-    h_y.Fit("g1y","QR")
-    h_y.Fit("g2y","QR+")
-    mean1_x, mean2_x = g1x.GetParameter(1), g2x.GetParameter(1)
-    mean1_y, mean2_y = g1y.GetParameter(1), g2y.GetParameter(1)
-
-    a = (g2y.GetParameter(1) - g1y.GetParameter(1))/(g2x.GetParameter(1) - g1x.GetParameter(1))
-    b = g1y.GetParameter(1) - (a * g1x.GetParameter(1))
-
-    return a, b
-         
-def findadccut(line, energycut = 10.):
-    adccut_p, adccut_n = [],[]
-    for ch in range(0, 128): 
-       cut_flag = 0
-       for iadc in range(20,500):
-          if (line[ch].Eval(iadc) > energycut) and (cut_flag is 0): 
-             adccut_p.append(iadc)
-             cut_flag = 1
-       if cut_flag is 0: adccut_p.append(100)# not find a good cut value for adc
-    for ch in range(0, 128): 
-       cut_flag = 0
-       for iadc in range(20,500):
-          if (line[ch+128].Eval(iadc) > energycut) and (cut_flag is 0): 
-             adccut_n.append(iadc)
-             cut_flag = 1
-       if cut_flag is 0: adccut_n.append(100)# not find a good cut value for adc
-    return adccut_p, adccut_n   
-
-
-def tran(args, IsRandom = False):
+def tran(args):
     __location__ = os.path.realpath(
             os.path.join(os.getcwd(), os.path.dirname(__file__)))
     ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
@@ -173,7 +131,7 @@ def tran(args, IsRandom = False):
     log().info("Starting Job: %s"%(asctime(localtime()))) 
 
     coef_R = 1 # random to ADC to avoid quantum phenomenon
-    if not IsRandom : coef_R = 0
+    if not enums.IsRandom : coef_R = 0
 
     ti = time.time()
 
@@ -213,7 +171,7 @@ def tran(args, IsRandom = False):
           hist = f.Get(hist_name) 
           hy.Add(hist)
 
-    cut_p, cut_n = findadccut(line, 10)
+    cut_p, cut_n = findadccut(line)
 #    coef_a, coef_b = findx2yshift(hx, hy)
 
     tree = DisableBranch(tree)
@@ -302,5 +260,5 @@ if __name__ == "__main__":
     parser.add_argument("--adc", default=False, action="store_true", help="log progess")
     args = parser.parse_args()
 
-    tran( args , True)
+    tran( args)
 
