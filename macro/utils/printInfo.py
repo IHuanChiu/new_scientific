@@ -37,7 +37,7 @@ def checkTree(tree, ori_tree):
 
     log().info("=========== Results ===========")
     log().info("Total passed events : %s / %s"%(totalevent, ori_tree.GetEntries()))
-    log().info("Total passed hits (average) =>   X : %s (%s);  Y : %s (%s);  Point : %s (%s);"%(totalxhit, totalxhit/totalevent, totalyhit, totalyhit/totalevent, totalhit, totalhit/totalevent))
+    log().info("Total passed hits (average) =>   X : %s (%.2f);  Y : %s (%.2f);  Point : %s (%.2f);"%(totalxhit, totalxhit/totalevent, totalyhit, totalyhit/totalevent, totalhit, totalhit/totalevent))
         
 if __name__ == "__main__":
     f = ROOT.TFile("../run/root/tranadc_dsd_temp.root","read") 

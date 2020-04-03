@@ -32,6 +32,7 @@ from slimming import DisableBranch
 from div import createRatioCanvas
 from utils.cuts import PreEventSelection, findx2yshift, findadccut
 import enums
+from process import ProgressBar
 
 gROOT.ProcessLine(
 "struct RootStruct {\
@@ -127,7 +128,6 @@ def tran(args):
     for i in range(len(h1_Label)):
        h1_event_cutflow.GetXaxis().SetBinLabel(i+1,h1_Label[i])
    
-
     log().info("Starting Job: %s"%(asctime(localtime()))) 
 
     coef_R = 1 # random to ADC to avoid quantum phenomenon
@@ -180,9 +180,12 @@ def tran(args):
     log().info("total events : %s / %s (by PreEventSelection)"%(skimmingtree.GetN(),tree.GetEntries()))
     h1_event_cutflow.Fill(0,tree.GetEntries())
     h1_event_cutflow.Fill(1,skimmingtree.GetN())
+    prog = ProgressBar(ntotal=skimmingtree.GetN(),text="Processing ntuple")
 
     for ie in range(skimmingtree.GetN()):
-       if ie%5000 is 0 : print("event running : ", ie , " time : ", time.time() - ti)
+       nevproc=ie
+       prog.update(nevproc)
+       #if ie%5000 is 0 : print("event running : ", ie , " time : ", time.time() - ti)
        tree.GetEntry(skimmingtree.GetEntry(ie))
        h2_cutflow_x.Fill(0, 128)
        h2_cutflow_y.Fill(0, 128)
@@ -222,6 +225,7 @@ def tran(args):
        makentuple(hit_signal)
        tout.Fill()
 
+    prog.finalize()
     tf = time.time()
     dt = tf - ti
     log().info("Ntuple processing time: %.1f s"%(dt))
