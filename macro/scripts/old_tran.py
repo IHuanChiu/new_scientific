@@ -96,6 +96,10 @@ def makentuple(signal):
        struct.mergehit_y[n-1]   = signal[n].mergehit_y
 
 def tran(args):
+    __location__ = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
+    ROOT.SetAtlasStyle()
     
     fout = ROOT.TFile( args.output, 'recreate' )
     f = ROOT.TFile(args.input)   
@@ -176,7 +180,7 @@ def tran(args):
     log().info("total events : %s / %s (by PreEventSelection)"%(skimmingtree.GetN(),tree.GetEntries()))
     h1_event_cutflow.Fill(0,tree.GetEntries())
     h1_event_cutflow.Fill(1,skimmingtree.GetN())
-    prog = ProgressBar(ntotal=skimmingtree.GetN(),text="Processing ntuple",init_t=ti)
+    prog = ProgressBar(ntotal=skimmingtree.GetN(),text="Processing ntuple")
 
     for ie in range(skimmingtree.GetN()):
        nevproc=ie
@@ -224,6 +228,7 @@ def tran(args):
     prog.finalize()
     tf = time.time()
     dt = tf - ti
+    log().info("Ntuple processing time: %.1f s"%(dt))
     checkTree(tout,tree)
     log().info("Info. processing time: %.1f s"%(dt))
     
