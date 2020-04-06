@@ -98,6 +98,7 @@ def spectrum(tree, scut):
 
     return h1_p, h1_n
 
+
 def main(args):
 
     f = ROOT.TFile( '../run/root/repro_image.root', 'recreate' )

@@ -1,5 +1,7 @@
 import time
 import progressbar
+from progressbar import *
+
 p = progressbar.ProgressBar()
 N = 1000
 p.start(N)

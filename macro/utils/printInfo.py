@@ -35,7 +35,7 @@ def checkTree(tree, ori_tree):
        totalyhit += e.nsignaly_lv1
        totalhit += e.nhit
 
-    log().info("=========== Results ===========")
+    log().info("=========== Summary ===========")
     log().info("Total passed events : %s / %s"%(totalevent, ori_tree.GetEntries()))
     log().info("Total passed hits (average) =>   X : %s (%.2f);  Y : %s (%.2f);  Point : %s (%.2f);"%(totalxhit, totalxhit/totalevent, totalyhit, totalyhit/totalevent, totalhit, totalhit/totalevent))
         
