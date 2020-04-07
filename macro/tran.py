@@ -37,36 +37,37 @@ from utils.helpers import ProgressBar
 gROOT.ProcessLine(
 "struct RootStruct {\
    Int_t      trigger;\
+   Int_t      nhit;\
+   Int_t       npoint;\
    Int_t      nsignalx_lv1;\
    Int_t      nsignaly_lv1;\
    Int_t      nsignalx_lv2;\
    Int_t      nsignaly_lv2;\
-   Int_t      npoint;\
-   Int_t      nhit;\
-   Double_t  energy_p[512];\
-   Double_t  energy_n[512];\
-   Double_t     adc_p[512];\
-   Double_t     adc_n[512];\
-   Int_t       axis_x[512];\
-   Int_t       axis_y[512];\
-   Int_t    mergehit_x[512];\
-   Int_t    mergehit_y[512];\
-   Double_t    weight[512];\
-};" 
-"struct RootPoint {\
-   Int_t      npoint;\
-   Double_t  E_p[512];\
-   Double_t  E_n[512];\
+   Double_t  energy_p[128];\
+   Double_t  energy_n[128];\
+   Double_t     adc_p[128];\
+   Double_t     adc_n[128];\
+   Int_t       axis_x[128];\
+   Int_t       axis_y[128];\
+   Double_t    weight[128];\
+   Double_t    E_p[512];\
+   Double_t    E_n[512];\
+   Double_t    E_p_lv1[128];\
+   Double_t    E_n_lv1[128];\
+   Double_t    E_p_lv2[128];\
+   Double_t    E_n_lv2[128];\
+   Double_t    DeltaE[512];\
    Int_t       Poi_x[512];\
    Int_t       Poi_y[512];\
-   Double_t    DeltaE[512];\
+   Int_t       Poi_x_lv1[128];\
+   Int_t       Poi_y_lv1[128];\
+   Int_t       Poi_x_lv2[128];\
+   Int_t       Poi_y_lv2[128];\
 };"
 ); 
 
 from ROOT import RootStruct
-from ROOT import RootPoint
 struct = RootStruct()
-pointstruct = RootPoint()
 
 def getlineEnergy(energyFile, channel): 
     return energyFile.Get('spline_%s'%(channel))
@@ -92,15 +93,8 @@ def array2tree(name, tree):
     a = "adc{}"[0].format(0) 
     print(e.GetBranch(a))
 
-def makepointtree(signal):
-    for n in range(1,len(signal)+1):          
-       pointstruct.E_p[n-1]        = signal[n].energy_p
-       pointstruct.E_n[n-1]        = signal[n].energy_n
-       pointstruct.Poi_x[n-1]      = signal[n].x
-       pointstruct.Poi_y[n-1]      = signal[n].y
-       pointstruct.DeltaE[n-1]     = signal[n].deltaE
     
-def makentuple(signal):
+def makentuple(signal, point, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
     for n in range(1,len(signal)+1):          
        struct.adc_p[n-1]        = signal[n].adc_p
        struct.adc_n[n-1]        = signal[n].adc_n
@@ -109,8 +103,24 @@ def makentuple(signal):
        struct.axis_x[n-1]       = signal[n].x
        struct.axis_y[n-1]       = signal[n].y
        struct.weight[n-1]       = signal[n].weight
-       struct.mergehit_x[n-1]   = signal[n].mergehit_x
-       struct.mergehit_y[n-1]   = signal[n].mergehit_y
+    for n in range(1,len(point)+1):          
+       struct.E_p[n-1]        = point[n].energy_p
+       struct.E_n[n-1]        = point[n].energy_n
+       struct.Poi_x[n-1]      = point[n].x
+       struct.Poi_y[n-1]      = point[n].y
+       struct.DeltaE[n-1]     = point[n].deltaE
+    for n in range(1,len(hitx_lv1)+1):          
+       struct.E_p_lv1[n-1]        = hitx_lv1[n].energy
+       struct.Poi_x_lv1[n-1]      = hitx_lv1[n].position
+    for n in range(1,len(hity_lv1)+1):          
+       struct.E_n_lv1[n-1]        = hity_lv1[n].energy
+       struct.Poi_y_lv1[n-1]      = hity_lv1[n].position
+    for n in range(1,len(hitx_lv2)+1):          
+       struct.E_p_lv2[n-1]        = hitx_lv2[n].energy
+       struct.Poi_x_lv2[n-1]      = hitx_lv2[n].position
+    for n in range(1,len(hity_lv2)+1):          
+       struct.E_n_lv2[n-1]        = hity_lv2[n].energy
+       struct.Poi_y_lv2[n-1]      = hity_lv2[n].position
 
 class tran_process():
       def __init__(self,
@@ -158,24 +168,30 @@ class tran_process():
 
           self.tout = TTree('tree','tree') 
           self.tout.SetDirectory(0)
-          self.tout.Branch( 'trigger', struct, 'trigger/I:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2:npoint:nhit' ) 
+          self.tout.Branch( 'trigger', struct, 'trigger/I:nhit:npoint:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' ) 
+ 
           self.tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),    'energy_p[nhit]/D' )
           self.tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ),    'energy_n[nhit]/D' )
           self.tout.Branch( 'adc_p', AddressOf( struct, 'adc_p' ),          'adc_p[nhit]/D' )
           self.tout.Branch( 'adc_n', AddressOf( struct, 'adc_n' ),          'adc_n[nhit]/D' )
           self.tout.Branch( 'x', AddressOf( struct, 'axis_x' ),             'x[nhit]/I' )
           self.tout.Branch( 'y', AddressOf( struct, 'axis_y' ),             'y[nhit]/I' )
-          self.tout.Branch( 'mergehit_x', AddressOf( struct, 'mergehit_x' ),'mergehit_x[nhit]/I' )
-          self.tout.Branch( 'mergehit_y', AddressOf( struct, 'mergehit_y' ),'mergehit_y[nhit]/I' )
           self.tout.Branch( 'weight', AddressOf( struct, 'weight' ),        'weight[nhit]/D' )
 
-          self.tout_p = TTree('pointtree','pointtree') 
-          self.tout_p.SetDirectory(0)
-          self.tout_p.Branch( 'npoint', pointstruct, 'npoint/I' ) 
-          self.tout_p.Branch( 'energy_p', AddressOf( pointstruct, 'E_p' ),    'energy_p[npoint]/D' )
-          self.tout_p.Branch( 'energy_n', AddressOf( pointstruct, 'E_n' ),    'energy_n[npoint]/D' )
-          self.tout_p.Branch( 'x', AddressOf( pointstruct, 'Poi_x' ),        'x[npoint]/I' )
-          self.tout_p.Branch( 'y', AddressOf( pointstruct, 'Poi_y' ),        'y[npoint]/I' )
+          self.tout.Branch( 'E_p', AddressOf( struct, 'E_p' ),    'E_p[npoint]/D' )
+          self.tout.Branch( 'E_n', AddressOf( struct, 'E_n' ),    'E_n[npoint]/D' )
+          self.tout.Branch( 'E_p_lv1', AddressOf( struct, 'E_p_lv1' ),    'E_p_lv1[nsignalx_lv1]/D' )
+          self.tout.Branch( 'E_n_lv1', AddressOf( struct, 'E_n_lv1' ),    'E_n_lv1[nsignaly_lv1]/D' )
+          self.tout.Branch( 'E_p_lv2', AddressOf( struct, 'E_p_lv2' ),    'E_p_lv2[nsignalx_lv2]/D' )
+          self.tout.Branch( 'E_n_lv2', AddressOf( struct, 'E_n_lv2' ),    'E_n_lv2[nsignaly_lv2]/D' )
+          self.tout.Branch( 'DeltaE', AddressOf( struct, 'DeltaE' ),   'DeltaE[npoint]/D' )
+
+          self.tout.Branch( 'Poi_x', AddressOf( struct, 'Poi_x' ),        'Poi_x[npoint]/I' )
+          self.tout.Branch( 'Poi_y', AddressOf( struct, 'Poi_y' ),        'Poi_y[npoint]/I' )
+          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),        'Poi_x[nsignalx_lv1]/I' )
+          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),        'Poi_y[nsignaly_lv1]/I' )
+          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),        'Poi_x[nsignalx_lv2]/I' )
+          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),        'Poi_y[nsignaly_lv2]/I' )
 
           self.coef_R = 1 # random to ADC to avoid quantum phenomenon
           if not enums.IsRandom : self.coef_R = 0
@@ -193,7 +209,6 @@ class tran_process():
           self.hist_list.append(self.h1_event_cutflow)
 
           self.tree_list.append(self.tout)
-          self.tree_list.append(self.tout_p)         
 
       def tran_adc2e(self,ie):
           self.tree.GetEntry(self.event_list.GetEntry(ie))
@@ -218,14 +233,9 @@ class tran_process():
       
           point = findpoint(hitx_lv2, hity_lv2, madx, mady)
           hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
-          if len(hit_signal) > 512 or len(hit_signal) is 0: return 0 # huge hit channel (over max size of leaf) or no signal   
+          if len(hit_signal) > 128 or len(hit_signal) is 0: return 0 # huge hit channel (over max size of leaf) or no signal   
           self.h1_event_cutflow.Fill(4)
 
-          # ntuple for each point
-          pointstruct.npoint = len(hitx_lv2)*len(hity_lv2)
-          makepointtree(point)
-          self.tout_p.Fill()
-          
           # varaibles of ntuple 
           struct.nsignalx_lv1 = len(hitx_lv1)
           struct.nsignaly_lv1 = len(hity_lv1)
@@ -234,10 +244,10 @@ class tran_process():
           struct.npoint = len(hitx_lv2)*len(hity_lv2)
           struct.nhit = len(hit_signal)
           struct.trigger = self.tree.integral_livetime
-          makentuple(hit_signal)
+          makentuple(hit_signal,point,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
           self.tout.Fill()
 
-       
+"""       
 def tran(args):
     
     fout = ROOT.TFile( args.output, 'recreate' )
@@ -391,7 +401,8 @@ def tran(args):
     Efile.Close()
 
     if __name__ is not "__main__": return tout
-   
+"""
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')

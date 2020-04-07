@@ -26,7 +26,7 @@ sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/')
 def test():
     print(__name__)
 
-def checkTree(tree, ori_tree):
+def checkTree(tree, nmax):
 #    print "=========== Checking tree ===========" 
     totalevent  = tree.GetEntries()
     totalxhit, totalyhit, totalhit = 0,0,0
@@ -36,8 +36,8 @@ def checkTree(tree, ori_tree):
        totalhit += e.nhit
 
     log().info("=========== Summary ===========")
-    log().info("Total passed events : %s / %s"%(totalevent, ori_tree.GetEntries()))
-    log().info("Total passed hits (average) =>   X : %s (%.2f);  Y : %s (%.2f);  Point : %s (%.2f);"%(totalxhit, totalxhit/totalevent, totalyhit, totalyhit/totalevent, totalhit, totalhit/totalevent))
+    log().info("Total final events : %s / %s"%(totalevent, nmax))
+    log().info("Hits summary (average) =>   X : %s (%.2f);  Y : %s (%.2f);  Point : %s (%.2f);"%(totalxhit, totalxhit/totalevent, totalyhit, totalyhit/totalevent, totalhit, totalhit/totalevent))
         
 if __name__ == "__main__":
     f = ROOT.TFile("../run/root/tranadc_dsd_temp.root","read") 

@@ -13,6 +13,7 @@ sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
 from slimming import DisableBranch
 from utils.cuts import PreEventSelection, findx2yshift, findadccut
+from printInfo import checkTree
 
 class Processor():
       
@@ -29,6 +30,7 @@ class Processor():
           self.T = None
           self.skimmingtree = None
           self.drawables = []
+          self.Nevents = None
 
       def register(self,drawables):
           """
@@ -47,13 +49,16 @@ class Processor():
       def __get_selector__(self):
           log().info("Preparing jobs...")
           tree = DisableBranch(self.tree)
-          self.skimmingtree = PreEventSelection(self.ifile, tree) # this is ROOT.TEventList
+          if self.nevents:   self.Nevents = min(self.nevents, self.tree.GetEntries())
+          else: self.Nevents = self.tree.GetEntries()
 
-          if self.nevents:   Nevents = min(self.nevents, self.skimmingtree.GetN())
-          else: Nevents = self.skimmingtree.GetN()
+          self.skimmingtree = PreEventSelection(self.ifile, tree, self.Nevents) # this is ROOT.TEventList
 
-          self.T = tran_process(ifile=self.ifile, tree=self.tree, event_list=self.skimmingtree ,efile=self.efile)
-          selectorjob_list = [SelectorCfg(i,eventlist = self.skimmingtree, tran=self.T) for i in range(Nevents)]
+          self.T = tran_process(ifile=self.ifile, tree=self.tree, event_list=self.skimmingtree ,efile=self.efile)         
+          self.register(self.T.tree_list)
+          self.register(self.T.hist_list)
+     
+          selectorjob_list = [SelectorCfg(i,eventlist = self.skimmingtree, tran=self.T) for i in range(self.Nevents)]
 
           return selectorjob_list 
                 
@@ -70,15 +75,18 @@ class Processor():
           pool = Pool(processes=ncores)
           results = [pool.apply_async(__process_selector__, (s,)) for s in selectorjob_list]
 
-# TODO need to fix this
+          #TODO:sgel only retune result of 1 events/ 1 jobs
 #          nevproc=0
 #          while results:
 #             for r in results:             
 #                if r.ready():
+#                   sgel = r.get()
 #                   results.remove(r)
 #                   nevproc+=1
-#                if prog: prog.update(nevproc)          
+#             if prog: prog.update(nevproc)          
+#             time.sleep(0.05)
 #          prog.finalize()
+#          print(sgel.tran.h2_cutflow_x.GetEntries())
 
           # temp 
           nevproc=0
@@ -93,9 +101,11 @@ class Processor():
           log().info("Printing output...")
           fout = ROOT.TFile( self.ofile, 'recreate' )
           __print_output__(fout, self.drawables)
+          checkTree(self.T.tout,self.Nevents)
 
 def __process_selector__(sgel):
     sgel.tran.tran_adc2e(sgel.ie)
+    return sgel
        
 def __print_output__(ofile, Drawables):
     ofile.cd()

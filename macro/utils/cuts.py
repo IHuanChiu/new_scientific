@@ -16,13 +16,14 @@ from ROOT import gROOT, AddressOf
 import enums 
 from logger import log
 
-def PreEventSelection(ifile, tree):
+def PreEventSelection(ifile, tree, nmax):
+    if not nmax: nmax = tree.GetEntries()
     cut = TCut("1")
-    if "test" in ifile : cut = TCut("integral_livetime > 500 && integral_livetime < 1500")
+    if "test" in ifile : cut = TCut("integral_livetime > 500 && integral_livetime < 1500 && Entry$ < {}".format(nmax))
     cv = ROOT.TCanvas("","")
     tree.Draw(">>elist", cut) 
     elist = gROOT.FindObject("elist")
-    log().info("total events : %s / %s (by PreEventSelection)"%(elist.GetN(),tree.GetEntries()))
+    log().info("Total passed events : %s / %s (by PreEventSelection)"%(elist.GetN(),nmax))
     return elist
 
 def findx2yshift(h_x, h_y):
