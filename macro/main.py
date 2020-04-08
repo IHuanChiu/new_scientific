@@ -21,21 +21,22 @@ import time
 from time import localtime, asctime
 from array import array
 import logging
+from utils.helpers import GetInputList 
 from process import Processor
 
 def main(args):
-    f = ROOT.TFile(args.input) 
-    tree = f.Get("eventtree")  
-   
-    p = Processor(ifile = args.input, ofile=args.output, ncores = args.ncores, nevents = args.nevents, tree=tree, efile = args.efile)
+    
+    ilist = GetInputList(args.inputFolder) 
+    p = Processor(ifilelist = ilist, ofile=args.output, ncores = args.ncores, nevents = args.nevents, efile = args.efile)
     p.mainprocess() 
     exit(0)
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("input", type=str, default="../rawdata/calibration_data/20200225a_am241_5plus.root", help="Input File Name")
-    parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd.root", help="Input File Name")
+    parser.add_argument("inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/data/testinput/", help="Input File Name")
+    parser.add_argument("--input", type=str, default=None, help="Input File Name")
+    parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd_", help="Input File Name")
     parser.add_argument("--efile", type=str, default="../run/auxfile/spline_calibration.root", help="Input File Name")
     parser.add_argument( "-cpu", "--ncores", dest="ncores", type=int, default = 4, help="number of CPU")
     parser.add_argument( "-n", "--nevents", dest="nevents", type=int, default = None, help="Number of processing events." )

@@ -3,7 +3,10 @@ class Animal():
   print ("init")
   self.name = name
  def change(self):
-  self.name = "changed"
+  namelist = ["a","b","c"]
+  for self.name in namelist:
+     print (self.name)
+  
 
 class NEWC():
   def __init__(self,newname=None):
@@ -21,8 +24,8 @@ class NEWC():
 #print("3",s.name)
 #s.change()
 #print("4",s.name)
-n = NEWC()
-n.getname()
+a = Animal()
+a.change()
 #s = Animal()
 #s.change()
 #s.name

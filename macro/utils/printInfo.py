@@ -35,9 +35,10 @@ def checkTree(tree, nmax):
        totalyhit += e.nsignaly_lv1
        totalhit += e.nhit
 
-    log().info("=========== Summary ===========")
-    log().info("Total final events : %s / %s"%(totalevent, nmax))
-    log().info("Hits summary (average) =>   X : %s (%.2f);  Y : %s (%.2f);  Point : %s (%.2f);"%(totalxhit, totalxhit/totalevent, totalyhit, totalyhit/totalevent, totalhit, totalhit/totalevent))
+    if totalevent is not 0 :
+       log().info("=========== Summary ===========")
+       log().info("Total final events : %s / %s"%(totalevent, nmax))
+       log().info("Hits summary (average) =>   X : %s (%.2f);  Y : %s (%.2f);  Point : %s (%.2f);"%(totalxhit, totalxhit/totalevent, totalyhit, totalyhit/totalevent, totalhit, totalhit/totalevent))
         
 if __name__ == "__main__":
     f = ROOT.TFile("../run/root/tranadc_dsd_temp.root","read") 

@@ -17,94 +17,102 @@ from printInfo import checkTree
 
 class Processor():
       
-      def __init__(self,ifile=None,ofile=None,ncores=None,nevents=None,tree=None,efile=None): 
+      def __init__(self,ifilelist=None,ofile=None,ncores=None,nevents=None,efile=None): 
           # config
-          self.tree = tree
           self.ncores = ncores
           self.nevents = nevents
-          self.ifile = ifile
+          self.ifilelist = ifilelist
           self.ofile = ofile
           self.efile = efile
           
           # members
+          self.tree = None
+          self.ifile = None
           self.T = None
           self.skimmingtree = None
-          self.drawables = []
+          self.drawables = dict()
           self.Nevents = None
 
-      def register(self,drawables):
+      def register(self,ifile, drawables):
           """
           :param drawables: single or list of ROOT drawables or plots (collection of drawables)
           """
           if not isinstance(drawables, list):
               drawables = [drawables]
-          self.drawables += drawables
+          self.drawables[ifile] = drawables
 
       def mainprocess(self):
           log().info("Starting Job: %s"%(asctime(localtime())))
-          selector_job_list = self.__get_selector__()
-          self.__process__(selector_job_list)
+          neventsum, selector_job_list = self.__get_selector__()
+          self.__process__(neventsum, selector_job_list)
           self.__outputs__()
 
       def __get_selector__(self):
           log().info("Preparing jobs...")
-          tree = DisableBranch(self.tree)
-          if self.nevents:   self.Nevents = min(self.nevents, self.tree.GetEntries())
-          else: self.Nevents = self.tree.GetEntries()
+          selectorjob_list = list()          
+          alle, sele = 0,0
+          for ifilename in self.ifilelist:
+             self.ifile = ROOT.TFile(ifilename)
+             self.tree = self.ifile.Get("eventtree")  
+             self.tree = DisableBranch(self.tree)
 
-          self.skimmingtree = PreEventSelection(self.ifile, tree, self.Nevents) # this is ROOT.TEventList
+             if self.nevents:   self.Nevents = min(self.nevents, self.tree.GetEntries())
+             else: self.Nevents = self.tree.GetEntries()
+             self.skimmingtree = PreEventSelection(ifilename, self.tree, self.Nevents) # this is ROOT.TEventList
+             alle += self.Nevents
+             sele += self.skimmingtree.GetN()     
 
-          self.T = tran_process(ifile=self.ifile, tree=self.tree, event_list=self.skimmingtree ,efile=self.efile)         
-          self.register(self.T.tree_list)
-          self.register(self.T.hist_list)
-     
-          selectorjob_list = [SelectorCfg(i,eventlist = self.skimmingtree, tran=self.T) for i in range(self.Nevents)]
+             selectorjob_list.append(SelectorCfg(ifile=self.ifile, tree=self.tree, eventlist=self.skimmingtree, efile=self.efile))
 
-          return selectorjob_list 
+          log().info("Total passed events : %s / %s (by PreEventSelection)"%(sele,alle))
+          return sele, selectorjob_list 
                 
-      def __process__(self,selectorjob_list):
+      def __process__(self,neventsum, selectorjob_list):
           if not self.ncores:   ncores = min(2, cpu_count())
           else: ncores = min(self.ncores, cpu_count())
 
           log().info("Lighting up %d cores!!!"%(ncores))
           ti = time.time()
-          prog = ProgressBar(ntotal=len(selectorjob_list),text="Processing ntuple",init_t=ti)
-
-          self.T.h1_event_cutflow.Fill(0,self.tree.GetEntries())         
- 
+          prog = ProgressBar(ntotal=neventsum,text="Processing ntuple",init_t=ti)
           pool = Pool(processes=ncores)
-          results = [pool.apply_async(__process_selector__, (s,)) for s in selectorjob_list]
+          results = [pool.apply_async(__process_selector__, (s,)) for s in selectorjob_list] # run the jobs
 
           #TODO:sgel only retune result of 1 events/ 1 jobs
-#          nevproc=0
-#          while results:
-#             for r in results:             
-#                if r.ready():
-#                   sgel = r.get()
-#                   results.remove(r)
-#                   nevproc+=1
-#             if prog: prog.update(nevproc)          
-#             time.sleep(0.05)
-#          prog.finalize()
-#          print(sgel.tran.h2_cutflow_x.GetEntries())
+          nevproc=0
+          while results:
+             for r in results:             
+                if r.ready():
+                   print (3) 
+                   sgel = r.get()
+                   print (4) 
+                   nevproc+=sgel.eventlist.GetN()
+                   print (5) 
+                   self.register(sgel.ifile, sgel.drawable)
+                   results.remove(r)
+             if prog: prog.update(nevproc)          
+          prog.finalize()
 
           # temp 
-          nevproc=0
-          for s in selectorjob_list:
-             __process_selector__(s)
-             nevproc+=1
-             if prog: prog.update(nevproc)
-          prog.finalize()
-          print(self.T.h2_cutflow_x.GetEntries())
+#          nevproc=0
+#          for s in selectorjob_list:
+#             __process_selector__(s)
+#             nevproc+=1
+#             if prog: prog.update(nevproc)
+#          prog.finalize()
+#          print(self.T.h2_cutflow_x.GetEntries())
 
       def __outputs__(self):
           log().info("Printing output...")
-          fout = ROOT.TFile( self.ofile, 'recreate' )
-          __print_output__(fout, self.drawables)
-          checkTree(self.T.tout,self.Nevents)
+          for ifile, drawobjects in self.drawables.items():
+             subProc = self.ofile+ifile.split("/")[-1]
+             fout = ROOT.TFile( subProc, 'recreate' )
+             __print_output__(fout, drawobjects)
+#             checkTree(self.T.tout,self.Nevents)
 
 def __process_selector__(sgel):
-    sgel.tran.tran_adc2e(sgel.ie)
+    self.T = tran_process(ifile=sgel.ifile, tree=sgel.tree, event_list=sgel.eventlist ,efile=sgel.efile)         
+    sgel.drawable = self.T.tran_adc2e()
+    print(self.T.h2_cutflow_x.GetEntries())
     return sgel
        
 def __print_output__(ofile, Drawables):
@@ -114,9 +122,11 @@ def __print_output__(ofile, Drawables):
     ofile.Close()
 
 class SelectorCfg(object):
-      def __init__(self,ie=None,eventlist=None,tran=None):
-          self.ie = ie
+      def __init__(self,ifile=None,tree=None,eventlist=None,efile=None):
+          self.ifile = ifile
+          self.tree = tree          
           self.eventlist = eventlist
-          self.tran = tran
+          self.efile = efile
+          self.drawable = None
 
 

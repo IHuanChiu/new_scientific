@@ -1,7 +1,7 @@
 from logger import log, supports_color
 import sys
 from array import array
-import ROOT
+import glob,ROOT
 import os
 import enums
 import time
@@ -32,3 +32,19 @@ class ProgressBar():
       def finalize(self):
            sys.stdout.write('\n')
 
+
+def GetInputList(inputFolder):
+    inputDict = list()
+    if ".root" in inputFolder : 
+       inputDict.append(inputFolder)
+       return inputDict
+
+    subFolders = glob.glob(inputFolder+"/*.root")
+    for subFolder in subFolders:
+       inputDict.append(subFolder)
+
+#    for subFolder in subFolders:
+#        subProc = subFolder.split("/")[-1]
+#        inputDict[subProc] = glob.glob(subFolder+"/*.root")
+
+    return inputDict

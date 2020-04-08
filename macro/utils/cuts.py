@@ -23,7 +23,6 @@ def PreEventSelection(ifile, tree, nmax):
     cv = ROOT.TCanvas("","")
     tree.Draw(">>elist", cut) 
     elist = gROOT.FindObject("elist")
-    log().info("Total passed events : %s / %s (by PreEventSelection)"%(elist.GetN(),nmax))
     return elist
 
 def findx2yshift(h_x, h_y):

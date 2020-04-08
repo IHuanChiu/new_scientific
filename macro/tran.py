@@ -133,7 +133,7 @@ class tran_process():
           self.ifile = ifile
           self.tree   = tree
           self.event_list = event_list
-          
+           
           # members
           Efile = ROOT.TFile(efile, 'read')
           self.hist_list = []
@@ -210,42 +210,54 @@ class tran_process():
 
           self.tree_list.append(self.tout)
 
-      def tran_adc2e(self,ie):
-          self.tree.GetEntry(self.event_list.GetEntry(ie))
+          self.drawables = self.hist_list + self.tree_list
+          print ("init : ")
 
-          self.h1_event_cutflow.Fill(1)
-          self.h2_cutflow_x.Fill(0, 128)
-          self.h2_cutflow_y.Fill(0, 128)
+      def tran_adc2e(self):
+          self.h1_event_cutflow.Fill(0,self.tree.GetEntries())         
 
-          hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.line, self.cut_p, self.cut_n, self.coef_R) # cut adc & save info.
-          self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
-          self.h2_cutflow_x.Fill(1, len(hitx_lv1))
-          self.h2_cutflow_y.Fill(1, len(hity_lv1))
-          if len(hitx_lv1) is 0 or len(hity_lv1) is 0: return 0
-          self.h1_event_cutflow.Fill(2)
+          print ("run : ")
+          for ie in range(skimmingtree.GetN()):
+             print ("run : ",ie)
 
-          hitx_lv2, hity_lv2, madx, mady = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
-          self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
-          self.h2_cutflow_x.Fill(2, len(hitx_lv2))
-          self.h2_cutflow_y.Fill(2, len(hity_lv2))
-          if len(hitx_lv2) is 0 or len(hity_lv2) is 0: return 0
-          self.h1_event_cutflow.Fill(3)
+             self.tree.GetEntry(self.event_list.GetEntry(ie))
+
+             self.h1_event_cutflow.Fill(1)
+             self.h2_cutflow_x.Fill(0, 128)
+             self.h2_cutflow_y.Fill(0, 128)
+
+             hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.line, self.cut_p, self.cut_n, self.coef_R) # cut adc & save info.
+             self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
+             self.h2_cutflow_x.Fill(1, len(hitx_lv1))
+             self.h2_cutflow_y.Fill(1, len(hity_lv1))
+             if len(hitx_lv1) is 0 or len(hity_lv1) is 0: return 0
+             self.h1_event_cutflow.Fill(2)
+
+             hitx_lv2, hity_lv2, madx, mady = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
+             self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
+             self.h2_cutflow_x.Fill(2, len(hitx_lv2))
+             self.h2_cutflow_y.Fill(2, len(hity_lv2))
+             if len(hitx_lv2) is 0 or len(hity_lv2) is 0: return 0
+             self.h1_event_cutflow.Fill(3)
       
-          point = findpoint(hitx_lv2, hity_lv2, madx, mady)
-          hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
-          if len(hit_signal) > 128 or len(hit_signal) is 0: return 0 # huge hit channel (over max size of leaf) or no signal   
-          self.h1_event_cutflow.Fill(4)
+             point = findpoint(hitx_lv2, hity_lv2, madx, mady)
+             hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
+             if len(hit_signal) > 128 or len(hit_signal) is 0: return 0 # huge hit channel (over max size of leaf) or no signal   
+             self.h1_event_cutflow.Fill(4)
 
-          # varaibles of ntuple 
-          struct.nsignalx_lv1 = len(hitx_lv1)
-          struct.nsignaly_lv1 = len(hity_lv1)
-          struct.nsignalx_lv2 = len(hitx_lv2)
-          struct.nsignaly_lv2 = len(hity_lv2)
-          struct.npoint = len(hitx_lv2)*len(hity_lv2)
-          struct.nhit = len(hit_signal)
-          struct.trigger = self.tree.integral_livetime
-          makentuple(hit_signal,point,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
-          self.tout.Fill()
+             # varaibles of ntuple 
+             struct.nsignalx_lv1 = len(hitx_lv1)
+             struct.nsignaly_lv1 = len(hity_lv1)
+             struct.nsignalx_lv2 = len(hitx_lv2)
+             struct.nsignaly_lv2 = len(hity_lv2)
+             struct.npoint = len(hitx_lv2)*len(hity_lv2)
+             struct.nhit = len(hit_signal)
+             struct.trigger = self.tree.integral_livetime
+             makentuple(hit_signal,point,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
+             self.tout.Fill()
+
+          return self.drawables
+
 
 """       
 def tran(args):
@@ -407,7 +419,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument("input", type=str, default="../rawdata/calibration_data/20200225a_am241_5plus.root", help="Input File Name")
-    parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd.root", help="Input File Name")
+    parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd", help="Input File Name")
     parser.add_argument("--channel", default=False, action="store_true", help="number of CPU")
     parser.add_argument("--adc", default=False, action="store_true", help="log progess")
     args = parser.parse_args()
