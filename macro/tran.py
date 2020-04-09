@@ -26,7 +26,7 @@ from random import gauss
 import numpy as np
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
-from countHit import Level1Hit, Level2Hit, findpoint, matchhit
+from countHit import Level1Hit, Level2Hit, findpoint, matchhit, Level1Hit_Shima1
 from printInfo import checkTree
 from slimming import DisableBranch
 from div import createRatioCanvas
@@ -69,14 +69,16 @@ gROOT.ProcessLine(
 from ROOT import RootStruct
 struct = RootStruct()
 
-def getlineEnergy(energyFile, channel): 
+def getlineEnergy(energyFile, name, channel): 
+    if "spline_maxbin" in name : return energyFile.Get('Calline%s'%(channel))
     return energyFile.Get('spline_%s'%(channel))
 
-def getTSpline(self,fname, ef):
+def getTSpline(self,fname, efname):
     f = ROOT.TFile(fname) 
+    ef = ROOT.TFile(efname, 'read')
     line = list()
     for ch in range(0, 256): 
-       line.append(getlineEnergy(ef, ch))
+       line.append(getlineEnergy(ef, efname, ch))
        if ch < 128:#x
           if ch < 10: hist_name = "hist_cmn" + "00" + str(ch) 
           elif ch < 100:  hist_name = "hist_cmn" + "0" + str(ch) 
@@ -135,7 +137,6 @@ class tran_process():
           self.event_list = event_list
            
           # members
-          Efile = ROOT.TFile(efile, 'read')
           self.hist_list = []
           self.tree_list = []
           self.h2_lv1 = ROOT.TH2D("hist_level1","level1 hit channel",20,0,20,20,0,20)
@@ -196,7 +197,7 @@ class tran_process():
           self.coef_R = 1 # random to ADC to avoid quantum phenomenon
           if not enums.IsRandom : self.coef_R = 0
 
-          self.line = getTSpline(self, ifile, Efile) 
+          self.line = getTSpline(self, ifile, efile) 
           self.cut_p, self.cut_n = findadccut(self.line)
       #    coef_a, coef_b = findx2yshift(self.hx, self.hy)
 
@@ -211,52 +212,45 @@ class tran_process():
           self.tree_list.append(self.tout)
 
           self.drawables = self.hist_list + self.tree_list
-          print ("init : ")
 
-      def tran_adc2e(self):
-          self.h1_event_cutflow.Fill(0,self.tree.GetEntries())         
+      def tran_adc2e(self,ie):
 
-          print ("run : ")
-          for ie in range(skimmingtree.GetN()):
-             print ("run : ",ie)
+          self.tree.GetEntry(self.event_list.GetEntry(ie))
 
-             self.tree.GetEntry(self.event_list.GetEntry(ie))
+          self.h1_event_cutflow.Fill(1)
+          self.h2_cutflow_x.Fill(0, 128)
+          self.h2_cutflow_y.Fill(0, 128)
 
-             self.h1_event_cutflow.Fill(1)
-             self.h2_cutflow_x.Fill(0, 128)
-             self.h2_cutflow_y.Fill(0, 128)
+          if "20200307a" in self.ifile : hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.line, self.cut_p, self.cut_n, self.coef_R)
+          else : hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.line, self.cut_p, self.cut_n, self.coef_R) # cut adc & save info.
+          self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
+          self.h2_cutflow_x.Fill(1, len(hitx_lv1))
+          self.h2_cutflow_y.Fill(1, len(hity_lv1))
+          if len(hitx_lv1) is 0 or len(hity_lv1) is 0: return 0
+          self.h1_event_cutflow.Fill(2)
 
-             hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.line, self.cut_p, self.cut_n, self.coef_R) # cut adc & save info.
-             self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
-             self.h2_cutflow_x.Fill(1, len(hitx_lv1))
-             self.h2_cutflow_y.Fill(1, len(hity_lv1))
-             if len(hitx_lv1) is 0 or len(hity_lv1) is 0: return 0
-             self.h1_event_cutflow.Fill(2)
-
-             hitx_lv2, hity_lv2, madx, mady = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
-             self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
-             self.h2_cutflow_x.Fill(2, len(hitx_lv2))
-             self.h2_cutflow_y.Fill(2, len(hity_lv2))
-             if len(hitx_lv2) is 0 or len(hity_lv2) is 0: return 0
-             self.h1_event_cutflow.Fill(3)
+          hitx_lv2, hity_lv2, madx, mady = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
+          self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
+          self.h2_cutflow_x.Fill(2, len(hitx_lv2))
+          self.h2_cutflow_y.Fill(2, len(hity_lv2))
+          if len(hitx_lv2) is 0 or len(hity_lv2) is 0: return 0
+          self.h1_event_cutflow.Fill(3)
       
-             point = findpoint(hitx_lv2, hity_lv2, madx, mady)
-             hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
-             if len(hit_signal) > 128 or len(hit_signal) is 0: return 0 # huge hit channel (over max size of leaf) or no signal   
-             self.h1_event_cutflow.Fill(4)
+          point = findpoint(hitx_lv2, hity_lv2, madx, mady)
+          hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
+          if len(hit_signal) > 128 or len(hit_signal) is 0: return 0 # huge hit channel (over max size of leaf) or no signal   
+          self.h1_event_cutflow.Fill(4)
 
-             # varaibles of ntuple 
-             struct.nsignalx_lv1 = len(hitx_lv1)
-             struct.nsignaly_lv1 = len(hity_lv1)
-             struct.nsignalx_lv2 = len(hitx_lv2)
-             struct.nsignaly_lv2 = len(hity_lv2)
-             struct.npoint = len(hitx_lv2)*len(hity_lv2)
-             struct.nhit = len(hit_signal)
-             struct.trigger = self.tree.integral_livetime
-             makentuple(hit_signal,point,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
-             self.tout.Fill()
-
-          return self.drawables
+          # varaibles of ntuple 
+          struct.nsignalx_lv1 = len(hitx_lv1)
+          struct.nsignaly_lv1 = len(hity_lv1)
+          struct.nsignalx_lv2 = len(hitx_lv2)
+          struct.nsignaly_lv2 = len(hity_lv2)
+          struct.npoint = len(hitx_lv2)*len(hity_lv2)
+          struct.nhit = len(hit_signal)
+          struct.trigger = self.tree.integral_livetime
+          makentuple(hit_signal,point,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
+          self.tout.Fill()
 
 
 """       

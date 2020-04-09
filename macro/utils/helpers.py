@@ -30,8 +30,7 @@ class ProgressBar():
           sys.stdout.flush()
           
       def finalize(self):
-           sys.stdout.write('\n')
-
+          sys.stdout.write('\n')
 
 def GetInputList(inputFolder):
     inputDict = list()

@@ -26,6 +26,7 @@ class Processor():
           self.efile = efile
           
           # members
+          self.ifilename = None
           self.tree = None
           self.ifile = None
           self.T = None
@@ -51,20 +52,25 @@ class Processor():
           log().info("Preparing jobs...")
           selectorjob_list = list()          
           alle, sele = 0,0
-          for ifilename in self.ifilelist:
-             self.ifile = ROOT.TFile(ifilename)
+          #TODO use TCahin for multi-file
+          for self.ifilename in self.ifilelist:
+             self.ifile = ROOT.TFile(self.ifilename)
              self.tree = self.ifile.Get("eventtree")  
              self.tree = DisableBranch(self.tree)
 
              if self.nevents:   self.Nevents = min(self.nevents, self.tree.GetEntries())
              else: self.Nevents = self.tree.GetEntries()
-             self.skimmingtree = PreEventSelection(ifilename, self.tree, self.Nevents) # this is ROOT.TEventList
+             self.skimmingtree = PreEventSelection(self.ifilename, self.tree, self.Nevents) # this is ROOT.TEventList
              alle += self.Nevents
              sele += self.skimmingtree.GetN()     
 
-             selectorjob_list.append(SelectorCfg(ifile=self.ifile, tree=self.tree, eventlist=self.skimmingtree, efile=self.efile))
-
           log().info("Total passed events : %s / %s (by PreEventSelection)"%(sele,alle))
+
+          self.T = tran_process(ifile=self.ifilename, tree=self.tree, event_list=self.skimmingtree ,efile=self.efile)        
+          self.T.h1_event_cutflow.Fill(0,alle)
+          self.register(self.ifilename, self.T.drawables) 
+
+          selectorjob_list = [SelectorCfg(run_id=i, tran=self.T) for i in range(sele)]
           return sele, selectorjob_list 
                 
       def __process__(self,neventsum, selectorjob_list):
@@ -74,45 +80,39 @@ class Processor():
           log().info("Lighting up %d cores!!!"%(ncores))
           ti = time.time()
           prog = ProgressBar(ntotal=neventsum,text="Processing ntuple",init_t=ti)
-          pool = Pool(processes=ncores)
-          results = [pool.apply_async(__process_selector__, (s,)) for s in selectorjob_list] # run the jobs
 
-          #TODO:sgel only retune result of 1 events/ 1 jobs
-          nevproc=0
-          while results:
-             for r in results:             
-                if r.ready():
-                   print (3) 
-                   sgel = r.get()
-                   print (4) 
-                   nevproc+=sgel.eventlist.GetN()
-                   print (5) 
-                   self.register(sgel.ifile, sgel.drawable)
-                   results.remove(r)
-             if prog: prog.update(nevproc)          
-          prog.finalize()
-
-          # temp 
+          #TODO : Pool is no avaiable now : return a result (sgel) for 1 event/job, need to merge them
+#          pool = Pool(processes=ncores)
+#          results = [pool.apply_async(__process_selector__, (s,)) for s in selectorjob_list] # run the jobs
 #          nevproc=0
-#          for s in selectorjob_list:
-#             __process_selector__(s)
-#             nevproc+=1
-#             if prog: prog.update(nevproc)
+#          while results:
+#             for r in results:             
+#                if r.ready():
+#                   sgel = r.get()
+#                   nevproc+=sgel.eventlist.GetN()
+#                   self.register(sgel.ifile, sgel.drawable)
+#                   results.remove(r)
+#             if prog: prog.update(nevproc)          
 #          prog.finalize()
-#          print(self.T.h2_cutflow_x.GetEntries())
+
+          # temp : single core
+          nevproc=0
+          for s in selectorjob_list:
+             __process_selector__(s)
+             nevproc+=1
+             if prog: prog.update(nevproc)
+          if prog: prog.finalize()
 
       def __outputs__(self):
-          log().info("Printing output...")
+          log().info('Printing output...')
           for ifile, drawobjects in self.drawables.items():
              subProc = self.ofile+ifile.split("/")[-1]
              fout = ROOT.TFile( subProc, 'recreate' )
              __print_output__(fout, drawobjects)
-#             checkTree(self.T.tout,self.Nevents)
+          checkTree(self.T.tout,self.Nevents)
 
 def __process_selector__(sgel):
-    self.T = tran_process(ifile=sgel.ifile, tree=sgel.tree, event_list=sgel.eventlist ,efile=sgel.efile)         
-    sgel.drawable = self.T.tran_adc2e()
-    print(self.T.h2_cutflow_x.GetEntries())
+    sgel.tran.tran_adc2e(sgel.run_id)
     return sgel
        
 def __print_output__(ofile, Drawables):
@@ -122,11 +122,13 @@ def __print_output__(ofile, Drawables):
     ofile.Close()
 
 class SelectorCfg(object):
-      def __init__(self,ifile=None,tree=None,eventlist=None,efile=None):
+      def __init__(self,ifile=None,tree=None,eventlist=None,efile=None, run_id=None, tran=None):
           self.ifile = ifile
           self.tree = tree          
           self.eventlist = eventlist
           self.efile = efile
+          self.run_id = run_id
+          self.tran = tran
           self.drawable = None
 
 

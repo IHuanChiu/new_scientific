@@ -13,4 +13,7 @@ all: test
 
 
 test:
-	${RUN} ${TESTDIR} -cpu 2 -n 1000 2>&1  |   tee ${LOGDIR}/log_$@_${DATE}
+	${RUN} ${TESTDIR} -cpu 2 -n 1000 
+
+test2:
+	${RUN} ${TESTDIR} -cpu 2 -n 1000 2>&1  |   tee ${LOGDIR}/log2_$@_${DATE}
