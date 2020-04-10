@@ -17,13 +17,14 @@ from printInfo import checkTree
 
 class Processor():
       
-      def __init__(self,ifilelist=None,ofile=None,ncores=None,nevents=None,efile=None): 
+      def __init__(self,ifilelist=None,ofile=None,ncores=None,nevents=None,efile=None,dtype=None): 
           # config
           self.ncores = ncores
           self.nevents = nevents
           self.ifilelist = ifilelist
           self.ofile = ofile
           self.efile = efile
+          self.dtype = dtype
           
           # members
           self.ifilename = None
@@ -64,9 +65,10 @@ class Processor():
              alle += self.Nevents
              sele += self.skimmingtree.GetN()     
 
+          log().info("Current Tpye : %s "%(self.dtype))
           log().info("Total passed events : %s / %s (by PreEventSelection)"%(sele,alle))
 
-          self.T = tran_process(ifile=self.ifilename, tree=self.tree, event_list=self.skimmingtree ,efile=self.efile)        
+          self.T = tran_process(ifile=self.ifilename, tree=self.tree, event_list=self.skimmingtree ,efile=self.efile, dtype=self.dtype)        
           self.T.h1_event_cutflow.Fill(0,alle)
           self.register(self.ifilename, self.T.drawables) 
 

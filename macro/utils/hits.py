@@ -51,3 +51,21 @@ class hitphoton:
                setattr(self, optName, defaultVal)      
 
 
+class database:
+      def __init__(self,tree):
+          self.options = list()
+          self.declare_option("detid", tree.detid)  
+          self.declare_option("asicid", tree.asicid) 
+          self.declare_option("channel", tree.asicch) 
+          self.declare_option("posx", tree.posx)
+          self.declare_option("posy", tree.posy)
+          self.declare_option("widthx", tree.widthx)
+          self.declare_option("widthy", tree.widthy)
+          self.declare_option("ecut", tree.ethre)
+
+      def declare_option(self, optName, defaultVal = None):
+           self.options.append(optName)
+           if not (type(defaultVal) == type(None)):
+               setattr(self, optName, defaultVal)
+
+           

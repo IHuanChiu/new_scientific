@@ -24,13 +24,14 @@ import logging
 from logger import log
 from random import gauss
 import numpy as np
-sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
-sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
-from countHit import Level1Hit, Level2Hit, findpoint, matchhit, Level1Hit_Shima1
-from printInfo import checkTree
-from slimming import DisableBranch
-from div import createRatioCanvas
+#sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
+#sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
+from scripts.div import createRatioCanvas
+from utils.printInfo import checkTree
+from utils.slimming import DisableBranch
+from utils.countHit import Level1Hit, Level2Hit, findpoint, matchhit, Level1Hit_Shima1
 from utils.cuts import PreEventSelection, findx2yshift, findadccut
+from utils.hits import database
 import enums
 from utils.helpers import ProgressBar
 
@@ -47,8 +48,8 @@ gROOT.ProcessLine(
    Double_t  energy_n[128];\
    Double_t     adc_p[128];\
    Double_t     adc_n[128];\
-   Int_t       axis_x[128];\
-   Int_t       axis_y[128];\
+   Double_t       axis_x[128];\
+   Double_t       axis_y[128];\
    Double_t    weight[128];\
    Double_t    E_p[512];\
    Double_t    E_n[512];\
@@ -57,12 +58,12 @@ gROOT.ProcessLine(
    Double_t    E_p_lv2[128];\
    Double_t    E_n_lv2[128];\
    Double_t    DeltaE[512];\
-   Int_t       Poi_x[512];\
-   Int_t       Poi_y[512];\
-   Int_t       Poi_x_lv1[128];\
-   Int_t       Poi_y_lv1[128];\
-   Int_t       Poi_x_lv2[128];\
-   Int_t       Poi_y_lv2[128];\
+   Double_t       Poi_x[512];\
+   Double_t       Poi_y[512];\
+   Double_t       Poi_x_lv1[128];\
+   Double_t       Poi_y_lv1[128];\
+   Double_t       Poi_x_lv2[128];\
+   Double_t       Poi_y_lv2[128];\
 };"
 ); 
 
@@ -89,12 +90,20 @@ def getTSpline(self,fname, efname):
           hist_name = "hist_cmn" + str(ch)
           hist = f.Get(hist_name) 
           self.hy.Add(hist)
+    ef.Close()
     return line
 
-def array2tree(name, tree):
-    a = "adc{}"[0].format(0) 
-    print(e.GetBranch(a))
-
+def Getdatabase():
+    databasename = "/Users/chiu.i-huan/Desktop/new_scientific/macro/auxfile/database.root"
+    f = ROOT.TFile(databasename)
+    dbtree = f.Get("dbtree") 
+    mdatabase = []
+    for m in dbtree:
+       D = database(m)
+       mdatabase.append(D) 
+    f.Close()
+    # List for id 
+    return mdatabase
     
 def makentuple(signal, point, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
     for n in range(1,len(signal)+1):          
@@ -129,12 +138,14 @@ class tran_process():
                    ifile=None,
                    tree=None,
                    event_list=None,
-                   efile=None
+                   efile=None,
+                   dtype=None
                    ):
           # config
           self.ifile = ifile
           self.tree   = tree
           self.event_list = event_list
+          self.dtype = dtype
            
           # members
           self.hist_list = []
@@ -171,34 +182,35 @@ class tran_process():
           self.tout.SetDirectory(0)
           self.tout.Branch( 'trigger', struct, 'trigger/I:nhit:npoint:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' ) 
  
-          self.tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),    'energy_p[nhit]/D' )
-          self.tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ),    'energy_n[nhit]/D' )
-          self.tout.Branch( 'adc_p', AddressOf( struct, 'adc_p' ),          'adc_p[nhit]/D' )
-          self.tout.Branch( 'adc_n', AddressOf( struct, 'adc_n' ),          'adc_n[nhit]/D' )
-          self.tout.Branch( 'x', AddressOf( struct, 'axis_x' ),             'x[nhit]/I' )
-          self.tout.Branch( 'y', AddressOf( struct, 'axis_y' ),             'y[nhit]/I' )
-          self.tout.Branch( 'weight', AddressOf( struct, 'weight' ),        'weight[nhit]/D' )
+          self.tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),  'energy_p[nhit]/D' )
+          self.tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ),  'energy_n[nhit]/D' )
+          self.tout.Branch( 'adc_p',    AddressOf( struct, 'adc_p' ),     'adc_p[nhit]/D' )
+          self.tout.Branch( 'adc_n',    AddressOf( struct, 'adc_n' ),     'adc_n[nhit]/D' )
+          self.tout.Branch( 'x',        AddressOf( struct, 'axis_x' ),    'x[nhit]/D' )
+          self.tout.Branch( 'y',        AddressOf( struct, 'axis_y' ),    'y[nhit]/D' )
+          self.tout.Branch( 'weight',  AddressOf( struct, 'weight' ),     'weight[nhit]/D' )
 
-          self.tout.Branch( 'E_p', AddressOf( struct, 'E_p' ),    'E_p[npoint]/D' )
-          self.tout.Branch( 'E_n', AddressOf( struct, 'E_n' ),    'E_n[npoint]/D' )
+          self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[npoint]/D' )
+          self.tout.Branch( 'E_n',     AddressOf( struct, 'E_n' ),        'E_n[npoint]/D' )
           self.tout.Branch( 'E_p_lv1', AddressOf( struct, 'E_p_lv1' ),    'E_p_lv1[nsignalx_lv1]/D' )
           self.tout.Branch( 'E_n_lv1', AddressOf( struct, 'E_n_lv1' ),    'E_n_lv1[nsignaly_lv1]/D' )
           self.tout.Branch( 'E_p_lv2', AddressOf( struct, 'E_p_lv2' ),    'E_p_lv2[nsignalx_lv2]/D' )
           self.tout.Branch( 'E_n_lv2', AddressOf( struct, 'E_n_lv2' ),    'E_n_lv2[nsignaly_lv2]/D' )
-          self.tout.Branch( 'DeltaE', AddressOf( struct, 'DeltaE' ),   'DeltaE[npoint]/D' )
+          self.tout.Branch( 'DeltaE',  AddressOf( struct, 'DeltaE' ),     'DeltaE[npoint]/D' )
 
-          self.tout.Branch( 'Poi_x', AddressOf( struct, 'Poi_x' ),        'Poi_x[npoint]/I' )
-          self.tout.Branch( 'Poi_y', AddressOf( struct, 'Poi_y' ),        'Poi_y[npoint]/I' )
-          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),        'Poi_x[nsignalx_lv1]/I' )
-          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),        'Poi_y[nsignaly_lv1]/I' )
-          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),        'Poi_x[nsignalx_lv2]/I' )
-          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),        'Poi_y[nsignaly_lv2]/I' )
+          self.tout.Branch( 'Poi_x',     AddressOf( struct, 'Poi_x' ),    'Poi_x[npoint]/D' )
+          self.tout.Branch( 'Poi_y',     AddressOf( struct, 'Poi_y' ),    'Poi_y[npoint]/D' )
+          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),'Poi_x[nsignalx_lv1]/D' )
+          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y[nsignaly_lv1]/D' )
+          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x[nsignalx_lv2]/D' )
+          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y[nsignaly_lv2]/D' )
 
           self.coef_R = 1 # random to ADC to avoid quantum phenomenon
           if not enums.IsRandom : self.coef_R = 0
 
           self.line = getTSpline(self, ifile, efile) 
           self.cut_p, self.cut_n = findadccut(self.line)
+          self.dblist = Getdatabase()
       #    coef_a, coef_b = findx2yshift(self.hx, self.hy)
 
           self.hist_list.append(self.h2_lv1)
@@ -208,7 +220,6 @@ class tran_process():
           self.hist_list.append(self.h2_cutflow_x)
           self.hist_list.append(self.h2_cutflow_y)
           self.hist_list.append(self.h1_event_cutflow)
-
           self.tree_list.append(self.tout)
 
           self.drawables = self.hist_list + self.tree_list
@@ -221,7 +232,7 @@ class tran_process():
           self.h2_cutflow_x.Fill(0, 128)
           self.h2_cutflow_y.Fill(0, 128)
 
-          if "20200307a" in self.ifile : hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.line, self.cut_p, self.cut_n, self.coef_R)
+          if "CdTe" in self.dtype : hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.line, self.cut_p, self.cut_n, self.coef_R, self.dblist)
           else : hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.line, self.cut_p, self.cut_n, self.coef_R) # cut adc & save info.
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
           self.h2_cutflow_x.Fill(1, len(hitx_lv1))
@@ -238,7 +249,7 @@ class tran_process():
       
           point = findpoint(hitx_lv2, hity_lv2, madx, mady)
           hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
-          if len(hit_signal) > 128 or len(hit_signal) is 0: return 0 # huge hit channel (over max size of leaf) or no signal   
+          if len(hitx_lv2)*len(hity_lv2) > 512 or len(hit_signal) is 0: return 0 # huge hit channel 
           self.h1_event_cutflow.Fill(4)
 
           # varaibles of ntuple 
@@ -360,7 +371,7 @@ def tran(args):
       
        point = findpoint(hitx_lv2, hity_lv2, madx, mady)
        hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
-       if len(hit_signal) > 512 or len(hit_signal) is 0: continue # huge hit channel (over max size of leaf) or no signal   
+       if len(hitx_lv2)*len(hity_lv2) > 512 or len(hit_signal) is 0: continue # huge hit channel (over max size of leaf) or no signal   
        h1_event_cutflow.Fill(4)
 
        # ntuple for each point

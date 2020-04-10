@@ -26,8 +26,9 @@ from process import Processor
 
 def main(args):
     
-    ilist = GetInputList(args.inputFolder) 
-    p = Processor(ifilelist = ilist, ofile=args.output, ncores = args.ncores, nevents = args.nevents, efile = args.efile)
+    ilist = GetInputList(args.inputFolder)
+    outname = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/"+args.output 
+    p = Processor(ifilelist = ilist, ofile=outname, ncores = args.ncores, nevents = args.nevents, efile = args.efile, dtype = args.dtype)
     p.mainprocess() 
     exit(0)
 
@@ -35,10 +36,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument("inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/data/testinput/", help="Input File Name")
-    parser.add_argument( "-o", "--output", type=str, default="../run/root/tranadc_dsd_", help="Output File Name")
+    parser.add_argument( "-o", "--output", type=str, default="tranadc_dsd_", help="Output File Name")
     parser.add_argument( "-e", "--efile", type=str, default="../run/auxfile/spline_calibration.root", help="Calibration file Name")
     parser.add_argument( "-cpu", "--ncores", dest="ncores", type=int, default = 4, help="number of CPU")
     parser.add_argument( "-n", "--nevents", dest="nevents", type=int, default = None, help="Number of processing events." )
+    parser.add_argument( "-t", "--dtype", dest="dtype", type=str, default = "Si", help="Si or CdTe data." )
     args = parser.parse_args()
 
     main( args)
