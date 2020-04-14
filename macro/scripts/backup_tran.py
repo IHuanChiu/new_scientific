@@ -31,7 +31,7 @@ from utils.printInfo import checkTree
 from utils.slimming import DisableBranch
 from utils.countHit import Level1Hit, Level2Hit, findpoint, matchhit, Level1Hit_Shima1
 from utils.cuts import PreEventSelection, findx2yshift, findadccut
-from utils.hits import database, rawdata_eventtree
+from utils.hits import database
 import enums
 from utils.helpers import ProgressBar
 
@@ -132,62 +132,6 @@ def makentuple(signal, point, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
        struct.E_n_lv2[n-1]        = hity_lv2[n].energy
        struct.Poi_y_lv2[n-1]      = hity_lv2[n].position
 
-def GetEventTree(tree, adccut, coef_R, dtype):
-    m_rawdata_list = []
-    nasic = 4
-    if "CdTe" in dtype: nstrip = 64
-    else : nstrip = 32
-    index = 0
-    ti = time.time()
-    for idet in range(2):
-       for iasic in range(nasic):
-          for istrip in range(nstrip):
-             if "CdTe" in dtype and not istrip%2: continue # skip even strips in shimafuji-1 data
-             m_rawdata = rawdata_eventtree()
-             m_rawdata.detid      = idet # 0 is p-side(x), 1 is n-side(y)
-             m_rawdata.asicid     = iasic+idet*4 # 0~3 is p-side, 4~7 is n-side
-             m_rawdata.stripid    = index # 0 ~ 255
-             m_rawdata.upperbound = 1000.
-             m_rawdata.coef_R     = coef_R
-             m_rawdata.adccut     = adccut[index]
-             if (idet*nasic+iasic) is 0: 
-                m_rawdata.adc    = tree.adc0[istrip]
-                m_rawdata.cmn    = tree.cmn0
-                m_rawdata.adcm   = tree.adc0[istrip] - tree.cmn0
-             if (idet*nasic+iasic) is 1: 
-                m_rawdata.adc    = tree.adc1[istrip]
-                m_rawdata.cmn    = tree.cmn1
-                m_rawdata.adcm   = tree.adc1[istrip] - tree.cmn1
-             if (idet*nasic+iasic) is 2: 
-                m_rawdata.adc    = tree.adc2[istrip]
-                m_rawdata.cmn    = tree.cmn2
-                m_rawdata.adcm   = tree.adc2[istrip] - tree.cmn2
-             if (idet*nasic+iasic) is 3: 
-                m_rawdata.adc    = tree.adc3[istrip]
-                m_rawdata.cmn    = tree.cmn3
-                m_rawdata.adcm   = tree.adc3[istrip] - tree.cmn3
-             if (idet*nasic+iasic) is 4: 
-                m_rawdata.adc    = tree.adc4[istrip]
-                m_rawdata.cmn    = tree.cmn4
-                m_rawdata.adcm   = tree.adc4[istrip] - tree.cmn4
-             if (idet*nasic+iasic) is 5: 
-                m_rawdata.adc    = tree.adc5[istrip]
-                m_rawdata.cmn    = tree.cmn5
-                m_rawdata.adcm   = tree.adc5[istrip] - tree.cmn5
-             if (idet*nasic+iasic) is 6:
-                m_rawdata.adc    = tree.adc6[istrip]
-                m_rawdata.cmn    = tree.cmn6
-                m_rawdata.adcm   = tree.adc6[istrip] - tree.cmn6
-             if (idet*nasic+iasic) is 7: 
-                m_rawdata.adc    = tree.adc7[istrip]
-                m_rawdata.cmn    = tree.cmn7
-                m_rawdata.adcm   = tree.adc7[istrip] - tree.cmn7
-             m_rawdata_list.append(m_rawdata)# info. for 256 strips
-             index += 1
-#    tmp = np.asarray(m_rawdata_list)
-    print(time.time()-ti)
-    return m_rawdata_list
-
 class tran_process():
       def __init__(self,
                    ifile=None,
@@ -264,7 +208,7 @@ class tran_process():
           if not enums.IsRandom : self.coef_R = 0
 
           self.line = getTSpline(self, ifile, efile) 
-          self.cut = findadccut(self.line)
+          self.cut_p, self.cut_n = findadccut(self.line)
           self.dblist = Getdatabase()
       #    coef_a, coef_b = findx2yshift(self.hx, self.hy)
 
@@ -282,13 +226,13 @@ class tran_process():
       def tran_adc2e(self,ie):
 
           self.tree.GetEntry(self.event_list.GetEntry(ie))
-          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 
           self.h1_event_cutflow.Fill(1)
           self.h2_cutflow_x.Fill(0, 128)
           self.h2_cutflow_y.Fill(0, 128)
 
-          hitx_lv1, hity_lv1 = Level1Hit(rawdata_list, self.line, self.dblist)
+          if "CdTe" in self.dtype : hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.line, self.cut_p, self.cut_n, self.coef_R, self.dblist)
+          else : hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.line, self.cut_p, self.cut_n, self.coef_R) # cut adc & save info.
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
           self.h2_cutflow_x.Fill(1, len(hitx_lv1))
           self.h2_cutflow_y.Fill(1, len(hity_lv1))
@@ -318,6 +262,162 @@ class tran_process():
           makentuple(hit_signal,point,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
           self.tout.Fill()
 
+
+"""       
+def tran(args):
+    
+    fout = ROOT.TFile( args.output, 'recreate' )
+    f = ROOT.TFile(args.input)   
+    tree = f.Get("eventtree")
+    slinename = "../run/auxfile/spline_calibration.root"
+    Efile = ROOT.TFile(slinename, 'read') # not always open
+
+    h2_lv1 = ROOT.TH2D("hist_level1","level1 hit channel",20,0,20,20,0,20)
+    h2_lv1.GetXaxis().SetTitle("X")
+    h2_lv1.GetYaxis().SetTitle("Y")
+    h2_lv2 = ROOT.TH2D("hist_level2","level2 hit channel",20,0,20,20,0,20)
+    h2_lv2.GetXaxis().SetTitle("X")
+    h2_lv2.GetYaxis().SetTitle("Y")
+    hx = ROOT.TH1D("hist_cmn_pside","p-side adc - cmn",1024,-50.5,973.5)
+    hy = ROOT.TH1D("hist_cmn_nside","n-side adc - cmn",1024,-50.5,973.5)
+    h2_cutflow_x = ROOT.TH2D("hist_cutflow_x","remained hit after the selections",3,0,3,128,0,128)
+    h2_cutflow_y = ROOT.TH2D("hist_cutflow_y","remained hit after the selections",3,0,3,128,0,128)
+    h2_Label = ["Raw","Level 1","Level 2"]
+    h2_cutflow_x.GetYaxis().SetTitle("number of hits")
+    h2_cutflow_y.GetYaxis().SetTitle("number of hits")
+    for i in range(len(h2_Label)): 
+       h2_cutflow_x.GetXaxis().SetBinLabel(i+1,h2_Label[i])
+       h2_cutflow_y.GetXaxis().SetBinLabel(i+1,h2_Label[i])
+    h1_event_cutflow = ROOT.TH1D("hist_event_cutflow","events after the selections",5,0,5)
+    h1_Label = ["Raw","trigger","Level 1","Level 2", "photon"]
+    for i in range(len(h1_Label)):
+       h1_event_cutflow.GetXaxis().SetBinLabel(i+1,h1_Label[i])
+   
+    log().info("Starting Job: %s"%(asctime(localtime()))) 
+
+    coef_R = 1 # random to ADC to avoid quantum phenomenon
+    if not enums.IsRandom : coef_R = 0
+
+    ti = time.time()
+
+    fout.cd()
+    tout = TTree('tree','tree') 
+    tout.Branch( 'trigger', struct, 'trigger/I:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2:npoint:nhit' ) 
+    tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),    'energy_p[nhit]/D' )
+    tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ),    'energy_n[nhit]/D' )
+    tout.Branch( 'adc_p', AddressOf( struct, 'adc_p' ),          'adc_p[nhit]/D' )
+    tout.Branch( 'adc_n', AddressOf( struct, 'adc_n' ),          'adc_n[nhit]/D' )
+    tout.Branch( 'x', AddressOf( struct, 'axis_x' ),             'x[nhit]/I' )
+    tout.Branch( 'y', AddressOf( struct, 'axis_y' ),             'y[nhit]/I' )
+    tout.Branch( 'mergehit_x', AddressOf( struct, 'mergehit_x' ),'mergehit_x[nhit]/I' )
+    tout.Branch( 'mergehit_y', AddressOf( struct, 'mergehit_y' ),'mergehit_y[nhit]/I' )
+    tout.Branch( 'weight', AddressOf( struct, 'weight' ),        'weight[nhit]/D' )
+
+    tout_p = TTree('pointtree','pointtree') 
+    tout_p.Branch( 'npoint', pointstruct, 'npoint/I' ) 
+    tout_p.Branch( 'energy_p', AddressOf( pointstruct, 'E_p' ),    'energy_p[npoint]/D' )
+    tout_p.Branch( 'energy_n', AddressOf( pointstruct, 'E_n' ),    'energy_n[npoint]/D' )
+    tout_p.Branch( 'x', AddressOf( pointstruct, 'Poi_x' ),        'x[npoint]/I' )
+    tout_p.Branch( 'y', AddressOf( pointstruct, 'Poi_y' ),        'y[npoint]/I' )
+    tout_p.Branch( 'DeltaE', AddressOf( pointstruct, 'DeltaE' ),   'DeltaE[npoint]/D' )
+
+    line = list()
+    for ch in range(0, 256): 
+       line.append(getlineEnergy(Efile, ch))
+
+       if ch < 128:#x
+          if ch < 10: hist_name = "hist_cmn" + "00" + str(ch) 
+          elif ch < 100:  hist_name = "hist_cmn" + "0" + str(ch) 
+          else : hist_name = "hist_cmn" + str(ch)
+          hist = f.Get(hist_name) 
+          hx.Add(hist)
+       else:#y
+          hist_name = "hist_cmn" + str(ch)
+          hist = f.Get(hist_name) 
+          hy.Add(hist)
+
+    cut_p, cut_n = findadccut(line)
+#    coef_a, coef_b = findx2yshift(hx, hy)
+
+    tree = DisableBranch(tree)
+    skimmingtree = PreEventSelection(args.input, tree)
+    
+    h1_event_cutflow.Fill(0,tree.GetEntries())
+    h1_event_cutflow.Fill(1,skimmingtree.GetN())
+    prog = ProgressBar(ntotal=skimmingtree.GetN(),text="Processing ntuple",init_t=ti)
+
+    for ie in range(skimmingtree.GetN()):
+       nevproc=ie
+       prog.update(nevproc)
+       #if ie%5000 is 0 : print("event running : ", ie , " time : ", time.time() - ti)
+       tree.GetEntry(skimmingtree.GetEntry(ie))
+       h2_cutflow_x.Fill(0, 128)
+       h2_cutflow_y.Fill(0, 128)
+
+       hitx_lv1, hity_lv1 = Level1Hit(tree, line, cut_p, cut_n, coef_R) # cut adc & save info.
+       h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
+       h2_cutflow_x.Fill(1, len(hitx_lv1))
+       h2_cutflow_y.Fill(1, len(hity_lv1))
+       if len(hitx_lv1) is 0 or len(hity_lv1) is 0: continue
+       h1_event_cutflow.Fill(2)
+
+       hitx_lv2, hity_lv2, madx, mady = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
+       h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
+       h2_cutflow_x.Fill(2, len(hitx_lv2))
+       h2_cutflow_y.Fill(2, len(hity_lv2))
+       if len(hitx_lv2) is 0 or len(hity_lv2) is 0: continue
+       h1_event_cutflow.Fill(3)
+      
+       point = findpoint(hitx_lv2, hity_lv2, madx, mady)
+       hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
+       if len(hitx_lv2)*len(hity_lv2) > 512 or len(hit_signal) is 0: continue # huge hit channel (over max size of leaf) or no signal   
+       h1_event_cutflow.Fill(4)
+
+       # ntuple for each point
+       pointstruct.npoint = len(hitx_lv2)*len(hity_lv2)
+       makepointtree(point)
+       tout_p.Fill()
+       
+       # varaibles of ntuple 
+       struct.nsignalx_lv1 = len(hitx_lv1)
+       struct.nsignaly_lv1 = len(hity_lv1)
+       struct.nsignalx_lv2 = len(hitx_lv2)
+       struct.nsignaly_lv2 = len(hity_lv2)
+       struct.npoint = len(hitx_lv2)*len(hity_lv2)
+       struct.nhit = len(hit_signal)
+       struct.trigger = tree.integral_livetime
+       makentuple(hit_signal)
+       tout.Fill()
+
+    prog.finalize()
+    tf = time.time()
+    dt = tf - ti
+    checkTree(tout,tree)
+    log().info("Info. processing time: %.1f s"%(dt))
+    
+    cv = createRatioCanvas("cv",1600,800)
+    cv.Divide(2,1)
+    cv.cd(1).SetRightMargin(0.18)
+    h2_cutflow_x.Draw("colz TEXT0")
+    cv.cd(2).SetRightMargin(0.18)
+    h2_cutflow_y.Draw("colz TEXT0")
+    
+    cv.Write()
+    hx.Write()
+    hy.Write()
+    h2_lv1.Write()
+    h2_lv2.Write()
+    h2_cutflow_x.Write()
+    h2_cutflow_y.Write()
+    h1_event_cutflow.Write()
+    tout.Write()
+    tout_p.Write()
+
+    fout.Close()
+    Efile.Close()
+
+    if __name__ is not "__main__": return tout
+"""
 
 if __name__ == "__main__":
 

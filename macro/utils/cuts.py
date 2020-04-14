@@ -45,20 +45,13 @@ def findx2yshift(h_x, h_y):
     return a, b
          
 def findadccut(line):
-    adccut_p, adccut_n = [],[]
-    for ch in range(0, 128): 
+    adccut = []
+    for ch in range(0, 256): 
        cut_flag = 0
        for iadc in range(20,500):
           if (line[ch].Eval(iadc) > enums.EnergyCut) and (cut_flag is 0): 
-             adccut_p.append(iadc)
+             adccut.append(iadc)
              cut_flag = 1
-       if cut_flag is 0: adccut_p.append(100)# not find a good cut value for adc
-    for ch in range(0, 128): 
-       cut_flag = 0
-       for iadc in range(20,500):
-          if (line[ch+128].Eval(iadc) > enums.EnergyCut) and (cut_flag is 0): 
-             adccut_n.append(iadc)
-             cut_flag = 1
-       if cut_flag is 0: adccut_n.append(100)# not find a good cut value for adc
-    return adccut_p, adccut_n   
+       if cut_flag is 0: adccut.append(100)# not find a good cut value for adc
+    return adccut 
 

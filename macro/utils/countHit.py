@@ -20,9 +20,10 @@ from array import array
 from random import gauss
 import numpy as np
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
-from hits import level1hitchannel, hitphoton
+from hits import hitchannel, hitphoton
 import heapq 
 import enums
+import time
 
 def SetWeight(adcx, adcy, a, b):
     # ============ find hit point of photon (2D) ===========
@@ -67,7 +68,7 @@ def Level2Hit(_hitx, _hity):
     for ix in range(1, 1+len(_hitx)):
        if(isAdjacent(ix, _hitx)):
           n_adx += 1
-          _newmergehit = level1hitchannel()
+          _newmergehit = hitchannel()
           _newmergehit.energy, _newmergehit.adc = resetEnergyADC(ix, _hitx, n_adx)
           _newmergehit.channel, _newmergehit.position = resetPosition(ix, _hitx, n_adx)
           merge_xhit.update({m_nx:_newmergehit})
@@ -80,7 +81,7 @@ def Level2Hit(_hitx, _hity):
     for iy in range(1, 1+len(_hity)):
        if(isAdjacent(iy, _hity)):
           n_ady += 1
-          _newmergehit = level1hitchannel()
+          _newmergehit = hitchannel()
           _newmergehit.channel, _newmergehit.position = resetPosition(iy, _hity, n_ady)
           _newmergehit.energy, _newmergehit.adc = resetEnergyADC(iy, _hity, n_ady)
           merge_yhit.update({m_ny:_newmergehit})
@@ -111,7 +112,7 @@ def matchhit(_nx, _ny, _p):
        dic.update({ip:_p[ip].deltaE})
 
     maxpoint = min(_nx, _ny)
-    _id = heapq.nlargest(maxpoint,dic)
+    _id = heapq.nsmallest(maxpoint,dic)
     _nhit = 0#number of real photons
 
     for _ip in _id:
@@ -136,7 +137,7 @@ def SetphotonInfo(index, _ep, _en, _ap, _an, _x, _y, _delta, _nx, _ny):
     return _signal 
 
 def SetHitInfo(index, adc, energy, poi, ch, asic):
-    _hit = level1hitchannel()
+    _hit = hitchannel()
     _hit.index = index
     _hit.adc = adc
     _hit.energy = energy
@@ -145,73 +146,26 @@ def SetHitInfo(index, adc, energy, poi, ch, asic):
     _hit.asic = asic
     return _hit    
 
-def Level1Hit(tree, Eline, adccut_p, adccut_n, coef_R):
-    adc_hitcut = 1000
+def Level1Hit(rawdata_list, Eline, dblist):
+    # TODO merge GetEventTree in here 
     n_hit_x = 0
     n_hit_y = 0
     signalx, signaly = {}, {}
     # ========= find signal region (p-side and n-side) ============
-    for iasic in range(4): 
-       for ch in range(32):
-          if iasic is 0 and ((tree.adc0[ch] - tree.cmn0) > adccut_p[ch+iasic*32]) and (tree.adc0[ch] < adc_hitcut): 
-             n_hit_x += 1 #hit !
-             adc_p = tree.adc0[ch]-tree.cmn0 + coef_R * random.uniform(-0.5,0.5)
-             energy_p = Eline[ch + 32*iasic].Eval(adc_p)
-             poi_p = (ch+iasic*32)
-             signal_hitx = SetHitInfo(n_hit_x, adc_p, energy_p, poi_p, ch + 32*iasic, iasic)
-             signalx.update({n_hit_x:signal_hitx})               
-          if iasic is 1 and ((tree.adc1[ch] - tree.cmn1) > adccut_p[ch+iasic*32]) and (tree.adc1[ch] < adc_hitcut): 
-             n_hit_x += 1
-             adc_p = tree.adc1[ch]-tree.cmn1 + coef_R * random.uniform(-0.5,0.5) 
-             energy_p = Eline[ch + 32*iasic].Eval(adc_p)
-             poi_p = (ch+iasic*32)
-             signal_hitx = SetHitInfo(n_hit_x, adc_p, energy_p, poi_p, ch + 32*iasic, iasic)
-             signalx.update({n_hit_x:signal_hitx})               
-          if iasic is 2 and ((tree.adc2[ch] - tree.cmn2) > adccut_p[ch+iasic*32]) and (tree.adc2[ch] < adc_hitcut): 
-             n_hit_x += 1
-             adc_p = tree.adc2[ch]-tree.cmn2 + coef_R * random.uniform(-0.5,0.5) 
-             energy_p = Eline[ch + 32*iasic].Eval(adc_p)
-             poi_p = (ch+iasic*32)
-             signal_hitx = SetHitInfo(n_hit_x, adc_p, energy_p, poi_p, ch + 32*iasic, iasic)
-             signalx.update({n_hit_x:signal_hitx})               
-          if iasic is 3 and ((tree.adc3[ch] - tree.cmn3) > adccut_p[ch+iasic*32]) and (tree.adc3[ch] < adc_hitcut): 
-             n_hit_x += 1
-             adc_p = tree.adc3[ch]-tree.cmn3 + coef_R * random.uniform(-0.5,0.5) 
-             energy_p = Eline[ch + 32*iasic].Eval(adc_p)
-             poi_p = (ch+iasic*32)
-             signal_hitx = SetHitInfo(n_hit_x, adc_p, energy_p, poi_p, ch + 32*iasic, iasic)
-             signalx.update({n_hit_x:signal_hitx})               
+    for i_data in rawdata_list:
+       if i_data.adcm < i_data.adccut: continue
+       if i_data.adc > i_data.upperbound: continue
 
-          if iasic is 0 and ((tree.adc4[ch] - tree.cmn4) > adccut_n[ch+iasic*32]) and (tree.adc4[ch] < adc_hitcut): 
-             n_hit_y += 1
-             adc_n = tree.adc4[ch]-tree.cmn4 + coef_R * random.uniform(-0.5,0.5) 
-             energy_n = Eline[ch + 32*iasic+128].Eval(adc_n)
-             poi_n = 128-((32-ch)+iasic*32)
-             signal_hity = SetHitInfo(n_hit_y, adc_n, energy_n, poi_n, (ch + 32*iasic+128), iasic)
-             signaly.update({n_hit_y:signal_hity})               
-          if iasic is 1 and ((tree.adc5[ch] - tree.cmn5) > adccut_n[ch+iasic*32]) and (tree.adc5[ch] < adc_hitcut): 
-             n_hit_y += 1
-             adc_n = tree.adc5[ch]-tree.cmn5 + coef_R * random.uniform(-0.5,0.5) # save adc
-             energy_n = Eline[ch + 32*iasic+128].Eval(adc_n)
-             poi_n = 128-((32-ch)+iasic*32)
-             signal_hity = SetHitInfo(n_hit_y, adc_n, energy_n, poi_n, (ch + 32*iasic+128), iasic)
-             signaly.update({n_hit_y:signal_hity})               
-          if iasic is 2 and ((tree.adc6[ch] - tree.cmn6) > adccut_n[ch+iasic*32]) and (tree.adc6[ch] < adc_hitcut): 
-             n_hit_y += 1
-             adc_n = tree.adc6[ch]-tree.cmn6 + coef_R * random.uniform(-0.5,0.5) # save adc
-             energy_n = Eline[ch + 32*iasic+128].Eval(adc_n)
-             poi_n = 128-((32-ch)+iasic*32)
-             signal_hity = SetHitInfo(n_hit_y, adc_n, energy_n, poi_n, (ch + 32*iasic+128), iasic)
-             signaly.update({n_hit_y:signal_hity})               
-          if iasic is 3 and ((tree.adc7[ch] - tree.cmn7) > adccut_n[ch+iasic*32]) and (tree.adc7[ch] < adc_hitcut): 
-             n_hit_y += 1
-             adc_n = tree.adc7[ch]-tree.cmn7 + coef_R * random.uniform(-0.5,0.5) # save adc
-             energy_n = Eline[ch + 32*iasic+128].Eval(adc_n)
-             poi_n = 128-((32-ch)+iasic*32)
-             signal_hity = SetHitInfo(n_hit_y, adc_n, energy_n, poi_n, (ch + 32*iasic+128), iasic)
-             signaly.update({n_hit_y:signal_hity})               
-
-      
+       if i_data.detid is 0: 
+          n_hit_x += 1
+          energy = Eline[i_data.stripid].Eval(i_data.adcm)
+          poi = dblist[i_data.stripid].posx
+          signalx.update({n_hit_x:SetHitInfo(n_hit_x, i_data.adcm, energy, poi, i_data.stripid, i_data.asicid)})
+       else:
+          n_hit_y += 1
+          energy = Eline[i_data.stripid].Eval(i_data.adcm)
+          poi = dblist[i_data.stripid].posy
+          signaly.update({n_hit_y:SetHitInfo(n_hit_y, i_data.adcm, energy, poi, i_data.stripid, i_data.asicid)})
     return signalx, signaly
         
 def Level1Hit_Shima1(tree, Eline, adccut_p, adccut_n, coef_R, dblist):
@@ -227,6 +181,8 @@ def Level1Hit_Shima1(tree, Eline, adccut_p, adccut_n, coef_R, dblist):
              n_hit_x += 1 #hit !
              adc_p = tree.adc0[ch*2]-tree.cmn0 + coef_R * random.uniform(-0.5,0.5)
              energy_p = Eline[ch + 32*iasic].Eval(adc_p)
+             #print (dblist[ch+iasic*32].calfunc.GetName())
+             #energy_p = dblist[ch+iasic*32].calfunc.Eval(adc_p)
              poi_p = dblist[ch+iasic*32].posx
              signal_hitx = SetHitInfo(n_hit_x, adc_p, energy_p, poi_p, ch + 32*iasic, iasic)
              signalx.update({n_hit_x:signal_hitx})               

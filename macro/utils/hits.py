@@ -14,7 +14,26 @@ import sys,os,random,math,ROOT
 from ROOT import TFile, TTree, gROOT
 ROOT.gROOT.SetBatch(1)
 
-class level1hitchannel:
+class rawdata_eventtree:
+      def __init__(self): 
+          self.options = list()
+          self.declare_option("detid", 0)
+          self.declare_option("asicid", 0)
+          self.declare_option("stripid", 0)
+          self.declare_option("adc", 0)
+          self.declare_option("adcm", 0)
+          self.declare_option("cmn", 0)
+          self.declare_option("adccut", 0)
+          self.declare_option("upperbound", 0)
+          self.declare_option("coef_R", 0)
+
+      def declare_option(self, optName, defaultVal = None):
+           self.options.append(optName)
+           if not (type(defaultVal) == type(None)):
+               setattr(self, optName, defaultVal)     
+ 
+
+class hitchannel:
       def __init__(self): 
           self.options = list()
           self.declare_option("index", 0)
@@ -62,6 +81,7 @@ class database:
           self.declare_option("widthx", tree.widthx)
           self.declare_option("widthy", tree.widthy)
           self.declare_option("ecut", tree.ethre)
+          #self.declare_option("calfunc", tree.calfunc)
 
       def declare_option(self, optName, defaultVal = None):
            self.options.append(optName)
