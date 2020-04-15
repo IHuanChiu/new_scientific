@@ -293,7 +293,7 @@ class tran_process():
           self.h2_cutflow_y.Fill(0, 128)
 
 #          hitx_lv1, hity_lv1 = Level1Hit(rawdata_list, self.line, self.dblist)
-          hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.cut, self.coef_R, self.dblist)
+          hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.cut, self.coef_R, self.dblist, self.line)
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
           self.h2_cutflow_x.Fill(1, len(hitx_lv1))
           self.h2_cutflow_y.Fill(1, len(hity_lv1))

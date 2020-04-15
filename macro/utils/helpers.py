@@ -16,7 +16,7 @@ class ProgressBar():
           self.width = width or 40
 
       def update(self,n):
-          bar = '[%-'+str(self.width)+'s] %.f%% %.2f s'
+          bar = '[%-'+str(self.width)+'s] %.f%% %.1f s'
           frac = float(n)/float(self.ntotal)
           print_time = time.time() - self.init_t
           sys.stdout.write('\r')
