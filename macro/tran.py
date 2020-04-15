@@ -99,7 +99,8 @@ def Getdatabase():
     dbtree = f.Get("dbtree") 
     mdatabase = []
     for m in dbtree:
-       D = database(m)
+       func = m.calfunc.Clone()
+       D = database(m.detid,m.asicid,m.asicch,m.posx,m.posy,m.widthx,m.widthy,m.ethre,func)
        mdatabase.append(D) # List for id 
     f.Close()
     return mdatabase
@@ -150,42 +151,45 @@ def GetEventTree(tree, adccut, coef_R, dtype):
              m_rawdata.upperbound = 1000.
              m_rawdata.coef_R     = coef_R
              m_rawdata.adccut     = adccut[index]
+
              if (idet*nasic+iasic) is 0: 
                 m_rawdata.adc    = tree.adc0[istrip]
                 m_rawdata.cmn    = tree.cmn0
                 m_rawdata.adcm   = tree.adc0[istrip] - tree.cmn0
-             if (idet*nasic+iasic) is 1: 
+             elif (idet*nasic+iasic) is 1: 
                 m_rawdata.adc    = tree.adc1[istrip]
                 m_rawdata.cmn    = tree.cmn1
                 m_rawdata.adcm   = tree.adc1[istrip] - tree.cmn1
-             if (idet*nasic+iasic) is 2: 
+             elif (idet*nasic+iasic) is 2: 
                 m_rawdata.adc    = tree.adc2[istrip]
                 m_rawdata.cmn    = tree.cmn2
                 m_rawdata.adcm   = tree.adc2[istrip] - tree.cmn2
-             if (idet*nasic+iasic) is 3: 
+             elif (idet*nasic+iasic) is 3: 
                 m_rawdata.adc    = tree.adc3[istrip]
                 m_rawdata.cmn    = tree.cmn3
                 m_rawdata.adcm   = tree.adc3[istrip] - tree.cmn3
-             if (idet*nasic+iasic) is 4: 
+             elif (idet*nasic+iasic) is 4: 
                 m_rawdata.adc    = tree.adc4[istrip]
                 m_rawdata.cmn    = tree.cmn4
                 m_rawdata.adcm   = tree.adc4[istrip] - tree.cmn4
-             if (idet*nasic+iasic) is 5: 
+             elif (idet*nasic+iasic) is 5: 
                 m_rawdata.adc    = tree.adc5[istrip]
                 m_rawdata.cmn    = tree.cmn5
                 m_rawdata.adcm   = tree.adc5[istrip] - tree.cmn5
-             if (idet*nasic+iasic) is 6:
+             elif (idet*nasic+iasic) is 6:
                 m_rawdata.adc    = tree.adc6[istrip]
                 m_rawdata.cmn    = tree.cmn6
                 m_rawdata.adcm   = tree.adc6[istrip] - tree.cmn6
-             if (idet*nasic+iasic) is 7: 
+             elif (idet*nasic+iasic) is 7: 
                 m_rawdata.adc    = tree.adc7[istrip]
                 m_rawdata.cmn    = tree.cmn7
                 m_rawdata.adcm   = tree.adc7[istrip] - tree.cmn7
-             m_rawdata_list.append(m_rawdata)# info. for 256 strips
+             
              index += 1
+             if m_rawdata.adcm < m_rawdata.adccut : continue 
+             m_rawdata_list.append(m_rawdata)# info. for the selected strips
 #    tmp = np.asarray(m_rawdata_list)
-    print(time.time()-ti)
+#    print(time.time()-ti)
     return m_rawdata_list
 
 class tran_process():
@@ -282,29 +286,30 @@ class tran_process():
       def tran_adc2e(self,ie):
 
           self.tree.GetEntry(self.event_list.GetEntry(ie))
-          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
+#          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 
           self.h1_event_cutflow.Fill(1)
           self.h2_cutflow_x.Fill(0, 128)
           self.h2_cutflow_y.Fill(0, 128)
 
-          hitx_lv1, hity_lv1 = Level1Hit(rawdata_list, self.line, self.dblist)
+#          hitx_lv1, hity_lv1 = Level1Hit(rawdata_list, self.line, self.dblist)
+          hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.cut, self.coef_R, self.dblist)
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
           self.h2_cutflow_x.Fill(1, len(hitx_lv1))
           self.h2_cutflow_y.Fill(1, len(hity_lv1))
-          if len(hitx_lv1) is 0 or len(hity_lv1) is 0: return 0
+          # if len(hitx_lv1) is 0 or len(hity_lv1) is 0: return 0
           self.h1_event_cutflow.Fill(2)
 
           hitx_lv2, hity_lv2, madx, mady = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
           self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
           self.h2_cutflow_x.Fill(2, len(hitx_lv2))
           self.h2_cutflow_y.Fill(2, len(hity_lv2))
-          if len(hitx_lv2) is 0 or len(hity_lv2) is 0: return 0
+          # if len(hitx_lv2) is 0 or len(hity_lv2) is 0: return 0
           self.h1_event_cutflow.Fill(3)
       
           point = findpoint(hitx_lv2, hity_lv2, madx, mady)
           hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
-          if len(hitx_lv2)*len(hity_lv2) > 512 or len(hit_signal) is 0: return 0 # huge hit channel 
+          # if len(hitx_lv2)*len(hity_lv2) > 512 or len(hit_signal) is 0: return 0 # huge hit channel 
           self.h1_event_cutflow.Fill(4)
 
           # varaibles of ntuple 
