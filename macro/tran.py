@@ -48,22 +48,22 @@ gROOT.ProcessLine(
    Double_t  energy_n[128];\
    Double_t     adc_p[128];\
    Double_t     adc_n[128];\
-   Double_t       axis_x[128];\
-   Double_t       axis_y[128];\
+   Double_t    axis_x[128];\
+   Double_t    axis_y[128];\
    Double_t    weight[128];\
-   Double_t    E_p[512];\
-   Double_t    E_n[512];\
-   Double_t    E_p_lv1[128];\
-   Double_t    E_n_lv1[128];\
-   Double_t    E_p_lv2[128];\
-   Double_t    E_n_lv2[128];\
+   Double_t       E_p[512];\
+   Double_t       E_n[512];\
+   Double_t   E_p_lv1[128];\
+   Double_t   E_n_lv1[128];\
+   Double_t   E_p_lv2[128];\
+   Double_t   E_n_lv2[128];\
    Double_t    DeltaE[512];\
-   Double_t       Poi_x[512];\
-   Double_t       Poi_y[512];\
-   Double_t       Poi_x_lv1[128];\
-   Double_t       Poi_y_lv1[128];\
-   Double_t       Poi_x_lv2[128];\
-   Double_t       Poi_y_lv2[128];\
+   Double_t     Poi_x[512];\
+   Double_t     Poi_y[512];\
+   Double_t Poi_x_lv1[128];\
+   Double_t Poi_y_lv1[128];\
+   Double_t Poi_x_lv2[128];\
+   Double_t Poi_y_lv2[128];\
 };"
 ); 
 
@@ -74,24 +74,29 @@ def getlineEnergy(energyFile, name, channel):
     if "spline_maxbin" in name : return energyFile.Get('Calline%s'%(channel))
     return energyFile.Get('spline_%s'%(channel))
 
-def getTSpline(self,fname, efname):
+def getTSpline(self,fname, efname, dblist):
     f = ROOT.TFile(fname) 
-    ef = ROOT.TFile(efname, 'read')
     line = list()
-    for ch in range(0, 256): 
-       line.append(getlineEnergy(ef, efname, ch))
-       if ch < 128:#x
-          if ch < 10: hist_name = "hist_cmn" + "00" + str(ch) 
-          elif ch < 100:  hist_name = "hist_cmn" + "0" + str(ch) 
-          else : hist_name = "hist_cmn" + str(ch)
-          hist = f.Get(hist_name) 
-          self.hx.Add(hist)
-       else:#y
-          hist_name = "hist_cmn" + str(ch)
-          hist = f.Get(hist_name) 
-          self.hy.Add(hist)
-    ef.Close()
-    return line
+    if efname:
+       ef = ROOT.TFile(efname, 'read')
+       for ch in range(0, 256): 
+          line.append(getlineEnergy(ef, efname, ch))
+          if ch < 128:#x
+             if ch < 10: hist_name = "hist_cmn" + "00" + str(ch) 
+             elif ch < 100:  hist_name = "hist_cmn" + "0" + str(ch) 
+             else : hist_name = "hist_cmn" + str(ch)
+             hist = f.Get(hist_name) 
+             self.hx.Add(hist)
+          else:#y
+             hist_name = "hist_cmn" + str(ch)
+             hist = f.Get(hist_name) 
+             self.hy.Add(hist)
+       ef.Close()
+    else:
+       for ch in range(0, 256):
+          func=dblist[ch].calfunc.Clone()
+          line.append(func)
+    return line       
 
 def Getdatabase():
     databasename = "/Users/chiu.i-huan/Desktop/new_scientific/macro/auxfile/database.root"
@@ -266,10 +271,10 @@ class tran_process():
 
           self.coef_R = 1 # random to ADC to avoid quantum phenomenon
           if not enums.IsRandom : self.coef_R = 0
-
-          self.line = getTSpline(self, ifile, efile) 
-          self.cut = findadccut(self.line)
           self.dblist = Getdatabase()
+
+          self.line = getTSpline(self, ifile, efile, self.dblist) 
+          self.cut = findadccut(self.line)
       #    coef_a, coef_b = findx2yshift(self.hx, self.hy)
 
           self.hist_list.append(self.h2_lv1)
@@ -278,39 +283,38 @@ class tran_process():
           self.hist_list.append(self.hy)
           self.hist_list.append(self.h2_cutflow_x)
           self.hist_list.append(self.h2_cutflow_y)
-          self.hist_list.append(self.h1_event_cutflow)
+#          self.hist_list.append(self.h1_event_cutflow)
           self.tree_list.append(self.tout)
 
           self.drawables = self.hist_list + self.tree_list
 
       def tran_adc2e(self,ie):
-
           self.tree.GetEntry(self.event_list.GetEntry(ie))
 #          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 
-          self.h1_event_cutflow.Fill(1)
+#          self.h1_event_cutflow.Fill(1)
           self.h2_cutflow_x.Fill(0, 128)
           self.h2_cutflow_y.Fill(0, 128)
 
 #          hitx_lv1, hity_lv1 = Level1Hit(rawdata_list, self.line, self.dblist)
-          hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.cut, self.coef_R, self.dblist, self.line)
+          hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.cut, self.coef_R, self.dblist, self.line)#Slow
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
           self.h2_cutflow_x.Fill(1, len(hitx_lv1))
           self.h2_cutflow_y.Fill(1, len(hity_lv1))
           # if len(hitx_lv1) is 0 or len(hity_lv1) is 0: return 0
-          self.h1_event_cutflow.Fill(2)
+#          self.h1_event_cutflow.Fill(2)
 
           hitx_lv2, hity_lv2, madx, mady = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
           self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
           self.h2_cutflow_x.Fill(2, len(hitx_lv2))
           self.h2_cutflow_y.Fill(2, len(hity_lv2))
           # if len(hitx_lv2) is 0 or len(hity_lv2) is 0: return 0
-          self.h1_event_cutflow.Fill(3)
+#          self.h1_event_cutflow.Fill(3)
       
-          point = findpoint(hitx_lv2, hity_lv2, madx, mady)
-          hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)
+          point = findpoint(hitx_lv2, hity_lv2, madx, mady)#Slow
+          hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)#Slow
           # if len(hitx_lv2)*len(hity_lv2) > 512 or len(hit_signal) is 0: return 0 # huge hit channel 
-          self.h1_event_cutflow.Fill(4)
+#          self.h1_event_cutflow.Fill(4)
 
           # varaibles of ntuple 
           struct.nsignalx_lv1 = len(hitx_lv1)
