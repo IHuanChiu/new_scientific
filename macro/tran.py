@@ -222,6 +222,10 @@ class tran_process():
           self.h2_lv2.SetDirectory(0)
           self.h2_lv2.GetXaxis().SetTitle("X")
           self.h2_lv2.GetYaxis().SetTitle("Y")
+          self.h1_lv2_x_nstrips = ROOT.TH1D("p-side_n","p-side nstrips of level2hit",20,0,20)
+          self.h1_lv2_x_nstrips.SetDirectory(0)
+          self.h1_lv2_y_nstrips = ROOT.TH1D("n-side_n","n-side nstrips of level2hit",20,0,20)
+          self.h1_lv2_y_nstrips.SetDirectory(0)
           self.hx = ROOT.TH1D("hist_cmn_pside","p-side adc - cmn",1024,-50.5,973.5)
           self.hy = ROOT.TH1D("hist_cmn_nside","n-side adc - cmn",1024,-50.5,973.5)
           self.hx.SetDirectory(0)
@@ -283,6 +287,8 @@ class tran_process():
           self.hist_list.append(self.hy)
           self.hist_list.append(self.h2_cutflow_x)
           self.hist_list.append(self.h2_cutflow_y)
+          self.hist_list.append(self.h1_lv2_x_nstrips)
+          self.hist_list.append(self.h1_lv2_y_nstrips)
 #          self.hist_list.append(self.h1_event_cutflow)
           self.tree_list.append(self.tout)
 
@@ -304,14 +310,16 @@ class tran_process():
           # if len(hitx_lv1) is 0 or len(hity_lv1) is 0: return 0
 #          self.h1_event_cutflow.Fill(2)
 
-          hitx_lv2, hity_lv2, madx, mady = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
+          hitx_lv2, hity_lv2 = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
           self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
           self.h2_cutflow_x.Fill(2, len(hitx_lv2))
           self.h2_cutflow_y.Fill(2, len(hity_lv2))
+          for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
+          for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
           # if len(hitx_lv2) is 0 or len(hity_lv2) is 0: return 0
 #          self.h1_event_cutflow.Fill(3)
       
-          point = findpoint(hitx_lv2, hity_lv2, madx, mady)#Slow
+          point = findpoint(hitx_lv2, hity_lv2)#Slow
           hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)#Slow
           # if len(hitx_lv2)*len(hity_lv2) > 512 or len(hit_signal) is 0: return 0 # huge hit channel 
 #          self.h1_event_cutflow.Fill(4)
