@@ -57,15 +57,15 @@ gROOT.ProcessLine(
    Double_t   E_n_lv1[128];\
    Double_t   E_p_lv2[128];\
    Double_t   E_n_lv2[128];\
-   Double_t    DeltaE[512];\
    Double_t     Poi_x[512];\
    Double_t     Poi_y[512];\
    Double_t Poi_x_lv1[128];\
    Double_t Poi_y_lv1[128];\
    Double_t Poi_x_lv2[128];\
    Double_t Poi_y_lv2[128];\
-   Double_t Nstrips_x_lv2[128];\
-   Double_t Nstrips_y_lv2[128];\
+   Double_t    DeltaE[512];\
+   Double_t Nstrips_x[512];\
+   Double_t Nstrips_y[512];\
 };"
 ); 
 
@@ -127,6 +127,8 @@ def makentuple(signal, point, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
        struct.Poi_x[n-1]      = point[n].x
        struct.Poi_y[n-1]      = point[n].y
        struct.DeltaE[n-1]     = point[n].deltaE
+       struct.Nstrips_x[n-1]  = point[n].nstrips_x
+       struct.Nstrips_y[n-1]  = point[n].nstrips_y
     for n in range(1,len(hitx_lv1)+1):          
        struct.E_p_lv1[n-1]        = hitx_lv1[n].energy
        struct.Poi_x_lv1[n-1]      = hitx_lv1[n].position
@@ -136,11 +138,9 @@ def makentuple(signal, point, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
     for n in range(1,len(hitx_lv2)+1):          
        struct.E_p_lv2[n-1]        = hitx_lv2[n].energy
        struct.Poi_x_lv2[n-1]      = hitx_lv2[n].position
-       struct.Nstrips_x_lv2[n-1]  = hitx_lv2[n].nstrips
     for n in range(1,len(hity_lv2)+1):          
        struct.E_n_lv2[n-1]        = hity_lv2[n].energy
        struct.Poi_y_lv2[n-1]      = hity_lv2[n].position
-       struct.Nstrips_y_lv2[n-1]  = hity_lv2[n].nstrips
 
 def GetEventTree(tree, adccut, coef_R, dtype):
     m_rawdata_list = []
@@ -268,7 +268,6 @@ class tran_process():
           self.tout.Branch( 'E_n_lv1', AddressOf( struct, 'E_n_lv1' ),    'E_n_lv1[nsignaly_lv1]/D' )
           self.tout.Branch( 'E_p_lv2', AddressOf( struct, 'E_p_lv2' ),    'E_p_lv2[nsignalx_lv2]/D' )
           self.tout.Branch( 'E_n_lv2', AddressOf( struct, 'E_n_lv2' ),    'E_n_lv2[nsignaly_lv2]/D' )
-          self.tout.Branch( 'DeltaE',  AddressOf( struct, 'DeltaE' ),     'DeltaE[npoint]/D' )
 
           self.tout.Branch( 'Poi_x',     AddressOf( struct, 'Poi_x' ),    'Poi_x[npoint]/D' )
           self.tout.Branch( 'Poi_y',     AddressOf( struct, 'Poi_y' ),    'Poi_y[npoint]/D' )
@@ -276,8 +275,10 @@ class tran_process():
           self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
           self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
           self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
-          self.tout.Branch( 'Nstrips_x_lv2', AddressOf( struct, 'Nstrips_x_lv2' ),'Nstrips_x_lv2[nsignalx_lv2]/D' )
-          self.tout.Branch( 'Nstrips_y_lv2', AddressOf( struct, 'Nstrips_y_lv2' ),'Nstrips_y_lv2[nsignaly_lv2]/D' )
+
+          self.tout.Branch( 'DeltaE',  AddressOf( struct, 'DeltaE' ),     'DeltaE[npoint]/D' )
+          self.tout.Branch( 'Nstrips_x', AddressOf( struct, 'Nstrips_x' ),'Nstrips_x[npoint]/D' )
+          self.tout.Branch( 'Nstrips_y', AddressOf( struct, 'Nstrips_y' ),'Nstrips_y[npoint]/D' )
 
           self.coef_R = 1 # random to ADC to avoid quantum phenomenon
           if not enums.IsRandom : self.coef_R = 0
