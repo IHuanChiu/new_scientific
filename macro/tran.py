@@ -50,7 +50,7 @@ gROOT.ProcessLine(
    Double_t     adc_n[128];\
    Double_t    axis_x[128];\
    Double_t    axis_y[128];\
-   Double_t    weight[128];\
+   Double_t    deltaE[128];\
    Double_t       E_p[512];\
    Double_t       E_n[512];\
    Double_t   E_p_lv1[128];\
@@ -64,6 +64,8 @@ gROOT.ProcessLine(
    Double_t Poi_y_lv1[128];\
    Double_t Poi_x_lv2[128];\
    Double_t Poi_y_lv2[128];\
+   Double_t Nstrips_x_lv2[128];\
+   Double_t Nstrips_y_lv2[128];\
 };"
 ); 
 
@@ -118,7 +120,7 @@ def makentuple(signal, point, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
        struct.energy_n[n-1]     = signal[n].energy_n
        struct.axis_x[n-1]       = signal[n].x
        struct.axis_y[n-1]       = signal[n].y
-       struct.weight[n-1]       = signal[n].weight
+       struct.deltaE[n-1]       = signal[n].deltaE
     for n in range(1,len(point)+1):          
        struct.E_p[n-1]        = point[n].energy_p
        struct.E_n[n-1]        = point[n].energy_n
@@ -134,9 +136,11 @@ def makentuple(signal, point, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
     for n in range(1,len(hitx_lv2)+1):          
        struct.E_p_lv2[n-1]        = hitx_lv2[n].energy
        struct.Poi_x_lv2[n-1]      = hitx_lv2[n].position
+       struct.Nstrips_x_lv2[n-1]  = hitx_lv2[n].nstrips
     for n in range(1,len(hity_lv2)+1):          
        struct.E_n_lv2[n-1]        = hity_lv2[n].energy
        struct.Poi_y_lv2[n-1]      = hity_lv2[n].position
+       struct.Nstrips_y_lv2[n-1]  = hity_lv2[n].nstrips
 
 def GetEventTree(tree, adccut, coef_R, dtype):
     m_rawdata_list = []
@@ -256,7 +260,7 @@ class tran_process():
           self.tout.Branch( 'adc_n',    AddressOf( struct, 'adc_n' ),     'adc_n[nhit]/D' )
           self.tout.Branch( 'x',        AddressOf( struct, 'axis_x' ),    'x[nhit]/D' )
           self.tout.Branch( 'y',        AddressOf( struct, 'axis_y' ),    'y[nhit]/D' )
-          self.tout.Branch( 'weight',  AddressOf( struct, 'weight' ),     'weight[nhit]/D' )
+          self.tout.Branch( 'deltaE',  AddressOf( struct, 'deltaE' ),     'deltaE[nhit]/D' )
 
           self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[npoint]/D' )
           self.tout.Branch( 'E_n',     AddressOf( struct, 'E_n' ),        'E_n[npoint]/D' )
@@ -268,10 +272,12 @@ class tran_process():
 
           self.tout.Branch( 'Poi_x',     AddressOf( struct, 'Poi_x' ),    'Poi_x[npoint]/D' )
           self.tout.Branch( 'Poi_y',     AddressOf( struct, 'Poi_y' ),    'Poi_y[npoint]/D' )
-          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),'Poi_x[nsignalx_lv1]/D' )
-          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y[nsignaly_lv1]/D' )
-          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x[nsignalx_lv2]/D' )
-          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y[nsignaly_lv2]/D' )
+          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),'Poi_x_lv1[nsignalx_lv1]/D' )
+          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
+          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
+          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
+          self.tout.Branch( 'Nstrips_x_lv2', AddressOf( struct, 'Nstrips_x_lv2' ),'Nstrips_x_lv2[nsignalx_lv2]/D' )
+          self.tout.Branch( 'Nstrips_y_lv2', AddressOf( struct, 'Nstrips_y_lv2' ),'Nstrips_y_lv2[nsignaly_lv2]/D' )
 
           self.coef_R = 1 # random to ADC to avoid quantum phenomenon
           if not enums.IsRandom : self.coef_R = 0
@@ -295,34 +301,31 @@ class tran_process():
           self.drawables = self.hist_list + self.tree_list
 
       def tran_adc2e(self,ie):
+          hitx_lv2, hity_lv2, point, hit_signal = {},{},{},{}
           self.tree.GetEntry(self.event_list.GetEntry(ie))
-#          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 
-#          self.h1_event_cutflow.Fill(1)
           self.h2_cutflow_x.Fill(0, 128)
           self.h2_cutflow_y.Fill(0, 128)
 
+#          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 #          hitx_lv1, hity_lv1 = Level1Hit(rawdata_list, self.line, self.dblist)
           hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.cut, self.coef_R, self.dblist, self.line)#Slow
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
           self.h2_cutflow_x.Fill(1, len(hitx_lv1))
           self.h2_cutflow_y.Fill(1, len(hity_lv1))
-          # if len(hitx_lv1) is 0 or len(hity_lv1) is 0: return 0
-#          self.h1_event_cutflow.Fill(2)
 
-          hitx_lv2, hity_lv2 = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
-          self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
-          self.h2_cutflow_x.Fill(2, len(hitx_lv2))
-          self.h2_cutflow_y.Fill(2, len(hity_lv2))
-          for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
-          for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
-          # if len(hitx_lv2) is 0 or len(hity_lv2) is 0: return 0
-#          self.h1_event_cutflow.Fill(3)
-      
-          point = findpoint(hitx_lv2, hity_lv2)#Slow
-          hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)#Slow
-          # if len(hitx_lv2)*len(hity_lv2) > 512 or len(hit_signal) is 0: return 0 # huge hit channel 
-#          self.h1_event_cutflow.Fill(4)
+          if len(hitx_lv1) is not 0 and  len(hity_lv1) is not 0:
+             hitx_lv2, hity_lv2 = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
+             self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
+             self.h2_cutflow_x.Fill(2, len(hitx_lv2))
+             self.h2_cutflow_y.Fill(2, len(hity_lv2))
+             for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
+             for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
+
+          if len(hitx_lv2) is not 0 and len(hity_lv2) is not 0:   
+             point = findpoint(hitx_lv2, hity_lv2)#Slow
+             hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)#Slow
+             if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 
 
           # varaibles of ntuple 
           struct.nsignalx_lv1 = len(hitx_lv1)
