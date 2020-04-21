@@ -43,6 +43,8 @@ class hitchannel:
           self.declare_option("channel", 0)
           self.declare_option("asic", 0)
           self.declare_option("nstrips", 0)
+          self.declare_option("Lv1index", None)
+          self.declare_option("Lv1hit", None)
 
       def declare_option(self, optName, defaultVal = None):
            self.options.append(optName)
@@ -64,6 +66,10 @@ class hitphoton:
           self.declare_option("deltaE",0.0)
           self.declare_option("nstrips_x",0)
           self.declare_option("nstrips_y",0)
+          self.declare_option("Lv1index_x",None)
+          self.declare_option("Lv1index_y",None)
+          self.declare_option("Lv1hit_x",None)
+          self.declare_option("Lv1hit_y",None)
 
       def declare_option(self, optName, defaultVal = None):
            self.options.append(optName)

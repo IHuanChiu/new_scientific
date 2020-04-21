@@ -61,6 +61,8 @@ def reset(index, _lv1hit, nad, _mhit):
        _index = heapq.nlargest(1,dic)
        _mhit.channel, _mhit.position = _lv1hit[_index[0]].channel, _lv1hit[_index[0]].position
 
+    _mhit.Lv1hit = _lv1hit 
+    _mhit.Lv1index = [index - _n for _n in range(nad+1)]
     _mhit.nstrips = nad+1
     return _mhit
           
@@ -72,6 +74,7 @@ def Level2Hit(_hitx, _hity):
 
     for ix in range(1, 1+len(_hitx)):
        if(isAdjacent(ix, _hitx)):
+          #update hit info. due to adjacent channels
           n_adx += 1
           _newmergehit = hitchannel()
           _newmergehit = reset(ix, _hitx, n_adx, _newmergehit)
@@ -79,6 +82,8 @@ def Level2Hit(_hitx, _hity):
        else:
           n_adx = 0
           m_nx += 1
+          _hitx[ix].Lv1hit = _hitx
+          _hitx[ix].Lv1index = [ix]
           _hitx[ix].nstrips = n_adx+1
           merge_xhit.update({m_nx:_hitx[ix]})   
     for iy in range(1, 1+len(_hity)):
@@ -90,6 +95,8 @@ def Level2Hit(_hitx, _hity):
        else:
           n_ady = 0
           m_ny += 1
+          _hity[iy].Lv1hit = _hity
+          _hity[iy].Lv1index = [iy]
           _hity[iy].nstrips = n_ady+1
           merge_yhit.update({m_ny:_hity[iy]})
     
@@ -111,7 +118,7 @@ def matchhit(_nx, _ny, _p):
     _nhit = 0#number of real photons
 
     for _ip in range(1,len(_p)+1):
-       c = Category(_p[_ip]) # category for one cluster
+       c = Category(point=_p[_ip]) # category for one cluster
        single_dic = c.hit
        for _s in single_dic:#one cluster might has several reco. photon
           _nhit += 1
@@ -141,6 +148,10 @@ def SetphotonInfo(index, _x, _y, _delta):
     _signal.nstrips_x = _x.nstrips
     _signal.nstrips_y = _y.nstrips
     _signal.deltaE = _delta
+    _signal.Lv1index_x = _x.Lv1index
+    _signal.Lv1index_y = _y.Lv1index
+    _signal.Lv1hit_x = _x.Lv1hit
+    _signal.Lv1hit_y = _y.Lv1hit
     return _signal 
 
 def SetHitInfo(index, adc, energy, poi, ch, asic):
