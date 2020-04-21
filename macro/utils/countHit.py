@@ -21,6 +21,7 @@ from random import gauss
 import numpy as np
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 from hits import hitchannel, hitphoton
+from cat import Category 
 import heapq 
 import enums
 import time
@@ -110,30 +111,13 @@ def matchhit(_nx, _ny, _p):
     _nhit = 0#number of real photons
 
     for _ip in range(1,len(_p)+1):
-       if _p[_ip].nstrips_x is 1:
-          if _p[_ip].nstrips_y is 1:
-             _nhit += 1
-             list_signal.update({_nhit:_p[_ip]})
-#          elif _p[_ip].nstrips_y is 2:
-#             print("a")
-#          else:
-#             print("a")
-#       elif _p[_ip].nstrips_x is 2:
-#          if _p[_ip].nstrips_y is 1:
-#             print("a")
-#          elif _p[_ip].nstrips_y is 2:
-#             print("a")
-#          else:
-#             print("a")
-#       else:
-#          if _p[_ip].nstrips_y is 1:
-#             print("a")
-#          elif _p[_ip].nstrips_y is 2:
-#             print("a")
-#          else:
-#             print("a")
+       c = Category(_p[_ip]) # category for one cluster
+       single_dic = c.hit
+       for _s in single_dic:#one cluster might has several reco. photon
+          _nhit += 1
+          list_signal.update({_nhit:single_dic[_s]})
 
-    # Delta E selection
+     # === simple Delta E selection ===
 #    for ip in range(1, 1+len(_p)):
 #       dic.update({ip:_p[ip].deltaE})
 #    maxpoint = min(_nx, _ny)
