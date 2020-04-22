@@ -50,7 +50,6 @@ gROOT.ProcessLine(
    Double_t     adc_n[128];\
    Double_t    axis_x[128];\
    Double_t    axis_y[128];\
-   Double_t    deltaE[128];\
    Double_t       E_p[512];\
    Double_t       E_n[512];\
    Double_t   E_p_lv1[128];\
@@ -120,7 +119,6 @@ def makentuple(signal, point, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
        struct.energy_n[n-1]     = signal[n].energy_n
        struct.axis_x[n-1]       = signal[n].x
        struct.axis_y[n-1]       = signal[n].y
-       struct.deltaE[n-1]       = signal[n].deltaE
     for n in range(1,len(point)+1):          
        struct.E_p[n-1]        = point[n].energy_p
        struct.E_n[n-1]        = point[n].energy_n
@@ -260,7 +258,6 @@ class tran_process():
           self.tout.Branch( 'adc_n',    AddressOf( struct, 'adc_n' ),     'adc_n[nhit]/D' )
           self.tout.Branch( 'x',        AddressOf( struct, 'axis_x' ),    'x[nhit]/D' )
           self.tout.Branch( 'y',        AddressOf( struct, 'axis_y' ),    'y[nhit]/D' )
-          self.tout.Branch( 'deltaE',  AddressOf( struct, 'deltaE' ),     'deltaE[nhit]/D' )
 
           self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[npoint]/D' )
           self.tout.Branch( 'E_n',     AddressOf( struct, 'E_n' ),        'E_n[npoint]/D' )
