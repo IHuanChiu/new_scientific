@@ -45,33 +45,19 @@ class Category():
              Ey0 = _clu.Lv1hit_y[_clu.Lv1index_y[0]].energy
              Ey1 = _clu.Lv1hit_y[_clu.Lv1index_y[1]].energy
              if( math.fabs(Ex0 - (Ey0+Ey1)) < enums.DeltaEnergy): # Two photons
-#                _clu.adc_n = _clu.Lv1hit_y[_clu.Lv1index_y[0]].adc
-#                _clu.energy_n = Ey0
-#                _clu.energy_p = Ex0*Ey0/(Ey0+Ey1)
-#                _clu.y = _clu.Lv1hit_y[_clu.Lv1index_y[0]].position                
                 _p = setphoton(Ex0*Ey0/(Ey0+Ey1), Ey0, _clu.adc_p*Ey0/(Ey0+Ey1), _clu.Lv1hit_y[_clu.Lv1index_y[0]].adc, _clu.x, _clu.Lv1hit_y[_clu.Lv1index_y[0]].position, 2)
                 _n+=1
                 _d.update({_n:_p})
 
-#                _clu.adc_n = _clu.Lv1hit_y[_clu.Lv1index_y[1]].adc
-#                _clu.energy_n = Ey1
-#                _clu.energy_p = Ex0*Ey1/(Ey0+Ey1)
-#                _clu.y = _clu.Lv1hit_y[_clu.Lv1index_y[1]].position                
                 _p = setphoton(Ex0*Ey1/(Ey0+Ey1), Ey1, _clu.adc_p*Ey1/(Ey0+Ey1), _clu.Lv1hit_y[_clu.Lv1index_y[1]].adc, _clu.x, _clu.Lv1hit_y[_clu.Lv1index_y[1]].position, 2)
                 _n+=1
                 _d.update({_n:_p})               
              else: # One noise
                 if(math.fabs(Ex0 - Ey0) < math.fabs(Ex0 - Ey1)) and (math.fabs(Ex0 - Ey0) < enums.DeltaEnergy):
-#                   _clu.adc_n = _clu.Lv1hit_y[_clu.Lv1index_y[0]].adc
-#                   _clu.energy_n = _clu.Lv1hit_y[_clu.Lv1index_y[0]].energy
-#                   _clu.y = _clu.Lv1hit_y[_clu.Lv1index_y[0]].position
                    _p = setphoton(_clu.energy_p, _clu.Lv1hit_y[_clu.Lv1index_y[0]].energy, _clu.adc_p, _clu.Lv1hit_y[_clu.Lv1index_y[0]].adc, _clu.x, _clu.Lv1hit_y[_clu.Lv1index_y[0]].position, 2)
                    _n+=1
                    _d.update({_n:_p})
                 if (math.fabs(Ex0 - Ey1) < math.fabs(Ex0 - Ey1)) and (math.fabs(Ex0 - Ey1) < enums.DeltaEnergy):
-#                   _clu.adc_n = _clu.Lv1hit_y[_clu.Lv1index_y[1]].adc
-#                   _clu.energy_n = _clu.Lv1hit_y[_clu.Lv1index_y[1]].energy
-#                   _clu.y = _clu.Lv1hit_y[_clu.Lv1index_y[1]].position
                    _p = setphoton(_clu.energy_p, _clu.Lv1hit_y[_clu.Lv1index_y[1]].energy, _clu.adc_p, _clu.Lv1hit_y[_clu.Lv1index_y[1]].adc, _clu.x, _clu.Lv1hit_y[_clu.Lv1index_y[1]].position, 2)
                    _n+=1
                    _d.update({_n:_p})
@@ -85,32 +71,19 @@ class Category():
              Ex1 = _clu.Lv1hit_x[_clu.Lv1index_x[1]].energy
              Ey0 = _clu.Lv1hit_y[_clu.Lv1index_y[0]].energy
              if( math.fabs(Ey0 - (Ex0+Ex1)) < enums.DeltaEnergy):
-#                _clu.adc_n = _clu.Lv1hit_x[_clu.Lv1index_x[0]].adc
-#                _clu.energy_n = Ex0
-#                _clu.energy_p = Ey0*Ex0/(Ex0+Ex1)
-#                _clu.y = _clu.Lv1hit_x[_clu.Lv1index_x[0]].position               
                 _p = setphoton(Ex0, Ey0*Ex0/(Ex0+Ex1), _clu.Lv1hit_x[_clu.Lv1index_x[0]].adc, _clu.adc_n*Ex0/(Ex0+Ex1), _clu.Lv1hit_x[_clu.Lv1index_x[0]].position, _clu.y, 3) 
                 _n+=1
                 _d.update({_n:_p})
-#                _clu.adc_n = _clu.Lv1hit_x[_clu.Lv1index_x[1]].adc
-#                _clu.energy_n = Ex1
-#                _clu.energy_p = Ey0*Ex1/(Ex0+Ex1)
-#                _clu.y = _clu.Lv1hit_x[_clu.Lv1index_x[1]].position                
+
                 _p = setphoton(Ex1, Ey0*Ex1/(Ex0+Ex1), _clu.Lv1hit_x[_clu.Lv1index_x[1]].adc, _clu.adc_n*Ex1/(Ex0+Ex1), _clu.Lv1hit_x[_clu.Lv1index_x[1]].position, _clu.y, 3) 
                 _n+=1
                 _d.update({_n:_p})               
              else: 
                 if(math.fabs(Ey0 - Ex0) < math.fabs(Ey0 - Ex1)) and (math.fabs(Ey0 - Ex0) < enums.DeltaEnergy):
-#                   _clu.adc_p = _clu.Lv1hit_x[_clu.Lv1index_x[0]].adc
-#                   _clu.energy_p = _clu.Lv1hit_x[_clu.Lv1index_x[0]].energy
-#                   _clu.x = _clu.Lv1hit_x[_clu.Lv1index_x[0]].position
                    _p = setphoton(_clu.Lv1hit_x[_clu.Lv1index_x[0]].energy, Ey0, _clu.Lv1hit_x[_clu.Lv1index_x[0]].adc, _clu.adc_n, _clu.Lv1hit_x[_clu.Lv1index_x[0]].position, _clu.y, 3)
                    _n+=1
                    _d.update({_n:_p})
                 if (math.fabs(Ey0 - Ex1) < math.fabs(Ey0 - Ex1)) and (math.fabs(Ey0 - Ex1) < enums.DeltaEnergy):
-#                   _clu.adc_p = _clu.Lv1hit_x[_clu.Lv1index_x[1]].adc
-#                   _clu.energy_p = _clu.Lv1hit_x[_clu.Lv1index_x[1]].energy
-#                   _clu.x = _clu.Lv1hit_x[_clu.Lv1index_x[1]].position
                    _p = setphoton(_clu.Lv1hit_x[_clu.Lv1index_x[1]].energy, Ey0, _clu.Lv1hit_x[_clu.Lv1index_x[1]].adc, _clu.adc_n, _clu.Lv1hit_x[_clu.Lv1index_x[1]].position, _clu.y, 3)
                    _n+=1
                    _d.update({_n:_p})
@@ -126,40 +99,16 @@ class Category():
              Ey1 = _clu.Lv1hit_y[_clu.Lv1index_y[1]].energy
              if(math.fabs(Ex0+Ex1-Ey0-Ey1)  < enums.DeltaEnergy ):#four photons
                 if(math.fabs(Ex0-Ey0) < enums.DeltaEnergy) and (math.fabs(Ex1-Ey1) < enums.DeltaEnergy):
-#                   _clu.adc_p = _clu.Lv1hit_x[_clu.Lv1index_x[0]].adc
-#                   _clu.adc_n = _clu.Lv1hit_y[_clu.Lv1index_y[0]].adc
-#                   _clu.energy_p = _clu.Lv1hit_x[_clu.Lv1index_x[0]].energy
-#                   _clu.energy_n = _clu.Lv1hit_y[_clu.Lv1index_y[0]].energy
-#                   _clu.x = _clu.Lv1hit_x[_clu.Lv1index_x[0]].position
-#                   _clu.y = _clu.Lv1hit_y[_clu.Lv1index_y[0]].position
                    _p = setphoton(_clu.Lv1hit_x[_clu.Lv1index_x[0]].energy, _clu.Lv1hit_y[_clu.Lv1index_y[0]].energy, _clu.Lv1hit_x[_clu.Lv1index_x[0]].adc, _clu.Lv1hit_y[_clu.Lv1index_y[0]].adc, _clu.Lv1hit_x[_clu.Lv1index_x[0]].position, _clu.Lv1hit_y[_clu.Lv1index_y[0]].position, 4)
                    _n+=1
                    _d.update({_n:_p})
-#                   _clu.adc_p = _clu.Lv1hit_x[_clu.Lv1index_x[1]].adc
-#                   _clu.adc_n = _clu.Lv1hit_y[_clu.Lv1index_y[1]].adc
-#                   _clu.energy_p = _clu.Lv1hit_x[_clu.Lv1index_x[1]].energy
-#                   _clu.energy_n = _clu.Lv1hit_y[_clu.Lv1index_y[1]].energy
-#                   _clu.x = _clu.Lv1hit_x[_clu.Lv1index_x[1]].position
-#                   _clu.y = _clu.Lv1hit_y[_clu.Lv1index_y[1]].position
                    _p = setphoton(_clu.Lv1hit_x[_clu.Lv1index_x[1]].energy, _clu.Lv1hit_y[_clu.Lv1index_y[1]].energy, _clu.Lv1hit_x[_clu.Lv1index_x[1]].adc, _clu.Lv1hit_y[_clu.Lv1index_y[1]].adc, _clu.Lv1hit_x[_clu.Lv1index_x[1]].position, _clu.Lv1hit_y[_clu.Lv1index_y[1]].position, 4)
                    _n+=1
                    _d.update({_n:_p})
                 elif (math.fabs(Ex0-Ey1) < enums.DeltaEnergy) and (math.fabs(Ex1-Ey0) < enums.DeltaEnergy):
-#                   _clu.adc_p = _clu.Lv1hit_x[_clu.Lv1index_x[0]].adc
-#                   _clu.adc_n = _clu.Lv1hit_y[_clu.Lv1index_y[1]].adc
-#                   _clu.energy_p = _clu.Lv1hit_x[_clu.Lv1index_x[0]].energy
-#                   _clu.energy_n = _clu.Lv1hit_y[_clu.Lv1index_y[1]].energy
-#                   _clu.x = _clu.Lv1hit_x[_clu.Lv1index_x[0]].position
-#                   _clu.y = _clu.Lv1hit_y[_clu.Lv1index_y[1]].position
                    _p = setphoton(_clu.Lv1hit_x[_clu.Lv1index_x[0]].energy, _clu.Lv1hit_y[_clu.Lv1index_y[1]].energy, _clu.Lv1hit_x[_clu.Lv1index_x[0]].adc, _clu.Lv1hit_y[_clu.Lv1index_y[1]].adc, _clu.Lv1hit_x[_clu.Lv1index_x[0]].position, _clu.Lv1hit_y[_clu.Lv1index_y[1]].position, 4)
                    _n+=1
                    _d.update({_n:_p})
-#                   _clu.adc_p = _clu.Lv1hit_x[_clu.Lv1index_x[1]].adc
-#                   _clu.adc_n = _clu.Lv1hit_y[_clu.Lv1index_y[0]].adc
-#                   _clu.energy_p = _clu.Lv1hit_x[_clu.Lv1index_x[1]].energy
-#                   _clu.energy_n = _clu.Lv1hit_y[_clu.Lv1index_y[0]].energy
-#                   _clu.x = _clu.Lv1hit_x[_clu.Lv1index_x[1]].position
-#                   _clu.y = _clu.Lv1hit_y[_clu.Lv1index_y[0]].position
                    _p = setphoton(_clu.Lv1hit_x[_clu.Lv1index_x[1]].energy, _clu.Lv1hit_y[_clu.Lv1index_y[0]].energy, _clu.Lv1hit_x[_clu.Lv1index_x[1]].adc, _clu.Lv1hit_y[_clu.Lv1index_y[0]].adc, _clu.Lv1hit_x[_clu.Lv1index_x[1]].position, _clu.Lv1hit_y[_clu.Lv1index_y[0]].position, 4)
                    _n+=1
                    _d.update({_n:_p})
@@ -187,12 +136,6 @@ class Category():
                    Ex = _clu.Lv1hit_x[_clu.Lv1index_x[i]].energy
                    Ey = _clu.Lv1hit_y[_clu.Lv1index_y[j]].energy
                    if(math.fabs(Ex-Ey) < enums.DeltaEnergy):        
-#                      _clu.adc_p = _clu.Lv1hit_x[_clu.Lv1index_x[i]].adc
-#                      _clu.adc_n = _clu.Lv1hit_y[_clu.Lv1index_y[j]].adc
-#                      _clu.energy_p = _clu.Lv1hit_x[_clu.Lv1index_x[i]].energy
-#                      _clu.energy_n = _clu.Lv1hit_y[_clu.Lv1index_y[j]].energy
-#                      _clu.x = _clu.Lv1hit_x[_clu.Lv1index_x[i]].position
-#                      _clu.y = _clu.Lv1hit_y[_clu.Lv1index_y[j]].position
                       _p = setphoton(_clu.Lv1hit_x[_clu.Lv1index_x[i]].energy, _clu.Lv1hit_y[_clu.Lv1index_y[j]].energy, _clu.Lv1hit_x[_clu.Lv1index_x[i]].adc, _clu.Lv1hit_y[_clu.Lv1index_y[j]].adc, _clu.Lv1hit_x[_clu.Lv1index_x[i]].position, _clu.Lv1hit_y[_clu.Lv1index_y[j]].position, 5)
                       _n+=1
                       _d.update({_n:_p})
