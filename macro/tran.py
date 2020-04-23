@@ -29,7 +29,7 @@ import numpy as np
 from scripts.div import createRatioCanvas
 from utils.printInfo import checkTree
 from utils.slimming import DisableBranch
-from utils.countHit import Level1Hit, Level2Hit, findpoint, matchhit, Level1Hit_Shima1
+from utils.countHit import Level1Hit, Level2Hit, findcluster, matchhit, Level1Hit_Shima1
 from utils.cuts import PreEventSelection, findx2yshift, findadccut
 from utils.hits import database, rawdata_eventtree
 import enums
@@ -39,7 +39,7 @@ gROOT.ProcessLine(
 "struct RootStruct {\
    Int_t      trigger;\
    Int_t      nhit;\
-   Int_t       npoint;\
+   Int_t       ncluster;\
    Int_t      nsignalx_lv1;\
    Int_t      nsignaly_lv1;\
    Int_t      nsignalx_lv2;\
@@ -50,6 +50,7 @@ gROOT.ProcessLine(
    Double_t     adc_n[128];\
    Double_t    axis_x[128];\
    Double_t    axis_y[128];\
+   Double_t    type[128];\
    Double_t       E_p[512];\
    Double_t       E_n[512];\
    Double_t   E_p_lv1[128];\
@@ -111,7 +112,7 @@ def Getdatabase():
     f.Close()
     return mdatabase
     
-def makentuple(signal, point, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
+def makentuple(signal, cluster, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
     for n in range(1,len(signal)+1):          
        struct.adc_p[n-1]        = signal[n].adc_p
        struct.adc_n[n-1]        = signal[n].adc_n
@@ -119,14 +120,15 @@ def makentuple(signal, point, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
        struct.energy_n[n-1]     = signal[n].energy_n
        struct.axis_x[n-1]       = signal[n].x
        struct.axis_y[n-1]       = signal[n].y
-    for n in range(1,len(point)+1):          
-       struct.E_p[n-1]        = point[n].energy_p
-       struct.E_n[n-1]        = point[n].energy_n
-       struct.Poi_x[n-1]      = point[n].x
-       struct.Poi_y[n-1]      = point[n].y
-       struct.DeltaE[n-1]     = point[n].deltaE
-       struct.Nstrips_x[n-1]  = point[n].nstrips_x
-       struct.Nstrips_y[n-1]  = point[n].nstrips_y
+       struct.type[n-1]       = signal[n].type
+    for n in range(1,len(cluster)+1): # make cluster for adjacent channels
+       struct.E_p[n-1]        = cluster[n].energy_p # energy sum of cluster
+       struct.E_n[n-1]        = cluster[n].energy_n
+       struct.Poi_x[n-1]      = cluster[n].x # position with max. energy
+       struct.Poi_y[n-1]      = cluster[n].y
+       struct.DeltaE[n-1]     = cluster[n].deltaE
+       struct.Nstrips_x[n-1]  = cluster[n].nstrips_x # number of level-1 hits in cluster
+       struct.Nstrips_y[n-1]  = cluster[n].nstrips_y
     for n in range(1,len(hitx_lv1)+1):          
        struct.E_p_lv1[n-1]        = hitx_lv1[n].energy
        struct.Poi_x_lv1[n-1]      = hitx_lv1[n].position
@@ -250,7 +252,7 @@ class tran_process():
 
           self.tout = TTree('tree','tree') 
           self.tout.SetDirectory(0)
-          self.tout.Branch( 'intvar', struct, 'trigger/I:nhit:npoint:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' ) 
+          self.tout.Branch( 'intvar', struct, 'trigger/I:nhit:ncluster:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' ) 
  
           self.tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),  'energy_p[nhit]/D' )
           self.tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ),  'energy_n[nhit]/D' )
@@ -258,24 +260,25 @@ class tran_process():
           self.tout.Branch( 'adc_n',    AddressOf( struct, 'adc_n' ),     'adc_n[nhit]/D' )
           self.tout.Branch( 'x',        AddressOf( struct, 'axis_x' ),    'x[nhit]/D' )
           self.tout.Branch( 'y',        AddressOf( struct, 'axis_y' ),    'y[nhit]/D' )
+          self.tout.Branch( 'type',        AddressOf( struct, 'type' ),    'type[nhit]/D' )
 
-          self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[npoint]/D' )
-          self.tout.Branch( 'E_n',     AddressOf( struct, 'E_n' ),        'E_n[npoint]/D' )
+          self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[ncluster]/D' )
+          self.tout.Branch( 'E_n',     AddressOf( struct, 'E_n' ),        'E_n[ncluster]/D' )
           self.tout.Branch( 'E_p_lv1', AddressOf( struct, 'E_p_lv1' ),    'E_p_lv1[nsignalx_lv1]/D' )
           self.tout.Branch( 'E_n_lv1', AddressOf( struct, 'E_n_lv1' ),    'E_n_lv1[nsignaly_lv1]/D' )
           self.tout.Branch( 'E_p_lv2', AddressOf( struct, 'E_p_lv2' ),    'E_p_lv2[nsignalx_lv2]/D' )
           self.tout.Branch( 'E_n_lv2', AddressOf( struct, 'E_n_lv2' ),    'E_n_lv2[nsignaly_lv2]/D' )
 
-          self.tout.Branch( 'Poi_x',     AddressOf( struct, 'Poi_x' ),    'Poi_x[npoint]/D' )
-          self.tout.Branch( 'Poi_y',     AddressOf( struct, 'Poi_y' ),    'Poi_y[npoint]/D' )
+          self.tout.Branch( 'Poi_x',     AddressOf( struct, 'Poi_x' ),    'Poi_x[ncluster]/D' )
+          self.tout.Branch( 'Poi_y',     AddressOf( struct, 'Poi_y' ),    'Poi_y[ncluster]/D' )
           self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),'Poi_x_lv1[nsignalx_lv1]/D' )
           self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
           self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
           self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
 
-          self.tout.Branch( 'DeltaE',  AddressOf( struct, 'DeltaE' ),     'DeltaE[npoint]/D' )
-          self.tout.Branch( 'Nstrips_x', AddressOf( struct, 'Nstrips_x' ),'Nstrips_x[npoint]/D' )
-          self.tout.Branch( 'Nstrips_y', AddressOf( struct, 'Nstrips_y' ),'Nstrips_y[npoint]/D' )
+          self.tout.Branch( 'DeltaE',  AddressOf( struct, 'DeltaE' ),     'DeltaE[ncluster]/D' )
+          self.tout.Branch( 'Nstrips_x', AddressOf( struct, 'Nstrips_x' ),'Nstrips_x[ncluster]/D' )
+          self.tout.Branch( 'Nstrips_y', AddressOf( struct, 'Nstrips_y' ),'Nstrips_y[ncluster]/D' )
 
           self.coef_R = 1 # random to ADC to avoid quantum phenomenon
           if not enums.IsRandom : self.coef_R = 0
@@ -299,7 +302,7 @@ class tran_process():
           self.drawables = self.hist_list + self.tree_list
 
       def tran_adc2e(self,ie):
-          hitx_lv2, hity_lv2, point, hit_signal = {},{},{},{}
+          hitx_lv2, hity_lv2, cluster, hit_signal = {},{},{},{}
           self.tree.GetEntry(self.event_list.GetEntry(ie))
 
           self.h2_cutflow_x.Fill(0, 128)
@@ -321,8 +324,8 @@ class tran_process():
              for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
 
           if len(hitx_lv2) is not 0 and len(hity_lv2) is not 0:   
-             point = findpoint(hitx_lv2, hity_lv2)#Slow
-             hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), point)#Slow
+             cluster = findcluster(hitx_lv2, hity_lv2)#Slow
+             hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), cluster)#Slow
              if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 
 
           # varaibles of ntuple 
@@ -330,10 +333,10 @@ class tran_process():
           struct.nsignaly_lv1 = len(hity_lv1)
           struct.nsignalx_lv2 = len(hitx_lv2)
           struct.nsignaly_lv2 = len(hity_lv2)
-          struct.npoint = len(hitx_lv2)*len(hity_lv2)
+          struct.ncluster = len(hitx_lv2)*len(hity_lv2)
           struct.nhit = len(hit_signal)
           struct.trigger = self.tree.integral_livetime
-          makentuple(hit_signal,point,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
+          makentuple(hit_signal,cluster,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
           self.tout.Fill()
 
 

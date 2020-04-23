@@ -20,14 +20,14 @@ from array import array
 from random import gauss
 import numpy as np
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
-from hits import hitchannel, hitphoton
+from hits import hitchannel, hitcluster
 from cat import Category 
 import heapq 
 import enums
 import time
+from scipy.special import comb
 
 def SetWeight(adcx, adcy, a, b):
-    # ============ find hit point of photon (2D) ===========
 #    if(math.fabs(adcy - (adcx*a + b))) > 5 : return False
 #    return True
     return math.fabs(adcy - (adcx*a + b))
@@ -38,8 +38,6 @@ def SelectEnergy(_ex, _ey):
 
 def isAdjacent(i, _hit):
     if (i-1) is 0 : return False # first
-#    if(_hit[i].energy + _hit[i-1].energy) > enums.MaxSumRange : return False # over Si max range
-#    if _hit[i].energy > enums.SiEnergyRange and math.fabs(_hit[i].energy - _hit[i-1].energy) < enums.DeltaNoise : return False # same noise
     if _hit[i].channel - _hit[i-1].channel is 1 : return True
     else: return False
 
@@ -86,6 +84,7 @@ def Level2Hit(_hitx, _hity):
           _hitx[ix].Lv1index = [ix]
           _hitx[ix].nstrips = n_adx+1
           merge_xhit.update({m_nx:_hitx[ix]})   
+
     for iy in range(1, 1+len(_hity)):
        if(isAdjacent(iy, _hity)):
           n_ady += 1
@@ -102,15 +101,50 @@ def Level2Hit(_hitx, _hity):
     
     return merge_xhit, merge_yhit
 
-def findpoint(_hitx_lv2, _hity_lv2):
-    point_list = {}
+#def findcluster(_hitx_lv2, _hity_lv2):
+#    cluster_list = {}
+#    _nhit = 0
+#    for ix in range(1, 1+len(_hitx_lv2)):
+#       for iy in range(1, 1+len(_hity_lv2)):
+#          enums.ClusterMatch
+#          _nhit += 1
+#          delta_energy = math.fabs(_hitx_lv2[ix].energy - _hity_lv2[iy].energy)
+#          cluster_list.update({_nhit:SetClusterInfo(_nhit, _hitx_lv2[ix], _hity_lv2[iy], delta_energy)})
+#    return cluster_list                          
+
+def findcluster(_hitx_lv2, _hity_lv2):
+    cluster_list = {}
     _nhit = 0
     for ix in range(1, 1+len(_hitx_lv2)):
-       for iy in range(1, 1+len(_hity_lv2)):
-          _nhit += 1
-          delta_energy = math.fabs(_hitx_lv2[ix].energy - _hity_lv2[iy].energy)
-          point_list.update({_nhit:SetphotonInfo(_nhit, _hitx_lv2[ix], _hity_lv2[iy], delta_energy)})
-    return point_list                          
+        lv2indexlist, Etot = loophit(_hitx_lv2[ix].energy, _hity_lv2)
+        if lv2indexlist:
+           for _iy in lv2indexlist:
+              _nhit += 1
+              updatedInfo = [_hitx_lv2[ix].energy*(_hity_lv2[_iy].energy/Etot), _hitx_lv2[ix].adc*(_hity_lv2[_iy].energy/Etot)]
+              delta_energy = math.fabs(updatedInfo[0] - _hity_lv2[_iy].energy)
+              cluster_list.update({_nhit:SetClusterInfo(_nhit, _hitx_lv2[ix], updatedInfo, _hity_lv2[_iy], None, delta_energy)})
+
+    for iy in range(1, 1+len(_hity_lv2)):
+        lv2indexlist, Etot = loophit(_hity_lv2[iy].energy, _hitx_lv2)
+        if lv2indexlist:
+           for _ix in lv2indexlist:
+              _nhit += 1
+              updatedInfo = [_hity_lv2[iy].energy*(_hitx_lv2[_ix].energy/Etot), _hity_lv2[iy].adc*(_hitx_lv2[_ix].energy/Etot)]
+              delta_energy = math.fabs(updatedInfo[0] - _hitx_lv2[_ix].energy)
+              cluster_list.update({_nhit:SetClusterInfo(_nhit, _hitx_lv2[_ix], None, _hity_lv2[iy], updatedInfo, delta_energy)})
+
+    return cluster_list                          
+
+def loophit(energy, _hit):
+    for m in range(1,1+len(_hit)): # merge number
+       i = 0
+       while i < int(comb(len(_hit), m)):
+          Etot = 0
+          i += 1
+          _l = random.sample(list(_hit),m)
+          for _ih in _l : Etot += _hit[_ih].energy
+          if math.fabs(energy-Etot) < enums.ClusterMatch: return _l, Etot
+          else: return None, None
 
 def matchhit(_nx, _ny, _p):   
     list_signal = {}
@@ -118,13 +152,13 @@ def matchhit(_nx, _ny, _p):
     _nhit = 0#number of real photons
 
     for _ip in range(1,len(_p)+1):
-       c = Category(point=_p[_ip]) # category for one cluster
+       c = Category(cluster=_p[_ip]) # category for one cluster
        single_dic = c.hit
        for _s in single_dic:#one cluster might has several reco. photon
           _nhit += 1
           list_signal.update({_nhit:single_dic[_s]})
 
-     # === simple Delta E selection ===
+     # === simple Delta E selection for cluster ===
 #    for ip in range(1, 1+len(_p)):
 #       dic.update({ip:_p[ip].deltaE})
 #    maxpoint = min(_nx, _ny)
@@ -136,13 +170,21 @@ def matchhit(_nx, _ny, _p):
 
     return list_signal
 
-def SetphotonInfo(index, _x, _y, _delta):
-    _signal = hitphoton()     
+def SetClusterInfo(index, _x, ReEx, _y, ReEy, _delta):
+    _signal = hitcluster()     
     _signal.index = index
-    _signal.energy_p = _x.energy
-    _signal.energy_n = _y.energy
-    _signal.adc_p = _x.adc
-    _signal.adc_n = _y.adc
+    if ReEx: 
+       _signal.energy_p = ReEx[0]
+       _signal.adc_p = ReEx[1]
+    else: 
+       _signal.energy_p = _x.energy
+       _signal.adc_p = _x.adc
+    if ReEy: 
+       _signal.energy_n = ReEy[0]
+       _signal.adc_n = ReEy[1]
+    else: 
+       _signal.energy_n = _y.energy
+       _signal.adc_n = _y.adc
     _signal.x = _x.position
     _signal.y = _y.position
     _signal.nstrips_x = _x.nstrips

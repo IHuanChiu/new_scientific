@@ -52,7 +52,7 @@ class hitchannel:
                setattr(self, optName, defaultVal)      
 
 
-class hitphoton:     
+class hitcluster:     
       def __init__(self): 
           self.options = list()
           self.declare_option("index", 0)
@@ -70,6 +70,22 @@ class hitphoton:
           self.declare_option("Lv1index_y",None)
           self.declare_option("Lv1hit_x",None)
           self.declare_option("Lv1hit_y",None)
+
+      def declare_option(self, optName, defaultVal = None):
+           self.options.append(optName)
+           if not (type(defaultVal) == type(None)):
+               setattr(self, optName, defaultVal)      
+
+class hitphoton:     
+      def __init__(self): 
+          self.options = list()
+          self.declare_option("energy_p")
+          self.declare_option("energy_n")
+          self.declare_option("adc_p")
+          self.declare_option("adc_n")
+          self.declare_option("x")
+          self.declare_option("y")
+          self.declare_option("type",0)
 
       def declare_option(self, optName, defaultVal = None):
            self.options.append(optName)
