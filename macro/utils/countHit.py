@@ -21,7 +21,7 @@ from random import gauss
 import numpy as np
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 from hits import hitchannel, hitcluster
-from cat import Category 
+from cat import Category, EventCategory 
 import heapq 
 import enums
 import time
@@ -101,37 +101,37 @@ def Level2Hit(_hitx, _hity):
     
     return merge_xhit, merge_yhit
 
-#def findcluster(_hitx_lv2, _hity_lv2):
-#    cluster_list = {}
-#    _nhit = 0
-#    for ix in range(1, 1+len(_hitx_lv2)):
-#       for iy in range(1, 1+len(_hity_lv2)):
-#          enums.ClusterMatch
-#          _nhit += 1
-#          delta_energy = math.fabs(_hitx_lv2[ix].energy - _hity_lv2[iy].energy)
-#          cluster_list.update({_nhit:SetClusterInfo(_nhit, _hitx_lv2[ix], _hity_lv2[iy], delta_energy)})
-#    return cluster_list                          
-
 def findcluster(_hitx_lv2, _hity_lv2):
     cluster_list = {}
     _nhit = 0
+    # === no consideration for several photons input in same time ===
     for ix in range(1, 1+len(_hitx_lv2)):
-        lv2indexlist, Etot = loophit(_hitx_lv2[ix].energy, _hity_lv2)
-        if lv2indexlist:
-           for _iy in lv2indexlist:
-              _nhit += 1
-              updatedInfo = [_hitx_lv2[ix].energy*(_hity_lv2[_iy].energy/Etot), _hitx_lv2[ix].adc*(_hity_lv2[_iy].energy/Etot)]
-              delta_energy = math.fabs(updatedInfo[0] - _hity_lv2[_iy].energy)
-              cluster_list.update({_nhit:SetClusterInfo(_nhit, _hitx_lv2[ix], updatedInfo, _hity_lv2[_iy], None, delta_energy)})
-
-    for iy in range(1, 1+len(_hity_lv2)):
-        lv2indexlist, Etot = loophit(_hity_lv2[iy].energy, _hitx_lv2)
-        if lv2indexlist:
-           for _ix in lv2indexlist:
-              _nhit += 1
-              updatedInfo = [_hity_lv2[iy].energy*(_hitx_lv2[_ix].energy/Etot), _hity_lv2[iy].adc*(_hitx_lv2[_ix].energy/Etot)]
-              delta_energy = math.fabs(updatedInfo[0] - _hitx_lv2[_ix].energy)
-              cluster_list.update({_nhit:SetClusterInfo(_nhit, _hitx_lv2[_ix], None, _hity_lv2[iy], updatedInfo, delta_energy)})
+       for iy in range(1, 1+len(_hity_lv2)):
+          _nhit += 1
+          delta_energy = math.fabs(_hitx_lv2[ix].energy - _hity_lv2[iy].energy)
+          cluster_list.update({_nhit:SetClusterInfo(_nhit, _hitx_lv2[ix], None,  _hity_lv2[iy], None, delta_energy)})
+    return cluster_list                         
+      
+    # === reset energy for each cluster ===
+#    cluster_list = {}
+#    _nhit = 0
+#    for ix in range(1, 1+len(_hitx_lv2)):
+#        lv2indexlist, Etot = loophit(_hitx_lv2[ix].energy, _hity_lv2)
+#        if lv2indexlist:
+#           for _iy in lv2indexlist:
+#              _nhit += 1
+#              updatedInfo = [_hitx_lv2[ix].energy*(_hity_lv2[_iy].energy/Etot), _hitx_lv2[ix].adc*(_hity_lv2[_iy].energy/Etot)]
+#              delta_energy = math.fabs(updatedInfo[0] - _hity_lv2[_iy].energy)
+#              cluster_list.update({_nhit:SetClusterInfo(_nhit, _hitx_lv2[ix], updatedInfo, _hity_lv2[_iy], None, delta_energy)})
+#
+#    for iy in range(1, 1+len(_hity_lv2)):
+#        lv2indexlist, Etot = loophit(_hity_lv2[iy].energy, _hitx_lv2)
+#        if lv2indexlist:
+#           for _ix in lv2indexlist:
+#              _nhit += 1
+#              updatedInfo = [_hity_lv2[iy].energy*(_hitx_lv2[_ix].energy/Etot), _hity_lv2[iy].adc*(_hitx_lv2[_ix].energy/Etot)]
+#              delta_energy = math.fabs(updatedInfo[0] - _hitx_lv2[_ix].energy)
+#              cluster_list.update({_nhit:SetClusterInfo(_nhit, _hitx_lv2[_ix], None, _hity_lv2[iy], updatedInfo, delta_energy)})
 
     return cluster_list                          
 
@@ -140,17 +140,28 @@ def loophit(energy, _hit):
        i = 0
        while i < int(comb(len(_hit), m)):
           Etot = 0
-          i += 1
+          random.seed(i)
           _l = random.sample(list(_hit),m)
-          for _ih in _l : Etot += _hit[_ih].energy
-          if math.fabs(energy-Etot) < enums.ClusterMatch: return _l, Etot
-          else: return None, None
+          if i is 0 : i += 1
+          for _i in range(i):
+             random.seed(_i)
+             if _l is not random.sample(list(_hit),m): 
+                i += 1
+                for _ih in _l : Etot += _hit[_ih].energy
+                if math.fabs(energy-Etot) < enums.ClusterMatch and Etot is not 0: return _l, Etot
+                else: return None, None
 
-def matchhit(_nx, _ny, _p):   
+def matchLv2(_hitx, _hity):
+    # === matching Lv2 hit with energy info. ===
+    c = EventCategory(hitx=_hitx, hity=_hity)
+    return c.photon_list
+
+def ClusterCategory(_p):   
     list_signal = {}
     dic = {}
     _nhit = 0#number of real photons
 
+    # === strict analysis for each cluster ===
     for _ip in range(1,len(_p)+1):
        c = Category(cluster=_p[_ip]) # category for one cluster
        single_dic = c.hit
@@ -228,8 +239,7 @@ def Level1Hit(rawdata_list, Eline, dblist):
           signaly.update({n_hit_y:SetHitInfo(n_hit_y, i_data.adcm, energy, poi, i_data.stripid, i_data.asicid)})
     return signalx, signaly
         
-def Level1Hit_Shima1(tree, adccut, coef_R, dblist, eline):
-    adc_hitcut = 1000
+def Level1Hit_Shima1(tree, adccut, coef_R, dblist, efname, eline):
     n_hit_x = 0
     n_hit_y = 0
     signalx, signaly = {}, {}
@@ -238,74 +248,74 @@ def Level1Hit_Shima1(tree, adccut, coef_R, dblist, eline):
     for iasic in range(8): 
        for ch in range(32):
           if iasic is 0:
-             if ((tree.adc0[ch*2] - tree.cmn0) > adccut[ch+iasic*32]) and (tree.adc0[ch*2] < adc_hitcut):
+             if ((tree.adc0[ch*2] - tree.cmn0) > adccut[ch+iasic*32]) and (tree.adc0[ch*2] < enums.ADCUpperBound):
                 n_hit_x += 1 #hit !
                 adc = tree.adc0[ch*2]-tree.cmn0 + coef_R * random.uniform(-0.5,0.5)
-                energy = eline[ch+iasic*32].Eval(adc)
-#                energy = dblist[ch+iasic*32].calfunc.Eval(adc)
+                if efname: energy = eline[ch+iasic*32].Eval(adc)
+                else: energy = dblist[ch+iasic*32].calfunc.Eval(adc)
                 poi = dblist[ch+iasic*32].posx
                 signal_hitx = SetHitInfo(n_hit_x, adc, energy, poi, ch + iasic*32, iasic)
                 signalx.update({n_hit_x:signal_hitx})               
           elif iasic is 1: 
-             if ((tree.adc1[ch*2] - tree.cmn1) > adccut[ch+iasic*32]) and (tree.adc1[ch*2] < adc_hitcut):
+             if ((tree.adc1[ch*2] - tree.cmn1) > adccut[ch+iasic*32]) and (tree.adc1[ch*2] < enums.ADCUpperBound):
                 n_hit_x += 1
                 adc = tree.adc1[ch*2]-tree.cmn1 + coef_R * random.uniform(-0.5,0.5) 
-                energy = eline[ch+iasic*32].Eval(adc)
-#                energy = dblist[ch+iasic*32].calfunc.Eval(adc)
+                if efname: energy = eline[ch+iasic*32].Eval(adc)
+                else: energy = dblist[ch+iasic*32].calfunc.Eval(adc)
                 poi = dblist[ch+iasic*32].posx
                 signal_hitx = SetHitInfo(n_hit_x, adc, energy, poi, ch + 32*iasic, iasic)
                 signalx.update({n_hit_x:signal_hitx})               
           elif iasic is 2: 
-             if ((tree.adc2[ch*2] - tree.cmn2) > adccut[ch+iasic*32]) and (tree.adc2[ch*2] < adc_hitcut): 
+             if ((tree.adc2[ch*2] - tree.cmn2) > adccut[ch+iasic*32]) and (tree.adc2[ch*2] < enums.ADCUpperBound): 
                 n_hit_x += 1
                 adc = tree.adc2[ch*2]-tree.cmn2 + coef_R * random.uniform(-0.5,0.5) 
-                energy = eline[ch+iasic*32].Eval(adc)
-#                energy = dblist[ch+iasic*32].calfunc.Eval(adc)
+                if efname: energy = eline[ch+iasic*32].Eval(adc)
+                else: energy = dblist[ch+iasic*32].calfunc.Eval(adc)
                 poi = dblist[ch+iasic*32].posx
                 signal_hitx = SetHitInfo(n_hit_x, adc, energy, poi, ch + 32*iasic, iasic)
                 signalx.update({n_hit_x:signal_hitx})               
           elif iasic is 3: 
-             if ((tree.adc3[ch*2] - tree.cmn3) > adccut[ch+iasic*32]) and (tree.adc3[ch*2] < adc_hitcut):
+             if ((tree.adc3[ch*2] - tree.cmn3) > adccut[ch+iasic*32]) and (tree.adc3[ch*2] < enums.ADCUpperBound):
                 n_hit_x += 1
                 adc = tree.adc3[ch*2]-tree.cmn3 + coef_R * random.uniform(-0.5,0.5) 
-                energy = eline[ch+iasic*32].Eval(adc)
-#                energy = dblist[ch+iasic*32].calfunc.Eval(adc)
+                if efname: energy = eline[ch+iasic*32].Eval(adc)
+                else: energy = dblist[ch+iasic*32].calfunc.Eval(adc)
                 poi = dblist[ch+iasic*32].posx
                 signal_hitx = SetHitInfo(n_hit_x, adc, energy, poi, ch + 32*iasic, iasic)
                 signalx.update({n_hit_x:signal_hitx})               
           elif iasic is 4: 
-             if ((tree.adc4[ch*2] - tree.cmn4) > adccut[ch+iasic*32]) and (tree.adc4[ch*2] < adc_hitcut):
+             if ((tree.adc4[ch*2] - tree.cmn4) > adccut[ch+iasic*32]) and (tree.adc4[ch*2] < enums.ADCUpperBound):
                 n_hit_y += 1
                 adc = tree.adc4[ch*2]-tree.cmn4 + coef_R * random.uniform(-0.5,0.5) 
-                energy = eline[ch+iasic*32].Eval(adc)
-#                energy = dblist[ch+iasic*32].calfunc.Eval(adc)
+                if efname: energy = eline[ch+iasic*32].Eval(adc)
+                else: energy = dblist[ch+iasic*32].calfunc.Eval(adc)
                 poi = dblist[ch+iasic*32].posy
                 signal_hity = SetHitInfo(n_hit_y, adc, energy, poi, (ch + 32*iasic), iasic)
                 signaly.update({n_hit_y:signal_hity})               
           elif iasic is 5: 
-             if ((tree.adc5[ch*2] - tree.cmn5) > adccut[ch+iasic*32]) and (tree.adc5[ch*2] < adc_hitcut): 
+             if ((tree.adc5[ch*2] - tree.cmn5) > adccut[ch+iasic*32]) and (tree.adc5[ch*2] < enums.ADCUpperBound): 
                 n_hit_y += 1
                 adc = tree.adc5[ch*2]-tree.cmn5 + coef_R * random.uniform(-0.5,0.5) # save adc
-#                energy = dblist[ch+iasic*32].calfunc.Eval(adc)
-                energy = eline[ch+iasic*32].Eval(adc)
+                if efname: energy = eline[ch+iasic*32].Eval(adc)
+                else: energy = dblist[ch+iasic*32].calfunc.Eval(adc)
                 poi = dblist[ch+iasic*32].posy
                 signal_hity = SetHitInfo(n_hit_y, adc, energy, poi, (ch + 32*iasic), iasic)
                 signaly.update({n_hit_y:signal_hity})               
           elif iasic is 6: 
-             if ((tree.adc6[ch*2] - tree.cmn6) > adccut[ch+iasic*32]) and (tree.adc6[ch*2] < adc_hitcut): 
+             if ((tree.adc6[ch*2] - tree.cmn6) > adccut[ch+iasic*32]) and (tree.adc6[ch*2] < enums.ADCUpperBound): 
                 n_hit_y += 1
                 adc = tree.adc6[ch*2]-tree.cmn6 + coef_R * random.uniform(-0.5,0.5) # save adc
-#                energy = dblist[ch+iasic*32].calfunc.Eval(adc)
-                energy = eline[ch+iasic*32].Eval(adc)
+                if efname: energy = eline[ch+iasic*32].Eval(adc)
+                else: energy = dblist[ch+iasic*32].calfunc.Eval(adc)
                 poi = dblist[ch+iasic*32].posy
                 signal_hity = SetHitInfo(n_hit_y, adc, energy, poi, (ch + 32*iasic), iasic)
                 signaly.update({n_hit_y:signal_hity})               
           elif iasic is 7: 
-             if ((tree.adc7[ch*2] - tree.cmn7) > adccut[ch+iasic*32]) and (tree.adc7[ch*2] < adc_hitcut): 
+             if ((tree.adc7[ch*2] - tree.cmn7) > adccut[ch+iasic*32]) and (tree.adc7[ch*2] < enums.ADCUpperBound): 
                 n_hit_y += 1
                 adc = tree.adc7[ch*2]-tree.cmn7 + coef_R * random.uniform(-0.5,0.5) # save adc
-#                energy = dblist[ch+iasic*32].calfunc.Eval(adc)
-                energy = eline[ch+iasic*32].Eval(adc)
+                if efname: energy = eline[ch+iasic*32].Eval(adc)
+                else: energy = dblist[ch+iasic*32].calfunc.Eval(adc)
                 poi = dblist[ch+iasic*32].posy
                 signal_hity = SetHitInfo(n_hit_y, adc, energy, poi, (ch + 32*iasic), iasic)
                 signaly.update({n_hit_y:signal_hity})               

@@ -14,7 +14,7 @@ import sys,os,random,math,ROOT
 from ROOT import TFile, TTree, gROOT
 ROOT.gROOT.SetBatch(1)
 
-class rawdata_eventtree:
+class rawdata_eventtree: # not used, intense CPU time
       def __init__(self): 
           self.options = list()
           self.declare_option("detid", 0)
@@ -33,7 +33,7 @@ class rawdata_eventtree:
                setattr(self, optName, defaultVal)     
  
 
-class hitchannel:
+class hitchannel: # level-1 and level-2
       def __init__(self): 
           self.options = list()
           self.declare_option("index", 0)
@@ -52,7 +52,7 @@ class hitchannel:
                setattr(self, optName, defaultVal)      
 
 
-class hitcluster:     
+class hitcluster: 
       def __init__(self): 
           self.options = list()
           self.declare_option("index", 0)

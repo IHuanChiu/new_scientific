@@ -3,8 +3,9 @@ IsRandom = True
 
 #keV
 EnergyCut      = 10
+ADCUpperBound  = 1000
 DeltaEnergy    = 5
-ClusterMatch   = 20
+ClusterMatch   = 10
 
 DEFAULT  = u'\x1b[39;49m'
 BLUE     = u'\x1b[34m'

@@ -52,6 +52,6 @@ def findadccut(line):
           if (line[ch].Eval(iadc) > enums.EnergyCut) and (cut_flag is 0): 
              adccut.append(iadc)
              cut_flag = 1
-       if cut_flag is 0: adccut.append(100)# not find a good cut value for adc
+       if cut_flag is 0: adccut.append(enums.ADCUpperBound)# not find a good cut value for adc, drop this channel
     return adccut 
 

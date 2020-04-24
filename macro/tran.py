@@ -29,7 +29,7 @@ import numpy as np
 from scripts.div import createRatioCanvas
 from utils.printInfo import checkTree
 from utils.slimming import DisableBranch
-from utils.countHit import Level1Hit, Level2Hit, findcluster, matchhit, Level1Hit_Shima1
+from utils.countHit import Level1Hit, Level2Hit, findcluster, ClusterCategory, matchLv2, Level1Hit_Shima1
 from utils.cuts import PreEventSelection, findx2yshift, findadccut
 from utils.hits import database, rawdata_eventtree
 import enums
@@ -210,10 +210,11 @@ class tran_process():
                    dtype=None
                    ):
           # config
-          self.ifile = ifile
-          self.tree   = tree
+          self.ifile      = ifile
+          self.tree       = tree
           self.event_list = event_list
-          self.dtype = dtype
+          self.dtype      = dtype
+          self.efile      = efile
            
           # members
           self.hist_list = []
@@ -284,7 +285,7 @@ class tran_process():
           if not enums.IsRandom : self.coef_R = 0
           self.dblist = Getdatabase()
 
-          self.line = getTSpline(self, ifile, efile, self.dblist) 
+          self.line = getTSpline(self, ifile, self.efile, self.dblist) 
           self.cut = findadccut(self.line)
       #    coef_a, coef_b = findx2yshift(self.hx, self.hy)
 
@@ -310,12 +311,12 @@ class tran_process():
 
 #          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 #          hitx_lv1, hity_lv1 = Level1Hit(rawdata_list, self.line, self.dblist)
-          hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.cut, self.coef_R, self.dblist, self.line)#Slow
+          hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.cut, self.coef_R, self.dblist, self.efile, self.line)#Slow
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
           self.h2_cutflow_x.Fill(1, len(hitx_lv1))
           self.h2_cutflow_y.Fill(1, len(hity_lv1))
 
-          if len(hitx_lv1) is not 0 and  len(hity_lv1) is not 0:
+          if len(hitx_lv1) is not 0 and len(hity_lv1) is not 0:
              hitx_lv2, hity_lv2 = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
              self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
              self.h2_cutflow_x.Fill(2, len(hitx_lv2))
@@ -325,7 +326,8 @@ class tran_process():
 
           if len(hitx_lv2) is not 0 and len(hity_lv2) is not 0:   
              cluster = findcluster(hitx_lv2, hity_lv2)#Slow
-             hit_signal = matchhit(len(hitx_lv2), len(hity_lv2), cluster)#Slow
+#             hit_signal = ClusterCategory(cluster)#Slow
+             hit_signal = matchLv2(hitx_lv2, hity_lv2)
              if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 
 
           # varaibles of ntuple 
@@ -338,16 +340,4 @@ class tran_process():
           struct.trigger = self.tree.integral_livetime
           makentuple(hit_signal,cluster,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
           self.tout.Fill()
-
-
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("input", type=str, default="../rawdata/calibration_data/20200225a_am241_5plus.root", help="Input File Name")
-    parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd", help="Input File Name")
-    parser.add_argument("--channel", default=False, action="store_true", help="number of CPU")
-    parser.add_argument("--adc", default=False, action="store_true", help="log progess")
-    args = parser.parse_args()
-
-    tran( args)
 
