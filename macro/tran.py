@@ -29,7 +29,7 @@ import numpy as np
 from scripts.div import createRatioCanvas
 from utils.printInfo import checkTree
 from utils.slimming import DisableBranch
-from utils.countHit import Level1Hit, Level2Hit, findcluster, ClusterCategory, matchLv2, Level1Hit_Shima1
+from utils.countHit import Level1HitAll, Level2Hit, findcluster, ClusterCategory, matchLv2, Level1Hit
 from utils.cuts import PreEventSelection, findx2yshift, findadccut
 from utils.hits import database, rawdata_eventtree
 import enums
@@ -74,7 +74,13 @@ struct = RootStruct()
 
 def getlineEnergy(energyFile, name, channel): 
     if "spline_maxbin" in name : return energyFile.Get('Calline%s'%(channel))
-    return energyFile.Get('spline_%s'%(channel))
+    # return energyFile.Get('spline_%s'%(channel)) #TODO calibration data is not good enough
+    else:       
+       if channel is 240: return energyFile.Get('spline_%s'%(239))
+       elif channel >= 154 and channel <= 165:  return energyFile.Get('spline_%s'%(153))
+       elif channel >= 219 and channel <= 225:  return energyFile.Get('spline_%s'%(218))
+       else: return energyFile.Get('spline_%s'%(channel))
+       
 
 def getTSpline(self,fname, efname, dblist):
     f = ROOT.TFile(fname) 
@@ -286,7 +292,7 @@ class tran_process():
           self.dblist = Getdatabase()
 
           self.line = getTSpline(self, ifile, self.efile, self.dblist) 
-          self.cut = findadccut(self.line)
+          self.cut = findadccut(self.line, self.dtype)
       #    coef_a, coef_b = findx2yshift(self.hx, self.hy)
 
           self.hist_list.append(self.h2_lv1)
@@ -310,8 +316,8 @@ class tran_process():
           self.h2_cutflow_y.Fill(0, 128)
 
 #          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
-#          hitx_lv1, hity_lv1 = Level1Hit(rawdata_list, self.line, self.dblist)
-          hitx_lv1, hity_lv1 = Level1Hit_Shima1(self.tree, self.cut, self.coef_R, self.dblist, self.efile, self.line)#Slow
+#          hitx_lv1, hity_lv1 = Level1HitAll(rawdata_list, self.line, self.dblist)
+          hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.cut, self.coef_R, self.dblist, self.efile, self.line, self.dtype)#Slow
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
           self.h2_cutflow_x.Fill(1, len(hitx_lv1))
           self.h2_cutflow_y.Fill(1, len(hity_lv1))
