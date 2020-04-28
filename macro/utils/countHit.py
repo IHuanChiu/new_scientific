@@ -48,10 +48,10 @@ def reset(index, _lv1hit, nad, _mhit):
        adc += _lv1hit[index-i].adc
     _mhit.energy, _mhit.adc = energy, adc
 
-    if nad is 1:  
+    if nad is 1:  # one adjacent channel
        if _lv1hit[index].energy > _lv1hit[index -1].energy: _mhit.channel, _mhit.position = _lv1hit[index].channel, _lv1hit[index].position
-       else: _mhit.channel, _mhit.position = _lv1hit[index].channel, _lv1hit[index].position
-    else:
+       else: _mhit.channel, _mhit.position = _lv1hit[index-1].channel, _lv1hit[index-1].position
+    else: 
        dic = {}
        for i in range(nad+1):
            new_index = index-i 
