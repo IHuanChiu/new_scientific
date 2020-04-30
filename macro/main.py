@@ -23,6 +23,7 @@ from array import array
 import logging
 from utils.helpers import GetInputList 
 from process import Processor
+from image import Baseplots
 
 def main(args):
     

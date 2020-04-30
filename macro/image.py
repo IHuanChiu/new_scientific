@@ -98,13 +98,20 @@ def spectrum(tree, scut):
 
     return h1_p, h1_n
 
+class Baseplots():
+
+      def __init__(self,infile=None,outname=None): 
+          self.infile = infile
+          self.outname = outname
+
+      def plots(self,):
+   
 
 def main(args):
 
-    f = ROOT.TFile( '../run/root/repro_image.root', 'recreate' )
+#    f = ROOT.TFile( '../run/root/repro_image.root', 'recreate' )
     rfile   =  ROOT.TFile(args.input)
     mytree   =  rfile.Get("tree")
-#    mytree = tran(args, True)
 
     cut = definecut()
     hist_spectrum_p, hist_spectrum_n = spectrum(mytree,cut)
@@ -161,28 +168,26 @@ def main(args):
     hist_image_high.Draw("colz")
 
 #    cv.Update()
+    printname = "../run/figs/"+
     cv.Print("../run/figs/test_e_image.ROOT.pdf")
 
-    f.cd()
-    hist_image.Write()
-    hist_image_low.Write()
-    hist_image_high.Write()
-    hist_spectrum_p.Write()
-    hist_spectrum_n.Write()
-    h_tri.Write()
-    h_nhit.Write()
-    cv.Write()
-    f.Write()    
-    f.Close()    
+#    f.cd()
+#    hist_image.Write()
+#    hist_image_low.Write()
+#    hist_image_high.Write()
+#    hist_spectrum_p.Write()
+#    hist_spectrum_n.Write()
+#    h_tri.Write()
+#    h_nhit.Write()
+#    cv.Write()
+#    f.Write()    
+#    f.Close()    
         
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("input", type=str, default="./20151112_00009_001.root", help="Input File Name")
+    parser.add_argument("input", type=str, default="../run/root/20200307a_00070_001_tranadc_dsd.root", help="Input Ntuple Name")
     parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd.root", help="Output file for adctoenergy")
-    parser.add_argument("--log", default=False, action="store_true", help="log progess")
-    parser.add_argument("--nCPU", default=False, action="store_true", help="number of CPU")
-    parser.add_argument("--nevent", default=900000, action="store_true", help="number of event")
     args = parser.parse_args()
     
     main( args )

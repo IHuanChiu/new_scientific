@@ -255,11 +255,11 @@ class tran_process():
           for i in range(len(h2_Label)): 
              self.h2_cutflow_x.GetXaxis().SetBinLabel(i+1,h2_Label[i])
              self.h2_cutflow_y.GetXaxis().SetBinLabel(i+1,h2_Label[i])
-          self.h1_event_cutflow = ROOT.TH1D("hist_event_cutflow","events after the selections",5,0,5)
-          self.h1_event_cutflow.SetDirectory(0)
-          h1_Label = ["Raw","trigger","Level 1","Level 2", "photon"]
-          for i in range(len(h1_Label)):
-             self.h1_event_cutflow.GetXaxis().SetBinLabel(i+1,h1_Label[i])   
+#          self.h1_event_cutflow = ROOT.TH1D("hist_event_cutflow","events after the selections",5,0,5)
+#          self.h1_event_cutflow.SetDirectory(0)
+#          h1_Label = ["Raw","trigger","Level 1","Level 2", "photon"]
+#          for i in range(len(h1_Label)):
+#             self.h1_event_cutflow.GetXaxis().SetBinLabel(i+1,h1_Label[i])   
 
           self.tout = TTree('tree','tree') 
           self.tout.SetDirectory(0)
