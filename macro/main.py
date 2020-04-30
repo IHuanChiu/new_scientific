@@ -27,8 +27,8 @@ from process import Processor
 def main(args):
     
     ilist = GetInputList(args.inputFolder)
-    outname = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/"+args.output+"_" 
-    p = Processor(ifilelist = ilist, ofile=outname, ncores = args.ncores, nevents = args.nevents, efile = args.efile, dtype = args.dtype)
+    outname = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/"
+    p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype)
     p.mainprocess() 
     exit(0)
 

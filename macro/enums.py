@@ -2,8 +2,7 @@
 IsRandom = True
 
 #keV
-EnergyCut      = 10
-SiEnergyCut    = 5
+EnergyCut      = 5
 ADCUpperBound  = 1000
 DeltaEnergy    = 2
 ClusterMatch   = 10

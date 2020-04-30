@@ -57,6 +57,8 @@ gROOT.ProcessLine(
    Double_t   E_n_lv1[128];\
    Double_t   E_p_lv2[128];\
    Double_t   E_n_lv2[128];\
+   Double_t   Nstrips_p_lv2[128];\
+   Double_t   Nstrips_n_lv2[128];\
    Double_t     Poi_x[512];\
    Double_t     Poi_y[512];\
    Double_t Poi_x_lv1[128];\
@@ -143,9 +145,11 @@ def makentuple(signal, cluster, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
        struct.Poi_y_lv1[n-1]      = hity_lv1[n].position
     for n in range(1,len(hitx_lv2)+1):          
        struct.E_p_lv2[n-1]        = hitx_lv2[n].energy
+       struct.Nstrips_p_lv2[n-1]  = hitx_lv2[n].nstrips
        struct.Poi_x_lv2[n-1]      = hitx_lv2[n].position
     for n in range(1,len(hity_lv2)+1):          
        struct.E_n_lv2[n-1]        = hity_lv2[n].energy
+       struct.Nstrips_n_lv2[n-1]  = hity_lv2[n].nstrips
        struct.Poi_y_lv2[n-1]      = hity_lv2[n].position
 
 def GetEventTree(tree, adccut, coef_R, dtype):
@@ -275,6 +279,8 @@ class tran_process():
           self.tout.Branch( 'E_n_lv1', AddressOf( struct, 'E_n_lv1' ),    'E_n_lv1[nsignaly_lv1]/D' )
           self.tout.Branch( 'E_p_lv2', AddressOf( struct, 'E_p_lv2' ),    'E_p_lv2[nsignalx_lv2]/D' )
           self.tout.Branch( 'E_n_lv2', AddressOf( struct, 'E_n_lv2' ),    'E_n_lv2[nsignaly_lv2]/D' )
+          self.tout.Branch( 'Nstrips_p_lv2', AddressOf( struct, 'Nstrips_p_lv2' ),    'Nstrips_p_lv2[nsignalx_lv2]/D' )
+          self.tout.Branch( 'Nstrips_n_lv2', AddressOf( struct, 'Nstrips_n_lv2' ),    'Nstrips_n_lv2[nsignaly_lv2]/D' )
 
           self.tout.Branch( 'Poi_x',     AddressOf( struct, 'Poi_x' ),    'Poi_x[ncluster]/D' )
           self.tout.Branch( 'Poi_y',     AddressOf( struct, 'Poi_y' ),    'Poi_y[ncluster]/D' )

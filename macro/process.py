@@ -17,12 +17,13 @@ from printInfo import checkTree
 
 class Processor():
       
-      def __init__(self,ifilelist=None,ofile=None,ncores=None,nevents=None,efile=None,dtype=None): 
+      def __init__(self,ifilelist=None,ofile=None,addname=None,ncores=None,nevents=None,efile=None,dtype=None): 
           # config
           self.ncores = ncores
           self.nevents = nevents
           self.ifilelist = ifilelist
           self.ofile = ofile
+          self.addname = addname
           self.efile = efile
           self.dtype = dtype
           
@@ -108,7 +109,8 @@ class Processor():
       def __outputs__(self):
           log().info('Printing output...')
           for ifile, drawobjects in self.drawables.items():
-             subProc = self.ofile+ifile.split("/")[-1]
+             filename=ifile.split("/")[-1]
+             subProc = self.ofile+filename.split(".root")[0]+"_"+self.addname+".root"
              fout = ROOT.TFile( subProc, 'recreate' )
              __print_output__(fout, drawobjects)
           checkTree(self.T.tout,self.Nevents)
