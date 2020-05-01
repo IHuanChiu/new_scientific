@@ -35,6 +35,7 @@ class Processor():
           self.skimmingtree = None
           self.drawables = dict()
           self.Nevents = None
+          self.fout = None
 
       def register(self,ifile, drawables):
           """
@@ -112,9 +113,9 @@ class Processor():
           for ifile, drawobjects in self.drawables.items():
              filename=ifile.split("/")[-1]
              subProc = self.ofile+filename.split(".root")[0]+"_"+self.addname+".root"
-             fout = ROOT.TFile( subProc, 'recreate' )
-             __print_output__(fout, drawobjects)
-          log().info('Finished!')
+             self.fout = ROOT.TFile( subProc, 'recreate' )
+             __print_output__(self.fout, drawobjects)
+          log().info('Finished Ntuples!')
           #checkTree(self.T.tout,self.Nevents)
 
 def __process_selector__(sgel):

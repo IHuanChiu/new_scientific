@@ -1,7 +1,7 @@
 #!/usr/bin/env python    
 #-*- coding:utf-8 -*-   
 """
-This module provides the transformation from adc to energy.
+This module provides the plots
 """
 __author__    = "I-Huan CHIU"
 __email__     = "ichiu@chem.sci.osaka-u.ac.jp"
@@ -17,7 +17,7 @@ import argparse
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 
 import time
-from tran import tran
+from logger import log, supports_color
 
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -56,11 +56,19 @@ def gettreename(treename):
     }
     return dTreeNameMap[treename]
 
-def definecut():
-    cut1 = TCut("(trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630)")
-    cut2 = TCut("(weight > 1./50)")# Mvalue < 5
-    finalcut = cut1 + cut2
-    return finalcut
+def definecut(cutname):
+#    cut1 = TCut("(trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630)")
+#    cut2 = TCut("(weight > 1./50)")# Mvalue < 5    
+#    finalcut = cut1 + cut2
+    return TCut(cutname)
+
+class makecut():
+      def __init__(self,basecut):
+          self.base = basecut
+      def add(self,cutname):
+          self.base += "&&" + cutname
+      def get(self):
+          return TCut(self.base)
 
 def image(tree, icut, position):
      
@@ -68,16 +76,14 @@ def image(tree, icut, position):
     if position is "low": e_min,e_max = 10,20
     if position is "high": e_min,e_max = 60,80
 # =============== make image =============
-    addition_cut = TCut("weight * (energy_p>{} && energy_p < {})".format(e_min, e_max))
-    icut += addition_cut
-    print("cut for image : ",)
-    icut.Print()
-    tree.Draw("x:y >> h2(128,0,128,128,0,128)",icut,"colz")
+#    addition_cut = TCut("weight * (energy_p>{} && energy_p < {})".format(e_min, e_max))
+#    icut += addition_cut
+    tree.Draw("x:y >> h2(128,-16,16,128,-16,16)",icut,"colz")
     h2 = gDirectory.Get("h2")
-    h2.GetXaxis().SetTitle("p-side [ch]")
-    h2.GetYaxis().SetTitle("n-side [ch]")
+    h2.GetXaxis().SetTitle("p-side [mm]")
+    h2.GetYaxis().SetTitle("n-side [mm]")
     h2.SetDirectory(0)
-    gPad.SetLogz()
+#    gPad.SetLogz()
     return h2
 
 
@@ -85,8 +91,6 @@ def spectrum(tree, scut):
     h1_p = ROOT.TH1F("Spectrum_pside","Spectrum pside", 100,0,100)
     h1_n = ROOT.TH1F("Spectrum_nside","Spectrum nside", 100,0,100)
 
-    print("cut for spectum : ",)
-    scut.Print()
     tree.Draw("energy_p >> h1_p(100,0,100)",scut,"")
     tree.Draw("energy_n >> h1_n(100,0,100)",scut,"same")
     h1_p=gDirectory.Get("h1_p")
@@ -98,16 +102,78 @@ def spectrum(tree, scut):
 
     return h1_p, h1_n
 
-class Baseplots():
+class Baseplot():
 
       def __init__(self,infile=None,outname=None): 
           self.infile = infile
           self.outname = outname
 
-      def plots(self,):
-   
+      def plots(self):
+          log().info("Plotting...")
+          filename = self.infile.GetName()
+          f = ROOT.TFile(filename)
+          mytree   =  f.Get("tree")
 
-def main(args):
+          printname = "../run/figs/"+self.outname
+          outf = ROOT.TFile( printname+".root", 'recreate' )
+          outf.cd()
+
+          cv  = createRatioCanvas("cv", 1600, 1600)
+          cv.Divide(2,2)
+
+          cv.cd(1)
+          mytree.Draw("trigger >> h_trigger(100,200,300)","","")
+          h_tri = gDirectory.Get("h_trigger")
+          h_tri.GetXaxis().SetTitle("trigger")
+          h_tri.GetYaxis().SetTitle("count")
+          h_tri.Write()         
+
+          cv.cd(2)
+          gPad.SetRightMargin(0.15)   
+          gPad.SetLogz(1) 
+          gStyle.SetPalette(56)
+          mytree.Draw("nsignaly_lv2:nsignalx_lv2 >> hn2d(25,0,25,25,0,25)","","colz")
+          h_nhit = gDirectory.Get("hn2d")
+          h_nhit.GetXaxis().SetTitle("nhits Xaxis")
+          h_nhit.GetYaxis().SetTitle("nhits Yaxis")
+          h_nhit.Write()
+ 
+          cv.cd(3)
+          Cut = makecut(basecut="((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253))")
+          cut = Cut.get()
+          hist_spectrum_p, hist_spectrum_n = spectrum(mytree,cut)
+          hist_spectrum_p.Write()
+          hist_spectrum_n.Write()
+          hist_spectrum_p.SetLineColor(ROOT.kPink+9)
+          hist_spectrum_p.SetLineWidth(2)
+          hist_spectrum_p.SetMaximum(hist_spectrum_p.GetMaximum()*1.3);
+          hist_spectrum_n.SetLineColor(ROOT.kAzure-1)
+          hist_spectrum_n.SetLineWidth(2)
+          hist_spectrum_p.Draw()
+          hist_spectrum_n.Draw("same")
+          leg = ROOT.TLegend(.55,.78,.75,.90)
+          leg.AddEntry(hist_spectrum_p,  "P-side", "l")
+          leg.AddEntry(hist_spectrum_n,  "N-side", "l")
+          leg.Draw("same")
+          
+ 
+          cv.cd(4)
+          Cut.add("(energy_p > 72 && energy_p < 78)")
+          cut = Cut.get()
+          hist_image = image(mytree,cut,"all")
+          hist_image.Write()
+          gPad.SetLogz(1) 
+          gStyle.SetPalette(56)
+          gPad.SetRightMargin(0.15)
+          hist_image.RebinX(4)
+          hist_image.RebinY(4)
+          hist_image.Draw("colz")
+
+          outf.Write()
+          cv.Print(printname+".pdf")
+#          log().info("Finished plots!")
+   
+def mainrnu(args):
 
 #    f = ROOT.TFile( '../run/root/repro_image.root', 'recreate' )
     rfile   =  ROOT.TFile(args.input)
@@ -155,20 +221,20 @@ def main(args):
 
     cv.cd(4)
     gPad.SetLogz(1) 
-    gStyle.SetPalette(53)
+    gStyle.SetPalette(56)
     gPad.SetRightMargin(0.15)
     hist_image.Draw("colz")
     cv.cd(5)
-    gStyle.SetPalette(53)
+    gStyle.SetPalette(56)
     gPad.SetRightMargin(0.15)
     hist_image_low.Draw("colz")
     cv.cd(6)
-    gStyle.SetPalette(53)
+    gStyle.SetPalette(56)
     gPad.SetRightMargin(0.15)
     hist_image_high.Draw("colz")
 
 #    cv.Update()
-    printname = "../run/figs/"+
+    printname = "../run/figs/"
     cv.Print("../run/figs/test_e_image.ROOT.pdf")
 
 #    f.cd()
@@ -190,4 +256,4 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd.root", help="Output file for adctoenergy")
     args = parser.parse_args()
     
-    main( args )
+    mainrnu( args )

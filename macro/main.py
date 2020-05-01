@@ -23,14 +23,17 @@ from array import array
 import logging
 from utils.helpers import GetInputList 
 from process import Processor
-from image import Baseplots
+from image import Baseplot
 
 def main(args):
     
     ilist = GetInputList(args.inputFolder)
     outname = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/"
     p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype)
-    p.mainprocess() 
+    p.mainprocess()
+    if p.fout is not None:
+       b = Baseplot(infile=p.fout,outname=p.fout.GetName().split("/")[-1].split(".root")[0])
+       b.plots()
     exit(0)
 
 if __name__ == "__main__":
