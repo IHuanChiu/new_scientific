@@ -162,7 +162,7 @@ class Baseplot():
           cut = Cut.get()
           hist_image = image(mytree,cut,"all")
           hist_image.Write()
-          gPad.SetLogz(1) 
+          gPad.SetLogz(0) 
           gStyle.SetPalette(56)
           gPad.SetRightMargin(0.15)
           hist_image.RebinX(4)
