@@ -18,11 +18,12 @@ sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 
 import time
 from logger import log, supports_color
+from utils.helpers import GetInputList
 
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
 ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
-ROOT.SetAtlasStyle()
+#ROOT.SetAtlasStyle()
 
 def getBIN(h): 
     n = h.GetNbinsX()
@@ -72,6 +73,7 @@ class makecut():
 
 def image(tree, icut, position):
      
+    ROOT.SetAtlasStyle()
     e_min,e_max = 10,100
     if position is "low": e_min,e_max = 10,20
     if position is "high": e_min,e_max = 60,80
@@ -173,87 +175,29 @@ class Baseplot():
           cv.Print(printname+".pdf")
 #          log().info("Finished plots!")
    
-def mainrnu(args):
+def rnu3Dimage(args):
 
-#    f = ROOT.TFile( '../run/root/repro_image.root', 'recreate' )
-    rfile   =  ROOT.TFile(args.input)
-    mytree   =  rfile.Get("tree")
+#    ilist = GetInputList(args.inputFolder)
+#    rfile   =  ROOT.TFile(args.input)
+#    mytree   =  rfile.Get("tree")
 
-    cut = definecut()
-    hist_spectrum_p, hist_spectrum_n = spectrum(mytree,cut)
-    cut = definecut()
-    hist_image = image(mytree,cut,"all")
-    cut = definecut()
-    hist_image_low = image(mytree,cut,"low")
-    cut = definecut()
-    hist_image_high = image(mytree,cut,"high")
+    cv  = createRatioCanvas("cv", 1600, 1600)
+    h3d = ROOT.TH3D("test","test",128,-16,16,128,-16,16,128,-16,16)
+    for i in range(10000):
+       h3d.Fill(random.uniform(-0.5,0.5), 20*random.uniform(-0.5,0.5), 20*random.uniform(-0.5,0.5))
+    h3d.Draw("BOX2Z")
+    cv.Print("../run/figs/test_3D_image.ROOT.pdf")
 
-    cv  = createRatioCanvas("cv", 1600, 1200)
-    cv.Divide(2,3)
-
-    cv.cd(1)
-    mytree.Draw("trigger >> h_trigger(200,550,750)","","")
-    h_tri = gDirectory.Get("h_trigger")
-    h_tri.GetXaxis().SetTitle("trigger")
-    h_tri.GetYaxis().SetTitle("count")
-
-    cv.cd(2)
-    gPad.SetRightMargin(0.15)   
-    gPad.SetLogz(1) 
-    mytree.Draw("nhity:nhitx >> hn2d(25,0,25,25,0,25)","","colz")
-    h_nhit = gDirectory.Get("hn2d")
-    h_nhit.GetXaxis().SetTitle("nhits Xaxis")
-    h_nhit.GetYaxis().SetTitle("nhits Yaxis")
-
-    cv.cd(3)
-    hist_spectrum_p.SetLineColor(ROOT.kPink+9)
-    hist_spectrum_p.SetLineWidth(2)
-    hist_spectrum_p.SetMaximum(hist_spectrum_p.GetMaximum()*1.3);
-    hist_spectrum_n.SetLineColor(ROOT.kAzure-1)
-    hist_spectrum_n.SetLineWidth(2)
-    hist_spectrum_p.Draw()
-    hist_spectrum_n.Draw("same")
-    leg = ROOT.TLegend(.55,.78,.75,.90)
-    leg.AddEntry(hist_spectrum_p,  "P-side", "l")
-    leg.AddEntry(hist_spectrum_n,  "N-side", "l")
-    leg.Draw("same")
-    
-
-    cv.cd(4)
-    gPad.SetLogz(1) 
-    gStyle.SetPalette(56)
-    gPad.SetRightMargin(0.15)
-    hist_image.Draw("colz")
-    cv.cd(5)
-    gStyle.SetPalette(56)
-    gPad.SetRightMargin(0.15)
-    hist_image_low.Draw("colz")
-    cv.cd(6)
-    gStyle.SetPalette(56)
-    gPad.SetRightMargin(0.15)
-    hist_image_high.Draw("colz")
-
-#    cv.Update()
-    printname = "../run/figs/"
-    cv.Print("../run/figs/test_e_image.ROOT.pdf")
-
-#    f.cd()
-#    hist_image.Write()
-#    hist_image_low.Write()
-#    hist_image_high.Write()
-#    hist_spectrum_p.Write()
-#    hist_spectrum_n.Write()
-#    h_tri.Write()
-#    h_nhit.Write()
-#    cv.Write()
-#    f.Write()    
-#    f.Close()    
+    f = ROOT.TFile( '../run/figs/repro_3Dimage.root', 'recreate' )
+    f.cd()
+    h3d.Write()
+    f.Write()    
         
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("input", type=str, default="../run/root/20200307a_00070_001_tranadc_dsd.root", help="Input Ntuple Name")
+    parser.add_argument("input", type=str, default="../run/figs/", help="Input Ntuple Name")
     parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd.root", help="Output file for adctoenergy")
     args = parser.parse_args()
     
-    mainrnu( args )
+    rnu3Dimage( args )
