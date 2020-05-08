@@ -196,7 +196,7 @@ def rnu3Dimage(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("input", type=str, default="../run/figs/", help="Input Ntuple Name")
+    parser.add_argument("input", type=str, default="../run/figs/20200307a_rootfiles/", help="Input Ntuple Name")
     parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd.root", help="Output file for adctoenergy")
     args = parser.parse_args()
     
