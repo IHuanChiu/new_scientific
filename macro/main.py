@@ -32,7 +32,7 @@ def main(args):
     p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype)
     p.mainprocess()
     if p.fout is not None:
-       b = Baseplot(infile=p.fout,outname=p.fout.GetName().split("/")[-1].split(".root")[0])
+       b = Baseplot(infile=p.fout,outname=p.fout.GetName().split("/")[-1].split(".root")[0],dtype=args.dtype)
        b.plots()
     exit(0)
 

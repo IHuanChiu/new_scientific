@@ -4,7 +4,7 @@ IsRandom = True
 #keV
 EnergyCut      = 5
 ADCUpperBound  = 1000
-DeltaEnergy    = 2
+DeltaEnergy    = 3
 ClusterMatch   = 10
 
 DEFAULT  = u'\x1b[39;49m'

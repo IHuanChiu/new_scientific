@@ -72,16 +72,13 @@ class makecut():
           return TCut(self.base)
 
 def image(tree, icut, position):
-     
     ROOT.SetAtlasStyle()
-    e_min,e_max = 10,100
-    if position is "low": e_min,e_max = 10,20
-    if position is "high": e_min,e_max = 60,80
 # =============== make image =============
 #    addition_cut = TCut("weight * (energy_p>{} && energy_p < {})".format(e_min, e_max))
 #    icut += addition_cut
     tree.Draw("x:y >> h2(128,-16,16,128,-16,16)",icut,"colz")
     h2 = gDirectory.Get("h2")
+#    h2.SetTitle(icut.GetTitle())
     h2.GetXaxis().SetTitle("p-side [mm]")
     h2.GetYaxis().SetTitle("n-side [mm]")
     h2.SetDirectory(0)
@@ -97,6 +94,7 @@ def spectrum(tree, scut):
     tree.Draw("energy_n >> h1_n(100,0,100)",scut,"same")
     h1_p=gDirectory.Get("h1_p")
     h1_n=gDirectory.Get("h1_n")
+#    h1_p.SetTitle(scut.GetTitle())
     h1_p.GetXaxis().SetTitle("energy [keV]")
     h1_p.GetYaxis().SetTitle("Counts")
     h1_n.GetXaxis().SetTitle("energy [keV]")
@@ -106,9 +104,10 @@ def spectrum(tree, scut):
 
 class Baseplot():
 
-      def __init__(self,infile=None,outname=None): 
+      def __init__(self,infile=None,outname=None,dtype=None): 
           self.infile = infile
           self.outname = outname
+          self.dtype = dtype
 
       def plots(self):
           log().info("Plotting...")
@@ -124,8 +123,12 @@ class Baseplot():
           cv.Divide(2,2)
 
           cv.cd(1)
-          mytree.Draw("trigger >> h_trigger(100,200,300)","","")
+          if "CdTe" in self.dtype:
+             mytree.Draw("trigger >> h_trigger(100,200,300)","","")
+          else:
+             mytree.Draw("trigger >> h_trigger(300,550,850)","","")
           h_tri = gDirectory.Get("h_trigger")
+          h_tri.SetTitle("trigger time")
           h_tri.GetXaxis().SetTitle("trigger")
           h_tri.GetYaxis().SetTitle("count")
           h_tri.Write()         
@@ -136,12 +139,16 @@ class Baseplot():
           gStyle.SetPalette(56)
           mytree.Draw("nsignaly_lv2:nsignalx_lv2 >> hn2d(25,0,25,25,0,25)","","colz")
           h_nhit = gDirectory.Get("hn2d")
+          h_nhit.SetTitle("nhits of lv2")
           h_nhit.GetXaxis().SetTitle("nhits Xaxis")
           h_nhit.GetYaxis().SetTitle("nhits Yaxis")
           h_nhit.Write()
  
           cv.cd(3)
-          Cut = makecut(basecut="((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253))")
+          if "CdTe" in self.dtype:
+             Cut = makecut(basecut="((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253))")
+          else:
+             Cut = makecut(basecut="((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))")
           cut = Cut.get()
           hist_spectrum_p, hist_spectrum_n = spectrum(mytree,cut)
           hist_spectrum_p.Write()
@@ -160,7 +167,12 @@ class Baseplot():
           
  
           cv.cd(4)
-          Cut.add("(energy_p > 72 && energy_p < 78)")
+          gPad.SetLeftMargin(0.15)
+          gPad.SetBottomMargin(0.15)
+          if "CdTe" in self.dtype:
+             Cut.add("(energy_p > 72 && energy_p < 78)")
+          else:
+             Cut.add("(energy_p > 12 && energy_p < 16)")
           cut = Cut.get()
           hist_image = image(mytree,cut,"all")
           hist_image.Write()
