@@ -186,19 +186,38 @@ class Baseplot():
           outf.Write()
           cv.Print(printname+".pdf")
 #          log().info("Finished plots!")
+
+def getContent(ibinx, ibiny, ibinz, h2list):
+    content = 0.
+#    for h2 in h2list:
+#       if "00057" in h2.GetTitle():
+#          content += h2.GetBinContent(ibinx,ibiny)
+    return 1
+#    return content
+    
    
 def rnu3Dimage(args):
 
-#    ilist = GetInputList(args.inputFolder)
-#    rfile   =  ROOT.TFile(args.input)
-#    mytree   =  rfile.Get("tree")
-
+    ilist = GetInputList(args.inputFolder)          
+    nfiles = len(ilist)
     cv  = createRatioCanvas("cv", 1600, 1600)
     h3d = ROOT.TH3D("test","test",128,-16,16,128,-16,16,128,-16,16)
-    for i in range(10000):
-       h3d.Fill(random.uniform(-0.5,0.5), 20*random.uniform(-0.5,0.5), 20*random.uniform(-0.5,0.5))
-    h3d.Draw("BOX2Z")
-    cv.Print("../run/figs/test_3D_image.ROOT.pdf")
+    h2list=[]
+
+    for ifile in ilist:
+       rfile   =  ROOT.TFile(ifile)
+       h2   =  rfile.Get("h2")
+       h2.SetTitle(ifile)
+       h2list.append(h2)
+
+    for ibinx in range(1,h3d.GetXaxis().GetNbins()+1):
+       for ibiny in range(1,h3d.GetYaxis().GetNbins()+1):
+          for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
+             content = getContent(ibinx, ibiny, ibinz, h2list)
+             h3d.Fill(h3d.GetXaxis().GetBinCenter(ibinx),h3d.GetYaxis().GetBinCenter(ibiny),h3d.GetZaxis().GetBinCenter(ibinz),content/nfiles)
+
+#    h3d.Draw("BOX2Z")
+#    cv.Print("../run/figs/test_3D_image.ROOT.pdf")
 
     f = ROOT.TFile( '../run/figs/repro_3Dimage.root', 'recreate' )
     f.cd()
@@ -208,7 +227,7 @@ def rnu3Dimage(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("input", type=str, default="../run/figs/20200307a_rootfiles/", help="Input Ntuple Name")
+    parser.add_argument("--inputFolder", type=str, default="../run/figs/20200307a_rootfiles/", help="Input Ntuple Name")
     parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd.root", help="Output file for adctoenergy")
     args = parser.parse_args()
     
