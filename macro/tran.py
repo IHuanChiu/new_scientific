@@ -344,7 +344,9 @@ class tran_process():
              cluster = findcluster(hitx_lv2, hity_lv2)#Slow
 #             hit_signal = ClusterCategory(cluster)#Slow
              hit_signal = matchLv2(hitx_lv2, hity_lv2, self.deltae)
-             if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 
+
+          if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 
+          if len(hit_signal) is 0: return 0 # skip 0 hit events
 
           # varaibles of ntuple 
           struct.nsignalx_lv1 = len(hitx_lv1)
