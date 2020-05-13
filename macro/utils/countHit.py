@@ -151,9 +151,9 @@ def loophit(energy, _hit):
                 if math.fabs(energy-Etot) < enums.ClusterMatch and Etot is not 0: return _l, Etot
                 else: return None, None
 
-def matchLv2(_hitx, _hity):
+def matchLv2(_hitx, _hity, _d):
     # === matching Lv2 hit with energy info. ===
-    c = EventCategory(hitx=_hitx, hity=_hity)
+    c = EventCategory(hitx=_hitx, hity=_hity, deltae=_d)
     return c.photon_list
 
 def ClusterCategory(_p):   

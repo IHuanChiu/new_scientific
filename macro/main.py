@@ -29,7 +29,7 @@ def main(args):
     
     ilist = GetInputList(args.inputFolder)
     outname = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/"
-    p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype)
+    p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype, ecut = args.cut, deltae=args.delta)
     p.mainprocess()
     if p.fout is not None:
        b = Baseplot(infile=p.fout,outname=p.fout.GetName().split("/")[-1].split(".root")[0],dtype=args.dtype)
@@ -45,6 +45,8 @@ if __name__ == "__main__":
     parser.add_argument( "-cpu", "--ncores", dest="ncores", type=int, default = 1, help="number of CPU")
     parser.add_argument( "-n", "--nevents", dest="nevents", type=int, default = None, help="Number of processing events." )
     parser.add_argument( "-d", "--dtype", dest="dtype", type=str, default = "CdTe", help="Si or CdTe" )
+    parser.add_argument( "-m", "--delta", dest="delta", type=int, default = None, help="deltaE for p & nside" )
+    parser.add_argument( "-cut", "--cut", dest="cut", type=int, default = None, help="energy cut for lv1 hits" )
     args = parser.parse_args()
 
     main( args)

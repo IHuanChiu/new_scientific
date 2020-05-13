@@ -16,4 +16,7 @@ REDBKG   = u'\x1b[1;41;37m'
 YELLOW   = u'\x1b[33m'
 UNSET    = u'\x1b[0m'
 
+def reset(cut, deltaE):
+    EnergyCut = cut
+    DeltaEnergy = deltaE
 ## EOF

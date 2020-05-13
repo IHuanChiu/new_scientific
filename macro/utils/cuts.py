@@ -44,12 +44,14 @@ def findx2yshift(h_x, h_y):
 
     return a, b
          
-def findadccut(line, dtype):
+def findadccut(line, dtype, ecut):
     adccut = []
+    if ecut is None : applyEcut = enums.EnergyCut
+    else : applyEcut = ecut
     for ch in range(0, 256): 
        cut_flag = 0
        for iadc in range(20,500):
-          if (line[ch].Eval(iadc) > enums.EnergyCut) and (cut_flag is 0): 
+          if (line[ch].Eval(iadc) > applyEcut) and (cut_flag is 0): 
              adccut.append(iadc)
              cut_flag = 1
        if cut_flag is 0: adccut.append(enums.ADCUpperBound)# not find a good cut value for adc, drop this channel

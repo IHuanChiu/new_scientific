@@ -169,11 +169,14 @@ class Category():
 
 
 class EventCategory():
-      def __init__(self, hitx=None, hity=None):
+      def __init__(self, hitx=None, hity=None, deltae=None):
           # category for single cluster
           self.hitx = hitx 
           self.hity = hity
+          self.DeltaEnergy = enums.DeltaEnergy
+          if deltae is not None: self.DeltaEnergy = deltae
           self.case1, self.case2, self.case3, self.case4, self.case5 = None, None, None, None, None
+
           self.GetCategory(self.hitx, self.hity)
           self.photon_list = self.SumCategories()
 
@@ -224,7 +227,7 @@ class EventCategory():
       def get1and2(self, _x0, _y0, _y1):
           _d, _n={}, 0
           Ex0, Ey0, Ey1 = _x0.energy, _y0.energy, _y1.energy
-          if( math.fabs(Ex0 - (Ey0+Ey1)) < enums.DeltaEnergy): # Two photons
+          if( math.fabs(Ex0 - (Ey0+Ey1)) < self.DeltaEnergy): # Two photons
              _p = setphoton(Ex0*Ey0/(Ey0+Ey1), Ey0, _x0.adc*Ey0/(Ey0+Ey1), _y0.adc, _x0.position, _y0.position, 2)
              _n+=1
              _d.update({_n:_p})
@@ -232,16 +235,16 @@ class EventCategory():
              _n+=1
              _d.update({_n:_p})               
           else: # One noise
-             if(math.fabs(Ex0 - Ey0) < math.fabs(Ex0 - Ey1)) and (math.fabs(Ex0 - Ey0) < enums.DeltaEnergy):
+             if(math.fabs(Ex0 - Ey0) < math.fabs(Ex0 - Ey1)) and (math.fabs(Ex0 - Ey0) < self.DeltaEnergy):
                 _d = self.get1and1(_x0, _y0)
-             if (math.fabs(Ex0 - Ey1) < math.fabs(Ex0 - Ey1)) and (math.fabs(Ex0 - Ey1) < enums.DeltaEnergy):
+             if (math.fabs(Ex0 - Ey1) < math.fabs(Ex0 - Ey1)) and (math.fabs(Ex0 - Ey1) < self.DeltaEnergy):
                 _d = self.get1and1(_x0, _y1)
           return _d
                         
       def get2and1(self, _x0, _x1, _y0):
           _d, _n={}, 0
           Ex0, Ex1, Ey0 = _x0.energy, _x1.energy, _y0.energy
-          if( math.fabs(Ey0 - (Ex0+Ex1)) < enums.DeltaEnergy):
+          if( math.fabs(Ey0 - (Ex0+Ex1)) < self.DeltaEnergy):
              _p = setphoton(Ex0, Ey0*Ex0/(Ex0+Ex1), _x0.adc, _y0.adc*Ex0/(Ex0+Ex1), _x0.position, _y0.position, 3) 
              _n+=1
              _d.update({_n:_p})
@@ -250,24 +253,24 @@ class EventCategory():
              _n+=1
              _d.update({_n:_p})               
           else: 
-             if(math.fabs(Ey0 - Ex0) < math.fabs(Ey0 - Ex1)) and (math.fabs(Ey0 - Ex0) < enums.DeltaEnergy):
+             if(math.fabs(Ey0 - Ex0) < math.fabs(Ey0 - Ex1)) and (math.fabs(Ey0 - Ex0) < self.DeltaEnergy):
                 _d = self.get1and1(_x0, _y0)
-             if (math.fabs(Ey0 - Ex1) < math.fabs(Ey0 - Ex1)) and (math.fabs(Ey0 - Ex1) < enums.DeltaEnergy):
+             if (math.fabs(Ey0 - Ex1) < math.fabs(Ey0 - Ex1)) and (math.fabs(Ey0 - Ex1) < self.DeltaEnergy):
                 _d = self.get1and1(_x1, _y0)
           return _d
 
       def get2and2(self, _x0, _x1, _y0, _y1):
           _d, _n={}, 0
           Ex0, Ex1, Ey0, Ey1 = _x0.energy, _x1.energy, _y0.energy, _y1.energy
-          if(math.fabs(Ex0+Ex1-Ey0-Ey1)  < enums.DeltaEnergy ):#four photons
-             if(math.fabs(Ex0-Ey0) < enums.DeltaEnergy) and (math.fabs(Ex1-Ey1) < enums.DeltaEnergy):
+          if(math.fabs(Ex0+Ex1-Ey0-Ey1)  < self.DeltaEnergy ):#four photons
+             if(math.fabs(Ex0-Ey0) < self.DeltaEnergy) and (math.fabs(Ex1-Ey1) < self.DeltaEnergy):
                 _p = setphoton(_x0.energy, _y0.energy, _x0.adc, _y0.adc, _x0.position, _y0.position, 4)
                 _n+=1
                 _d.update({_n:_p})
                 _p = setphoton(_x1.energy, _y1.energy, _x1.adc, _y1.adc, _x1.position, _y1.position, 4)
                 _n+=1
                 _d.update({_n:_p})
-             elif (math.fabs(Ex0-Ey1) < enums.DeltaEnergy) and (math.fabs(Ex1-Ey0) < enums.DeltaEnergy):
+             elif (math.fabs(Ex0-Ey1) < self.DeltaEnergy) and (math.fabs(Ex1-Ey0) < self.DeltaEnergy):
                 _p = setphoton(_x0.energy, _y1.energy, _x0.adc, _y1.adc, _x0.position, _y1.position, 4)
                 _n+=1
                 _d.update({_n:_p})
@@ -275,14 +278,14 @@ class EventCategory():
                 _n+=1
                 _d.update({_n:_p})
           elif ((Ey0+Ey1) > (Ex0+Ex1)):# one noise in y-side -> return case3 (2*1)
-             if  (((Ex0+Ex1) - Ey0) < enums.DeltaEnergy):                   
+             if  (((Ex0+Ex1) - Ey0) < self.DeltaEnergy):                   
                 _d = self.get2and1(_x0,_x1,_y0)
-             elif (((Ex0+Ex1) - Ey1) < enums.DeltaEnergy):
+             elif (((Ex0+Ex1) - Ey1) < self.DeltaEnergy):
                 _d = self.get2and1(_x0,_x1,_y1)
           else:# one noise in x-side -> return case2 (1*2)
-             if  (((Ey0+Ey1) - Ex0) < enums.DeltaEnergy):
+             if  (((Ey0+Ey1) - Ex0) < self.DeltaEnergy):
                 _d = self.get1and2(_x0,_y0,_y1)
-             elif (((Ey0+Ey1) - Ex1) < enums.DeltaEnergy):
+             elif (((Ey0+Ey1) - Ex1) < self.DeltaEnergy):
                 _d = self.get1and2(_x1,_y0,_y1)
           return _d
 
@@ -294,7 +297,7 @@ class EventCategory():
              xi, Ex = xElist[i]
              yi, Ey = yElist[i]
              xhit, yhit = _xlist[xi], _ylist[yi]
-             if math.fabs(Ex-Ey) < enums.DeltaEnergy:
+             if math.fabs(Ex-Ey) < self.DeltaEnergy:
                 _p = setphoton(xhit.energy, yhit.energy, xhit.adc, yhit.adc, xhit.position, yhit.position, 5)
                 _n+=1
                 _d.update({_n:_p})

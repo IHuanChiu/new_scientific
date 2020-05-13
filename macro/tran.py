@@ -217,13 +217,17 @@ class tran_process():
                    tree=None,
                    event_list=None,
                    efile=None,
-                   dtype=None
+                   dtype=None,
+                   ecut=None,
+                   deltae=None
                    ):
           # config
           self.ifile      = ifile
           self.tree       = tree
           self.event_list = event_list
           self.dtype      = dtype
+          self.ecut       = ecut
+          self.deltae     = deltae
           self.efile      = efile
            
           # members
@@ -298,7 +302,7 @@ class tran_process():
           self.dblist = Getdatabase()
 
           self.line = getTSpline(self, ifile, self.efile, self.dblist) 
-          self.cut = findadccut(self.line, self.dtype)
+          self.cut = findadccut(self.line, self.dtype, self.ecut)
       #    coef_a, coef_b = findx2yshift(self.hx, self.hy)
 
           self.hist_list.append(self.h2_lv1)
@@ -339,7 +343,7 @@ class tran_process():
           if len(hitx_lv2) is not 0 and len(hity_lv2) is not 0:   
              cluster = findcluster(hitx_lv2, hity_lv2)#Slow
 #             hit_signal = ClusterCategory(cluster)#Slow
-             hit_signal = matchLv2(hitx_lv2, hity_lv2)
+             hit_signal = matchLv2(hitx_lv2, hity_lv2, self.deltae)
              if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 
 
           # varaibles of ntuple 
