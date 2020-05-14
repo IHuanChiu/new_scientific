@@ -25,6 +25,9 @@ __location__ = os.path.realpath(
 ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
 #ROOT.SetAtlasStyle()
 
+#from scipy.spatial.transform import Rotation as R
+import numpy as np
+
 def getBIN(h): 
     n = h.GetNbinsX()
     xlow = h.GetBinLowEdge(1)
@@ -187,14 +190,38 @@ class Baseplot():
           cv.Print(printname+".pdf")
 #          log().info("Finished plots!")
 
-def getContent(ibinx, ibiny, ibinz, h2list):
-    content = 0.
-#    for h2 in h2list:
-#       if "00057" in h2.GetTitle():
-#          content += h2.GetBinContent(ibinx,ibiny)
-    return 1
-#    return content
-    
+def getangle(hist_name):
+    nstep = 16
+    if "00057" in hist_name: return 0  * 2*(math.pi)/nstep
+    elif "00058" in hist_name: return 1  * 2*(math.pi)/nstep
+    elif "00059" in hist_name: return 2  * 2*(math.pi)/nstep
+    elif "00060" in hist_name: return 3  * 2*(math.pi)/nstep
+    elif "00061" in hist_name: return 4  * 2*(math.pi)/nstep
+    elif "00062" in hist_name: return 5  * 2*(math.pi)/nstep
+    elif "00063" in hist_name: return 6  * 2*(math.pi)/nstep
+    elif "00064" in hist_name: return 7  * 2*(math.pi)/nstep
+    elif "00065" in hist_name: return 8  * 2*(math.pi)/nstep
+    elif "00066" in hist_name: return 9  * 2*(math.pi)/nstep
+    elif "00067" in hist_name: return 10 * 2*(math.pi)/nstep
+    elif "00068" in hist_name: return 11 * 2*(math.pi)/nstep
+    elif "00069" in hist_name: return 12 * 2*(math.pi)/nstep
+    elif "00070" in hist_name: return 13 * 2*(math.pi)/nstep
+    elif "00071" in hist_name: return 14 * 2*(math.pi)/nstep
+    elif "00072" in hist_name: return 15 * 2*(math.pi)/nstep
+    elif "00073" in hist_name: return 0 * 2*(math.pi)/nstep
+
+def GetRotation(_x,_y,_z,_angle):
+    c, s = np.cos(_angle), np.sin(_angle)
+    R = np.matrix([[c, -s, 0], [s, c,0], [0,0,1]]) # around z-axis
+    v = np.matrix( [ _x, _y, _z ])
+    new_v = R*v.reshape(3,1)
+    return new_v[0,0], new_v[1,0], new_v[2,0]    
+
+def getContent(ibinx, ibiny, ibinz, h2, h2name, _h3):
+    _angle=getangle(h2name)
+    _content = h2.GetBinContent(ibinx,ibiny)
+    _x,_y,_z = GetRotation(_h3.GetXaxis().GetBinCenter(ibinx), _h3.GetYaxis().GetBinCenter(ibiny), _h3.GetYaxis().GetBinCenter(ibinz),_angle)
+    return _x,_y,_z, _content
    
 def rnu3Dimage(args):
 
@@ -202,23 +229,19 @@ def rnu3Dimage(args):
     nfiles = len(ilist)
     cv  = createRatioCanvas("cv", 1600, 1600)
     h3d = ROOT.TH3D("test","test",128,-16,16,128,-16,16,128,-16,16)
-    h2list=[]
 
     for ifile in ilist:
        rfile   =  ROOT.TFile(ifile)
        h2   =  rfile.Get("h2")
-       h2.SetTitle(ifile)
-       h2list.append(h2)
-
-    for ibinx in range(1,h3d.GetXaxis().GetNbins()+1):
-       for ibiny in range(1,h3d.GetYaxis().GetNbins()+1):
-          for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
-             content = getContent(ibinx, ibiny, ibinz, h2list)
-             h3d.Fill(h3d.GetXaxis().GetBinCenter(ibinx),h3d.GetYaxis().GetBinCenter(ibiny),h3d.GetZaxis().GetBinCenter(ibinz),content/nfiles)
-
+       h2name = ifile.split("/")[-1]
+       print("h2name", h2name)
+       for ibinx in range(1,h3d.GetXaxis().GetNbins()+1):
+          for ibiny in range(1,h3d.GetYaxis().GetNbins()+1):
+             for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
+                x,y,z,content = getContent(ibinx, ibiny, ibinz, h2, h2name, h3d)
+                h3d.Fill(x,y,z,content/nfiles)
 #    h3d.Draw("BOX2Z")
 #    cv.Print("../run/figs/test_3D_image.ROOT.pdf")
-
     f = ROOT.TFile( '../run/figs/repro_3Dimage.root', 'recreate' )
     f.cd()
     h3d.Write()
