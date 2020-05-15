@@ -212,7 +212,9 @@ def getangle(hist_name):
 
 def GetRotation(_x,_y,_z,_angle):
     c, s = np.cos(_angle), np.sin(_angle)
-    R = np.matrix([[c, -s, 0], [s, c,0], [0,0,1]]) # around z-axis
+    #R = np.matrix([[c, -s, 0], [s, c,0], [0,0,1]]) # around z-axis
+    #R = np.matrix([[c,0,s], [0,1,0], [-s,0,c]]) # around y-axis
+    R = np.matrix([[1,0,0], [0,c,-s], [0,s,c]]) # around x-axis
     v = np.matrix( [ _x, _y, _z ])
     new_v = R*v.reshape(3,1)
     return new_v[0,0], new_v[1,0], new_v[2,0]    
