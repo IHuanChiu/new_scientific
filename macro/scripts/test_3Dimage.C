@@ -1,4 +1,6 @@
 void test_3Dimage(){
+TFile* f1 = TFile("../../run/figs/repro_3Dimage.root","read")
+
 Double_t px, py, pz;
 TH3D *hd3 = new TH3D("hd3","hd3",32,0.,1.,32,0,1,32,.0,1.);
 

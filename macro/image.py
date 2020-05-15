@@ -82,8 +82,8 @@ def image(tree, icut, position):
     tree.Draw("x:y >> h2(128,-16,16,128,-16,16)",icut,"colz")
     h2 = gDirectory.Get("h2")
 #    h2.SetTitle(icut.GetTitle())
-    h2.GetXaxis().SetTitle("p-side [mm]")
-    h2.GetYaxis().SetTitle("n-side [mm]")
+    h2.GetXaxis().SetTitle("n-side [mm]")
+    h2.GetYaxis().SetTitle("p-side [mm]")
     h2.SetDirectory(0)
 #    gPad.SetLogz()
     return h2
@@ -192,7 +192,7 @@ class Baseplot():
 
 def getangle(hist_name):
     nstep = 16
-    if "00057" in hist_name: return 0  * 2*(math.pi)/nstep
+    if "00057" in hist_name:   return 0  * 2*(math.pi)/nstep
     elif "00058" in hist_name: return 1  * 2*(math.pi)/nstep
     elif "00059" in hist_name: return 2  * 2*(math.pi)/nstep
     elif "00060" in hist_name: return 3  * 2*(math.pi)/nstep
@@ -224,25 +224,32 @@ def getContent(ibinx, ibiny, ibinz, h2, h2name, _h3):
     return _x,_y,_z, _content
    
 def rnu3Dimage(args):
-
+    log().info("Preparing 3D image...")
+    ti = time.time()
     ilist = GetInputList(args.inputFolder)          
     nfiles = len(ilist)
     cv  = createRatioCanvas("cv", 1600, 1600)
-    h3d = ROOT.TH3D("test","test",128,-16,16,128,-16,16,128,-16,16)
+    h3d = ROOT.TH3D("solid","solid",128,-16,16,128,-16,16,128,-16,16)
 
     for ifile in ilist:
        rfile   =  ROOT.TFile(ifile)
        h2   =  rfile.Get("h2")
        h2name = ifile.split("/")[-1]
-       print("h2name", h2name)
+       log().info("Current file : %s , Angle is %.1f\u00b0"%(h2name, math.degrees(getangle(h2name))))
        for ibinx in range(1,h3d.GetXaxis().GetNbins()+1):
           for ibiny in range(1,h3d.GetYaxis().GetNbins()+1):
              for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
                 x,y,z,content = getContent(ibinx, ibiny, ibinz, h2, h2name, h3d)
                 h3d.Fill(x,y,z,content/nfiles)
+       log().info("Running time : %.1f s", time.time() - ti)
 #    h3d.Draw("BOX2Z")
-#    cv.Print("../run/figs/test_3D_image.ROOT.pdf")
-    f = ROOT.TFile( '../run/figs/repro_3Dimage.root', 'recreate' )
+#    cv.Print("../run/figs/hist_3D_image.ROOT.pdf")
+
+    _out = "../run/figs/repro_3Dimage" 
+    if args.output is not None: outname = _out + "_" +args.output + ".root"
+    else: outname = _out+".root"
+    log().info("Output : %s"%(outname))
+    f = ROOT.TFile( outname, 'recreate' )
     f.cd()
     h3d.Write()
     f.Write()    
@@ -251,7 +258,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument("--inputFolder", type=str, default="../run/figs/20200307a_rootfiles/", help="Input Ntuple Name")
-    parser.add_argument("--output", type=str, default="../run/root/tranadc_dsd.root", help="Output file for adctoenergy")
+    parser.add_argument("-o", "--output", type=str, default=None, help="Output file for adctoenergy")
     args = parser.parse_args()
     
     rnu3Dimage( args )
