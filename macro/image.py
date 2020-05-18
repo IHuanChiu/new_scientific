@@ -20,7 +20,7 @@ ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
 import time
 from logger import log, supports_color
-from utils.helpers import GetInputList
+from utils.helpers import GetInputList, createRatioCanvas
 from slice3D import MakeSlicePlots 
 
 __location__ = os.path.realpath(
@@ -37,17 +37,6 @@ def getBIN(h):
     xhigh = h.GetBinLowEdge(n)+h.GetBinWidth(n)
     return (n,xlow,xhigh)
     
-def createRatioCanvas(Name = "cs", w = 1200, h = 800):
-    cRatioCanvas = ROOT.TCanvas(Name,"",0,0,int(w),int(h))
-    cRatioCanvas.GetFrame().SetBorderMode(0)
-    cRatioCanvas.GetFrame().SetBorderSize(0)
-    cRatioCanvas.SetBorderMode(0)
-    cRatioCanvas.SetBorderSize(0)
-    cRatioCanvas.SetFillStyle(0)
-    cRatioCanvas.SetFillColor(0)
-    cRatioCanvas.SetRightMargin(0.15)
-    cRatioCanvas.SetWindowSize( int(w + (w-cRatioCanvas.GetWw())), int(h + (h-cRatioCanvas.GetWh())) )
-    return cRatioCanvas
 
 def gettreename(treename):
       
@@ -275,21 +264,21 @@ def run3Dimage(args):
     h3d_t.Draw("BOX2Z")
     cv.Print("../run/figs/hist_3D_image.ROOT.pdf")
     _nhx, _nhy, _nhz = 0,0,0
-    for _h in h2_list_x:
-      _nhx +=1
-      _h.Draw("colz")
-      cv.Print("../run/figs/3Dslices/hist_x_%d.ROOT.pdf"%(_nhx)) 
-      _h.Write()
-    for _h in h2_list_y:
-      _nhy +=1
-      _h.Draw("colz")
-      cv.Print("../run/figs/3Dslices/hist_y_%d.ROOT.pdf"%(_nhy)) 
-      _h.Write()
-    for _h in h2_list_z:
-      _nhz +=1
-      _h.Draw("colz")
-      cv.Print("../run/figs/3Dslices/hist_z_%d.ROOT.pdf"%(_nhz)) 
-      _h.Write()
+#    for _h in h2_list_x:
+#      _nhx +=1
+#      _h.Draw("colz")
+#      cv.Print("../run/figs/3Dslices/hist_x_%d.ROOT.pdf"%(_nhx)) 
+#      _h.Write()
+#    for _h in h2_list_y:
+#      _nhy +=1
+#      _h.Draw("colz")
+#      cv.Print("../run/figs/3Dslices/hist_y_%d.ROOT.pdf"%(_nhy)) 
+#      _h.Write()
+#    for _h in h2_list_z:
+#      _nhz +=1
+#      _h.Draw("colz")
+#      cv.Print("../run/figs/3Dslices/hist_z_%d.ROOT.pdf"%(_nhz)) 
+#      _h.Write()
     f.Write()    
         
 if __name__ == "__main__":

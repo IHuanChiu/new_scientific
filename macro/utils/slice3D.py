@@ -13,9 +13,20 @@ __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 import sys,os,random,math,ROOT
 from ROOT import TFile, TTree, gROOT, gStyle, TCut, gPad, gDirectory
 ROOT.gROOT.SetBatch(1)
-import argparse
-sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 from logger import log, supports_color
+from helpers import createRatioCanvas
+ROOT.gErrorIgnoreLevel = ROOT.kWarning
+
+gROOT.ProcessLine(
+"struct RootHistStruct {\
+   TH2D* h2_x[128];\
+   TH2D* h2_y[128];\
+   TH2D* h2_z[128];\
+};"
+); 
+
+from ROOT import RootHistStruct
+Hist = RootHistStruct()
 
 class MakeSlicePlots():
 
@@ -28,7 +39,8 @@ class MakeSlicePlots():
 
       def _getslice_z(self):
           h_list=[]
-          for i in range(self._nplots):      
+          for i in range(self._nplots):                   
+             cv  = createRatioCanvas("cv_%s"%(i), 1600, 1600)
              _h3temp = self._hist3.Clone()
              _u, _d = (16 - (32./self._nplots)*i), (16 - (32./self._nplots)*(i+1))
              _h3temp.GetZaxis().SetRangeUser(_d,_u)
@@ -42,11 +54,14 @@ class MakeSlicePlots():
              _h2.GetYaxis().SetRangeUser(-16, 16)             
              #_h2.Rebin2D(4,4)
              h_list.append(_h2)
+             _h2.Draw("colz")
+             cv.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/3Dslices/hist_z_%d.ROOT.pdf"%(i)) 
           return h_list
 
       def _getslice_x(self):
           h_list=[]
           for i in range(self._nplots):      
+             cv  = createRatioCanvas("cv_%s"%(i), 1600, 1600)
              _h3temp = self._hist3.Clone()
              _u, _d = (16 - (32./self._nplots)*i), (16 - (32./self._nplots)*(i+1))
              _h3temp.GetZaxis().SetRangeUser(_d,_u)
@@ -60,11 +75,14 @@ class MakeSlicePlots():
              _h2.GetYaxis().SetRangeUser(-16, 16)             
              #_h2.Rebin2D(4,4)
              h_list.append(_h2)
+             _h2.Draw("colz")
+             cv.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/3Dslices/hist_x_%d.ROOT.pdf"%(i)) 
           return h_list
 
       def _getslice_y(self):
           h_list=[]
           for i in range(self._nplots):      
+             cv  = createRatioCanvas("cv_%s"%(i), 1600, 1600)
              _h3temp = self._hist3.Clone()
              _u, _d = (16 - (32./self._nplots)*i), (16 - (32./self._nplots)*(i+1))
              _h3temp.GetZaxis().SetRangeUser(_d,_u)
@@ -78,6 +96,8 @@ class MakeSlicePlots():
              _h2.GetYaxis().SetRangeUser(-16, 16)             
              #_h2.Rebin2D(4,4)
              h_list.append(_h2)
+             _h2.Draw("colz")
+             cv.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/3Dslices/hist_y_%d.ROOT.pdf"%(i)) 
           return h_list
 
       def GetSlices(self, _axisname):

@@ -47,3 +47,15 @@ def GetInputList(inputFolder):
 #        inputDict[subProc] = glob.glob(subFolder+"/*.root")
 
     return inputDict
+
+def createRatioCanvas(Name = "cs", w = 1200, h = 800):
+    cRatioCanvas = ROOT.TCanvas(Name,"",0,0,int(w),int(h))
+    cRatioCanvas.GetFrame().SetBorderMode(0)
+    cRatioCanvas.GetFrame().SetBorderSize(0)
+    cRatioCanvas.SetBorderMode(0)
+    cRatioCanvas.SetBorderSize(0)
+    cRatioCanvas.SetFillStyle(0)
+    cRatioCanvas.SetFillColor(0)
+    cRatioCanvas.SetRightMargin(0.15)
+    cRatioCanvas.SetWindowSize( int(w + (w-cRatioCanvas.GetWw())), int(h + (h-cRatioCanvas.GetWh())) )
+    return cRatioCanvas

@@ -26,7 +26,6 @@ from random import gauss
 import numpy as np
 #sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 #sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
-from scripts.div import createRatioCanvas
 from utils.printInfo import checkTree
 from utils.slimming import DisableBranch
 from utils.countHit import Level1HitAll, Level2Hit, findcluster, ClusterCategory, matchLv2, Level1Hit
