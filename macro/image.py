@@ -15,10 +15,13 @@ from ROOT import TFile, TTree, gROOT, gStyle, TCut, gPad, gDirectory
 ROOT.gROOT.SetBatch(1)
 import argparse
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
+#gROOT.ProcessLine("gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;")
+ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
 import time
 from logger import log, supports_color
 from utils.helpers import GetInputList
+from slice3D import MakeSlicePlots 
 
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -224,16 +227,26 @@ def getContent(ibinx, ibiny, ibinz, h2, h2name, _h3):
     _content = h2.GetBinContent(ibinx,ibiny)
     _x,_y,_z = GetRotation(_h3.GetXaxis().GetBinCenter(ibinx), _h3.GetYaxis().GetBinCenter(ibiny), _h3.GetYaxis().GetBinCenter(ibinz),_angle)
     return _x,_y,_z, _content
-   
-def rnu3Dimage(args):
+
+def run3Dimage(args):
     log().info("Preparing 3D image...")
     ti = time.time()
     ilist = GetInputList(args.inputFolder)          
     nfiles = len(ilist)
     cv  = createRatioCanvas("cv", 1600, 1600)
     h3d = ROOT.TH3D("solid","solid",128,-16,16,128,-16,16,128,-16,16)
+    h3d_t = ROOT.TH3D("solid_t","solid_t",128,-16,16,128,-16,16,128,-16,16)
+    h3d.SetXTitle("x")
+    h3d.SetYTitle("y")
+    h3d.SetZTitle("z")
+    h3d_t.SetXTitle("x")
+    h3d_t.SetYTitle("y")
+    h3d_t.SetZTitle("z")
 
+    numoff=0 
     for ifile in ilist:
+       if numoff > 0: continue
+       numoff+=1
        rfile   =  ROOT.TFile(ifile)
        h2   =  rfile.Get("h2")
        h2name = ifile.split("/")[-1]
@@ -243,9 +256,12 @@ def rnu3Dimage(args):
              for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
                 x,y,z,content = getContent(ibinx, ibiny, ibinz, h2, h2name, h3d)
                 h3d.Fill(x,y,z,content/nfiles)
-       log().info("Running time : %.1f s", time.time() - ti)
-#    h3d.Draw("BOX2Z")
-#    cv.Print("../run/figs/hist_3D_image.ROOT.pdf")
+                if content >= 2: h3d_t.Fill(x,y,z,content/nfiles)
+       log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(ilist)))
+
+    # === make slices for xyz-sxis ===
+    _MS = MakeSlicePlots(_hist3=h3d)
+    h2_list_x, h2_list_y, h2_list_z = _MS.GetSlices("x"), _MS.GetSlices("y"), _MS.GetSlices("z")
 
     _out = "../run/figs/repro_3Dimage" 
     if args.output is not None: outname = _out + "_" +args.output + ".root"
@@ -253,7 +269,27 @@ def rnu3Dimage(args):
     log().info("Output : %s"%(outname))
     f = ROOT.TFile( outname, 'recreate' )
     f.cd()
+
+    h3d_t.Write()
     h3d.Write()
+    h3d_t.Draw("BOX2Z")
+    cv.Print("../run/figs/hist_3D_image.ROOT.pdf")
+    _nhx, _nhy, _nhz = 0,0,0
+    for _h in h2_list_x:
+      _nhx +=1
+      _h.Draw("colz")
+      cv.Print("../run/figs/3Dslices/hist_x_%d.ROOT.pdf"%(_nhx)) 
+      _h.Write()
+    for _h in h2_list_y:
+      _nhy +=1
+      _h.Draw("colz")
+      cv.Print("../run/figs/3Dslices/hist_y_%d.ROOT.pdf"%(_nhy)) 
+      _h.Write()
+    for _h in h2_list_z:
+      _nhz +=1
+      _h.Draw("colz")
+      cv.Print("../run/figs/3Dslices/hist_z_%d.ROOT.pdf"%(_nhz)) 
+      _h.Write()
     f.Write()    
         
 if __name__ == "__main__":
@@ -263,4 +299,4 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output", type=str, default=None, help="Output file for adctoenergy")
     args = parser.parse_args()
     
-    rnu3Dimage( args )
+    run3Dimage( args )
