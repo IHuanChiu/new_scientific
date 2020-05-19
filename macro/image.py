@@ -21,6 +21,7 @@ ROOT.gErrorIgnoreLevel = ROOT.kWarning
 import time
 from logger import log, supports_color
 from utils.helpers import GetInputList, createRatioCanvas
+from utils.color import SetMyPalette
 from slice3D import MakeSlicePlots 
 
 __location__ = os.path.realpath(
@@ -222,9 +223,8 @@ def run3Dimage(args):
     ti = time.time()
     ilist = GetInputList(args.inputFolder)          
     nfiles = len(ilist)
-    cv  = createRatioCanvas("cv", 1600, 1600)
     h3d = ROOT.TH3D("solid","solid",128,-16,16,128,-16,16,128,-16,16)
-    h3d_t = ROOT.TH3D("solid_t","solid_t",128,-16,16,128,-16,16,128,-16,16)
+    h3d_t = ROOT.TH3D("solid_t","solid_t",32,-16,16,32,-16,16,32,-16,16)
     h3d.SetXTitle("x")
     h3d.SetYTitle("y")
     h3d.SetZTitle("z")
@@ -232,21 +232,38 @@ def run3Dimage(args):
     h3d_t.SetYTitle("y")
     h3d_t.SetZTitle("z")
 
-    numoff=0 
-    for ifile in ilist:
-       if numoff > 0: continue
-       numoff+=1
-       rfile   =  ROOT.TFile(ifile)
-       h2   =  rfile.Get("h2")
-       h2name = ifile.split("/")[-1]
-       log().info("Current file : %s , Angle is %.1f\u00b0"%(h2name, math.degrees(getangle(h2name))))
-       for ibinx in range(1,h3d.GetXaxis().GetNbins()+1):
-          for ibiny in range(1,h3d.GetYaxis().GetNbins()+1):
-             for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
-                x,y,z,content = getContent(ibinx, ibiny, ibinz, h2, h2name, h3d)
-                h3d.Fill(x,y,z,content/nfiles)
-                if content >= 2: h3d_t.Fill(x,y,z,content/nfiles)
-       log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(ilist)))
+    if args.input3D is None: 
+       numoff=0 
+       for ifile in ilist:
+          numoff+=1
+          rfile   =  ROOT.TFile(ifile)
+          h2   =  rfile.Get("h2")
+          h2name = ifile.split("/")[-1]
+          log().info("Current file : %s , Angle is %.1f\u00b0"%(h2name, math.degrees(getangle(h2name))))
+          for ibinx in range(1,h3d.GetXaxis().GetNbins()+1):
+             for ibiny in range(1,h3d.GetYaxis().GetNbins()+1):
+                for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
+                   x,y,z,content = getContent(ibinx, ibiny, ibinz, h2, h2name, h3d)
+                   h3d.Fill(x,y,z,content)
+          log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(ilist)))
+   
+    else:
+       r3dfile  =  ROOT.TFile(args.input3D)    
+       h3d = r3dfile.Get("solid")
+
+    cv  = createRatioCanvas("cv", 1600, 1600)
+    log().info("Making 3D plots")
+    _h3d_t = h3d.Clone()
+    _h3d_t.Rebin3D(4,4,4)
+    for _ix in range(1,_h3d_t.GetXaxis().GetNbins()+1):
+       for _iy in range(1,_h3d_t.GetYaxis().GetNbins()+1):
+          for _iz in range(1,_h3d_t.GetZaxis().GetNbins()+1):
+             _bin = _h3d_t.GetBin(_ix,_iy,_iz)
+             _x,_y,_z=_h3d_t.GetXaxis().GetBinCenter(_ix),_h3d_t.GetYaxis().GetBinCenter(_iy),_h3d_t.GetZaxis().GetBinCenter(_iz)
+             if(_h3d_t.GetBinContent(_bin) > 180): h3d_t.Fill(_x,_y,_z,_h3d_t.GetBinContent(_bin))
+    SetMyPalette("RB",0.5)
+    h3d_t.Draw("BOX2Z")
+    cv.Print("../run/figs/hist_3D_image.ROOT.pdf")
 
     # === make slices for xyz-sxis ===
     _MS = MakeSlicePlots(_hist3=h3d)
@@ -255,15 +272,14 @@ def run3Dimage(args):
     _out = "../run/figs/repro_3Dimage" 
     if args.output is not None: outname = _out + "_" +args.output + ".root"
     else: outname = _out+".root"
-    log().info("Output : %s"%(outname))
+    log().info("Output : %s, figs: ../run/figs/hist_3D_image.ROOT.pdf"%(outname))
     f = ROOT.TFile( outname, 'recreate' )
     f.cd()
 
     h3d_t.Write()
     h3d.Write()
-    h3d_t.Draw("BOX2Z")
-    cv.Print("../run/figs/hist_3D_image.ROOT.pdf")
-    _nhx, _nhy, _nhz = 0,0,0
+
+#    _nhx, _nhy, _nhz = 0,0,0
 #    for _h in h2_list_x:
 #      _nhx +=1
 #      _h.Draw("colz")
@@ -279,13 +295,15 @@ def run3Dimage(args):
 #      _h.Draw("colz")
 #      cv.Print("../run/figs/3Dslices/hist_z_%d.ROOT.pdf"%(_nhz)) 
 #      _h.Write()
+
     f.Write()    
         
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument("--inputFolder", type=str, default="../run/figs/20200307a_rootfiles/", help="Input Ntuple Name")
-    parser.add_argument("-o", "--output", type=str, default=None, help="Output file for adctoenergy")
+    parser.add_argument("-o", "--output", type=str, default=None, help="Output file")
+    parser.add_argument("-i", "--input3D", type=str, default=None, help="Input 3D file")
     args = parser.parse_args()
     
     run3Dimage( args )

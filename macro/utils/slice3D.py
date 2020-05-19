@@ -32,7 +32,13 @@ class MakeSlicePlots():
 
       def __init__(self, _hist3=None):
           self._hist3 = _hist3
-          self._nplots = 100
+
+          # member
+          self._nplots = 40
+          self.MaxZ    = 80.
+          self.setlogz = 0
+
+          # function
           self.h_xy_list = self._getslice_z()
           self.h_yz_list = self._getslice_x()
           self.h_xz_list = self._getslice_y()
@@ -46,14 +52,16 @@ class MakeSlicePlots():
              _h3temp.GetZaxis().SetRangeUser(_d,_u)
              _h2 = _h3temp.Project3D("xy")
              _h2.SetStats(0)
-             _h2.SetTitle("slice_z_%s"%(i)) 
+             _h2.SetTitle("slice z %1f mm"%((_d+_u)/2.)) 
              _h2.GetXaxis().SetTitle("X")
              _h2.GetYaxis().SetTitle("Y")
-             _h2.GetZaxis().SetRangeUser(0., 30.)
+             _h2.GetZaxis().SetRangeUser(0., self.MaxZ)
              _h2.GetXaxis().SetRangeUser(-16, 16)
              _h2.GetYaxis().SetRangeUser(-16, 16)             
-             #_h2.Rebin2D(4,4)
+             _h2.RebinX(2)
+             _h2.RebinY(2)
              h_list.append(_h2)
+             gPad.SetLogz(self.setlogz)
              _h2.Draw("colz")
              cv.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/3Dslices/hist_z_%d.ROOT.pdf"%(i)) 
           return h_list
@@ -67,14 +75,16 @@ class MakeSlicePlots():
              _h3temp.GetZaxis().SetRangeUser(_d,_u)
              _h2 = _h3temp.Project3D("yz")
              _h2.SetStats(0)
-             _h2.SetTitle("slice_x_%s"%(i)) 
+             _h2.SetTitle("slice x %1f mm"%((_d+_u)/2.)) 
+             _h2.GetZaxis().SetRangeUser(0., self.MaxZ)
+             _h2.SetAxisRange(-16, 16,"X")
+             _h2.SetAxisRange(-16, 16,"Y")
              _h2.GetXaxis().SetTitle("Y")
              _h2.GetYaxis().SetTitle("Z")
-             _h2.GetZaxis().SetRangeUser(0., 30.)
-             _h2.GetXaxis().SetRangeUser(-16, 16)
-             _h2.GetYaxis().SetRangeUser(-16, 16)             
-             #_h2.Rebin2D(4,4)
+             _h2.RebinX(2)
+             _h2.RebinY(2)
              h_list.append(_h2)
+             gPad.SetLogz(self.setlogz)
              _h2.Draw("colz")
              cv.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/3Dslices/hist_x_%d.ROOT.pdf"%(i)) 
           return h_list
@@ -88,14 +98,16 @@ class MakeSlicePlots():
              _h3temp.GetZaxis().SetRangeUser(_d,_u)
              _h2 = _h3temp.Project3D("xz")
              _h2.SetStats(0)
-             _h2.SetTitle("slice_y_%s"%(i)) 
+             _h2.SetTitle("slice y %1f mm"%((_d+_u)/2.)) 
              _h2.GetXaxis().SetTitle("X")
              _h2.GetYaxis().SetTitle("Z")
-             _h2.GetZaxis().SetRangeUser(0., 30.)
+             _h2.GetZaxis().SetRangeUser(0., self.MaxZ)
              _h2.GetXaxis().SetRangeUser(-16, 16)
              _h2.GetYaxis().SetRangeUser(-16, 16)             
-             #_h2.Rebin2D(4,4)
+             _h2.RebinX(2)
+             _h2.RebinY(2)
              h_list.append(_h2)
+             gPad.SetLogz(self.setlogz)
              _h2.Draw("colz")
              cv.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/3Dslices/hist_y_%d.ROOT.pdf"%(i)) 
           return h_list
