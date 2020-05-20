@@ -266,6 +266,7 @@ def run3Dimage(args):
     cv.Print("../run/figs/hist_3D_image.ROOT.pdf")
 
     # === make slices for xyz-sxis ===
+    SetMyPalette("Bird",1)
     _MS = MakeSlicePlots(_hist3=h3d)
     h2_list_x, h2_list_y, h2_list_z = _MS.GetSlices("x"), _MS.GetSlices("y"), _MS.GetSlices("z")
 
@@ -301,7 +302,7 @@ def run3Dimage(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("--inputFolder", type=str, default="../run/figs/20200307a_rootfiles/", help="Input Ntuple Name")
+    parser.add_argument("--inputFolder", type=str, default="../run/root/20200307a_rootfiles_cut10delta5/", help="Input Ntuple Name")
     parser.add_argument("-o", "--output", type=str, default=None, help="Output file")
     parser.add_argument("-i", "--input3D", type=str, default=None, help="Input 3D file")
     args = parser.parse_args()
