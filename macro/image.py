@@ -245,8 +245,7 @@ def run3Dimage(args):
                 for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
                    x,y,z,content = getContent(ibinx, ibiny, ibinz, h2, h2name, h3d)
                    h3d.Fill(x,y,z,content)
-          log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(ilist)))
-   
+          log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(ilist)))   
     else:
        r3dfile  =  ROOT.TFile(args.input3D)    
        h3d = r3dfile.Get("solid")
@@ -260,49 +259,31 @@ def run3Dimage(args):
           for _iz in range(1,_h3d_t.GetZaxis().GetNbins()+1):
              _bin = _h3d_t.GetBin(_ix,_iy,_iz)
              _x,_y,_z=_h3d_t.GetXaxis().GetBinCenter(_ix),_h3d_t.GetYaxis().GetBinCenter(_iy),_h3d_t.GetZaxis().GetBinCenter(_iz)
-             if(_h3d_t.GetBinContent(_bin) > 180): h3d_t.Fill(_x,_y,_z,_h3d_t.GetBinContent(_bin))
+             if(_h3d_t.GetBinContent(_bin) > 245): h3d_t.Fill(_x,_y,_z,_h3d_t.GetBinContent(_bin))
     SetMyPalette("RB",0.5)
     h3d_t.Draw("BOX2Z")
-    cv.Print("../run/figs/hist_3D_image.ROOT.pdf")
+    cv.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image.ROOT.pdf")
 
     # === make slices for xyz-sxis ===
     SetMyPalette("Bird",1)
     _MS = MakeSlicePlots(_hist3=h3d)
     h2_list_x, h2_list_y, h2_list_z = _MS.GetSlices("x"), _MS.GetSlices("y"), _MS.GetSlices("z")
 
-    _out = "../run/figs/repro_3Dimage" 
+    _out = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage" 
     if args.output is not None: outname = _out + "_" +args.output + ".root"
     else: outname = _out+".root"
-    log().info("Output : %s, figs: ../run/figs/hist_3D_image.ROOT.pdf"%(outname))
+    log().info("Output : %s, figs: /Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image.ROOT.pdf"%(outname))
     f = ROOT.TFile( outname, 'recreate' )
     f.cd()
 
     h3d_t.Write()
     h3d.Write()
-
-#    _nhx, _nhy, _nhz = 0,0,0
-#    for _h in h2_list_x:
-#      _nhx +=1
-#      _h.Draw("colz")
-#      cv.Print("../run/figs/3Dslices/hist_x_%d.ROOT.pdf"%(_nhx)) 
-#      _h.Write()
-#    for _h in h2_list_y:
-#      _nhy +=1
-#      _h.Draw("colz")
-#      cv.Print("../run/figs/3Dslices/hist_y_%d.ROOT.pdf"%(_nhy)) 
-#      _h.Write()
-#    for _h in h2_list_z:
-#      _nhz +=1
-#      _h.Draw("colz")
-#      cv.Print("../run/figs/3Dslices/hist_z_%d.ROOT.pdf"%(_nhz)) 
-#      _h.Write()
-
     f.Write()    
         
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("--inputFolder", type=str, default="../run/root/20200307a_rootfiles_cut10delta5/", help="Input Ntuple Name")
+    parser.add_argument("--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/CdTe_hist/", help="Input Ntuple Name")
     parser.add_argument("-o", "--output", type=str, default=None, help="Output file")
     parser.add_argument("-i", "--input3D", type=str, default=None, help="Input 3D file")
     args = parser.parse_args()
