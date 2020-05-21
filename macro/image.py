@@ -23,6 +23,7 @@ from logger import log, supports_color
 from utils.helpers import GetInputList, createRatioCanvas
 from utils.color import SetMyPalette
 from slice3D import MakeSlicePlots 
+from enums import getangle
 
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -183,26 +184,6 @@ class Baseplot():
           cv.Print(printname+".pdf")
 #          log().info("Finished plots!")
 
-def getangle(hist_name):
-    nstep = 16
-    if "00057" in hist_name:   return 0  * 2*(math.pi)/nstep
-    elif "00058" in hist_name: return 1  * 2*(math.pi)/nstep
-    elif "00059" in hist_name: return 2  * 2*(math.pi)/nstep
-    elif "00060" in hist_name: return 3  * 2*(math.pi)/nstep
-    elif "00061" in hist_name: return 4  * 2*(math.pi)/nstep
-    elif "00062" in hist_name: return 5  * 2*(math.pi)/nstep
-    elif "00063" in hist_name: return 6  * 2*(math.pi)/nstep
-    elif "00064" in hist_name: return 7  * 2*(math.pi)/nstep
-    elif "00065" in hist_name: return 8  * 2*(math.pi)/nstep
-    elif "00066" in hist_name: return 9  * 2*(math.pi)/nstep
-    elif "00067" in hist_name: return 10 * 2*(math.pi)/nstep
-    elif "00068" in hist_name: return 11 * 2*(math.pi)/nstep
-    elif "00069" in hist_name: return 12 * 2*(math.pi)/nstep
-    elif "00070" in hist_name: return 13 * 2*(math.pi)/nstep
-    elif "00071" in hist_name: return 14 * 2*(math.pi)/nstep
-    elif "00072" in hist_name: return 15 * 2*(math.pi)/nstep
-    elif "00073" in hist_name: return 0 * 2*(math.pi)/nstep
-
 def GetRotation(_x,_y,_z,_angle):
     c, s = np.cos(_angle), np.sin(_angle)
     #R = np.matrix([[c, -s, 0], [s, c,0], [0,0,1]]) # around z-axis
@@ -232,7 +213,7 @@ def run3Dimage(args):
     h3d_t.SetYTitle("y")
     h3d_t.SetZTitle("z")
 
-    if args.input3D is None: 
+    if args.input3Dhist is None: 
        numoff=0 
        for ifile in ilist:
           numoff+=1
@@ -247,7 +228,7 @@ def run3Dimage(args):
                    h3d.Fill(x,y,z,content)
           log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(ilist)))   
     else:
-       r3dfile  =  ROOT.TFile(args.input3D)    
+       r3dfile  =  ROOT.TFile(args.input3Dhist)    
        h3d = r3dfile.Get("solid")
 
     cv  = createRatioCanvas("cv", 1600, 1600)
@@ -283,9 +264,9 @@ def run3Dimage(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/CdTe_hist/", help="Input Ntuple Name")
+    parser.add_argument("-i", "--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/CdTe_hist/", help="Input Ntuple Name")
     parser.add_argument("-o", "--output", type=str, default=None, help="Output file")
-    parser.add_argument("-i", "--input3D", type=str, default=None, help="Input 3D file")
+    parser.add_argument("-hist", "--input3Dhist", type=str, default=None, help="Input 3D file")
     args = parser.parse_args()
     
     run3Dimage( args )
