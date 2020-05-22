@@ -96,6 +96,28 @@ def getangle(hist_name):
        elif "00056" in hist_name: return 7  * 2*(math.pi)/nstep
        elif "00057" in hist_name: return 8  * 2*(math.pi)/nstep
     else:
-       print("Check hist name !")
+       if    "==0" in hist_name: return 0   * 2*(math.pi)/nstep
+       elif  "==1" in hist_name: return 1   * 2*(math.pi)/nstep
+       elif  "==2" in hist_name: return 2   * 2*(math.pi)/nstep
+       elif  "==3" in hist_name: return 3   * 2*(math.pi)/nstep
+       elif  "==4" in hist_name: return 4   * 2*(math.pi)/nstep
+       elif  "==5" in hist_name: return 5   * 2*(math.pi)/nstep
+       elif  "==6" in hist_name: return 6   * 2*(math.pi)/nstep
+       elif  "==7" in hist_name: return 7   * 2*(math.pi)/nstep
+       elif  "==8" in hist_name: return 8   * 2*(math.pi)/nstep
+       elif  "==9" in hist_name: return 9   * 2*(math.pi)/nstep
+       elif "==10" in hist_name: return 10  * 2*(math.pi)/nstep
+       elif "==11" in hist_name: return 11  * 2*(math.pi)/nstep
+       elif "==12" in hist_name: return 12  * 2*(math.pi)/nstep
+       elif "==13" in hist_name: return 13  * 2*(math.pi)/nstep
+       elif "==14" in hist_name: return 14  * 2*(math.pi)/nstep
+       elif "==15" in hist_name: return 15  * 2*(math.pi)/nstep
+       elif "==16" in hist_name: return 16  * 2*(math.pi)/nstep
+       else:
+          print("Check hist name !")
 
+def findangle(UTtime):
+    _nstep=16 
+    _RT=1800 # rotation time 1800 s
+    return (int(UTtime/_RT)%_nstep) * 2*(math.pi)/_nstep
 ## EOF

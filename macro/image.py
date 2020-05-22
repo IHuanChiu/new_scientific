@@ -20,9 +20,9 @@ ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
 import time
 from logger import log, supports_color
-from utils.helpers import GetInputList, createRatioCanvas
+from utils.helpers import GetTChain, createRatioCanvas
 from utils.color import SetMyPalette
-from slice3D import MakeSlicePlots 
+from slice3D import MakeSlicePlots, makeTH2D 
 from enums import getangle
 
 __location__ = os.path.realpath(
@@ -101,7 +101,7 @@ def spectrum(tree, scut):
 
 class Baseplot():
 
-      def __init__(self,infile=None,outname=None,dtype=None): 
+      def __init__(self,infile=None,outname=None,initUT=None,dtype=None): 
           self.infile = infile
           self.outname = outname
           self.dtype = dtype
@@ -202,8 +202,9 @@ def getContent(ibinx, ibiny, ibinz, h2, h2name, _h3):
 def run3Dimage(args):
     log().info("Preparing 3D image...")
     ti = time.time()
-    ilist = GetInputList(args.inputFolder)          
-    nfiles = len(ilist)
+    treesum = GetTChain(args.inputFolder,"tree")         
+    ihlist = makeTH2D(treesum,args.dtype)
+
     h3d = ROOT.TH3D("solid","solid",128,-16,16,128,-16,16,128,-16,16)
     h3d_t = ROOT.TH3D("solid_t","solid_t",32,-16,16,32,-16,16,32,-16,16)
     h3d.SetXTitle("x")
@@ -215,18 +216,20 @@ def run3Dimage(args):
 
     if args.input3Dhist is None: 
        numoff=0 
-       for ifile in ilist:
+       for h2 in ihlist:
           numoff+=1
-          rfile   =  ROOT.TFile(ifile)
-          h2   =  rfile.Get("h2")
-          h2name = ifile.split("/")[-1]
-          log().info("Current file : %s , Angle is %.1f\u00b0"%(h2name, math.degrees(getangle(h2name))))
+          h2name = h2.GetTitle()
+#          rfile   =  ROOT.TFile(ifile)
+#          h2   =  rfile.Get("h2")
+#          h2name = ifile.split("/")[-1]
+#          log().info("Current file : %s , Angle is %.1f\u00b0"%(h2name, math.degrees(getangle(h2name))))
+          log().info("Current Angle is %.1f\u00b0"%(math.degrees(getangle(h2name))))
           for ibinx in range(1,h3d.GetXaxis().GetNbins()+1):
              for ibiny in range(1,h3d.GetYaxis().GetNbins()+1):
                 for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
                    x,y,z,content = getContent(ibinx, ibiny, ibinz, h2, h2name, h3d)
                    h3d.Fill(x,y,z,content)
-          log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(ilist)))   
+          log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(ihlist)))         
     else:
        r3dfile  =  ROOT.TFile(args.input3Dhist)    
        h3d = r3dfile.Get("solid")
@@ -235,12 +238,13 @@ def run3Dimage(args):
     log().info("Making 3D plots")
     _h3d_t = h3d.Clone()
     _h3d_t.Rebin3D(4,4,4)
+    cut_cont = 280
     for _ix in range(1,_h3d_t.GetXaxis().GetNbins()+1):
        for _iy in range(1,_h3d_t.GetYaxis().GetNbins()+1):
           for _iz in range(1,_h3d_t.GetZaxis().GetNbins()+1):
              _bin = _h3d_t.GetBin(_ix,_iy,_iz)
              _x,_y,_z=_h3d_t.GetXaxis().GetBinCenter(_ix),_h3d_t.GetYaxis().GetBinCenter(_iy),_h3d_t.GetZaxis().GetBinCenter(_iz)
-             if(_h3d_t.GetBinContent(_bin) > 245): h3d_t.Fill(_x,_y,_z,_h3d_t.GetBinContent(_bin))
+             if(_h3d_t.GetBinContent(_bin) > cut_cont): h3d_t.Fill(_x,_y,_z,_h3d_t.GetBinContent(_bin))
     SetMyPalette("RB",0.5)
     h3d_t.Draw("BOX2Z")
     cv.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image.ROOT.pdf")
@@ -264,9 +268,10 @@ def run3Dimage(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("-i", "--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/CdTe_hist/", help="Input Ntuple Name")
+    parser.add_argument("-i", "--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/root/CdTe_root/", help="Input Ntuple Name")
     parser.add_argument("-o", "--output", type=str, default=None, help="Output file")
-    parser.add_argument("-hist", "--input3Dhist", type=str, default=None, help="Input 3D file")
+    parser.add_argument("-p", "--input3Dhist", type=str, default=None, help="Input 3D file")
+    parser.add_argument("-d", "--dtype", dest="dtype", type=str, default = "CdTe", help="Si or CdTe" )
     args = parser.parse_args()
     
     run3Dimage( args )

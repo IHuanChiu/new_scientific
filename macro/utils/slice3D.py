@@ -130,4 +130,15 @@ class MakeSlicePlots():
              print("Wrong axis !!! ")
              return None
          
-
+def makeTH2D(_tree,dtype):
+    nrange = 16
+    h2list=[]
+    if "CdTe" in self.dtype:
+       cutname = "((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253)) && (energy_p > 72 && energy_p < 78)" 
+    else: 
+       cutname = "((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630)) && (energy_p > 12 && energy_p < 16)" 
+    for _i in range(nrange):
+       icut = TCut(cutname+"&&"+"(int((unixtime-initUT)%{0})=={1})".format(nrange,_i)) 
+       tree.Draw("x:y >> h{}(128,-16,16,128,-16,16)".format(_i),icut,"colz")
+       h2list.append(gDirectory.Get("h{}".format(_i)))
+    return h2list

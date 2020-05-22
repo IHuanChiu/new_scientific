@@ -37,8 +37,10 @@ from utils.helpers import ProgressBar
 gROOT.ProcessLine(
 "struct RootStruct {\
    Int_t      trigger;\
+   Int_t      unixtime;\
+   Int_t      initUT;\
    Int_t      nhit;\
-   Int_t       ncluster;\
+   Int_t      ncluster;\
    Int_t      nsignalx_lv1;\
    Int_t      nsignaly_lv1;\
    Int_t      nsignalx_lv2;\
@@ -157,7 +159,6 @@ def GetEventTree(tree, adccut, coef_R, dtype):
     if "CdTe" in dtype: nstrip = 64
     else : nstrip = 32
     index = 0
-    ti = time.time()
     for idet in range(2):
        for iasic in range(nasic):
           for istrip in range(nstrip):
@@ -206,8 +207,6 @@ def GetEventTree(tree, adccut, coef_R, dtype):
              index += 1
              if m_rawdata.adcm < m_rawdata.adccut : continue 
              m_rawdata_list.append(m_rawdata)# info. for the selected strips
-#    tmp = np.asarray(m_rawdata_list)
-#    print(time.time()-ti)
     return m_rawdata_list
 
 class tran_process():
@@ -218,7 +217,8 @@ class tran_process():
                    efile=None,
                    dtype=None,
                    ecut=None,
-                   deltae=None
+                   deltae=None,
+                   initUT=None
                    ):
           # config
           self.ifile      = ifile
@@ -228,6 +228,7 @@ class tran_process():
           self.ecut       = ecut
           self.deltae     = deltae
           self.efile      = efile
+          self.initUT     = initUT
            
           # members
           self.hist_list = []
@@ -266,15 +267,15 @@ class tran_process():
 
           self.tout = TTree('tree','tree') 
           self.tout.SetDirectory(0)
-          self.tout.Branch( 'intvar', struct, 'trigger/I:nhit:ncluster:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' ) 
- 
+          self.tout.Branch( 'intvar', struct, 'trigger/I:unixtime:initUT:nhit:ncluster:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' )  
+
           self.tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),  'energy_p[nhit]/D' )
           self.tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ),  'energy_n[nhit]/D' )
           self.tout.Branch( 'adc_p',    AddressOf( struct, 'adc_p' ),     'adc_p[nhit]/D' )
           self.tout.Branch( 'adc_n',    AddressOf( struct, 'adc_n' ),     'adc_n[nhit]/D' )
           self.tout.Branch( 'x',        AddressOf( struct, 'axis_x' ),    'x[nhit]/D' )
           self.tout.Branch( 'y',        AddressOf( struct, 'axis_y' ),    'y[nhit]/D' )
-          self.tout.Branch( 'type',        AddressOf( struct, 'type' ),    'type[nhit]/D' )
+          self.tout.Branch( 'type',        AddressOf( struct, 'type' ),   'type[nhit]/D' )
 
           self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[ncluster]/D' )
           self.tout.Branch( 'E_n',     AddressOf( struct, 'E_n' ),        'E_n[ncluster]/D' )
@@ -354,7 +355,9 @@ class tran_process():
           struct.nsignaly_lv2 = len(hity_lv2)
           struct.ncluster = len(hitx_lv2)*len(hity_lv2)
           struct.nhit = len(hit_signal)
-          struct.trigger = self.tree.integral_livetime
+          struct.trigger  = self.tree.integral_livetime
+          struct.unixtime = self.tree.unixtime
+          struct.initUT   = int(self.initUT)
           makentuple(hit_signal,cluster,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
           self.tout.Fill()
 

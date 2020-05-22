@@ -48,6 +48,21 @@ def GetInputList(inputFolder):
 
     return inputDict
 
+def GetInitUnixTime(flist):
+    _ifile = ROOT.TFile(flist)# first file
+    _tree = _ifile.Get("eventtree")
+    print(_tree.GetEntries()) 
+    _tree.Draw("unixtime >> temp_h1","Entry$ == 1","") # first event
+    _h1 = ROOT.gDirectory.Get("temp_h1")
+    return _h1.GetXaxis().GetBinCenter( _h1.GetMaximumBin() )
+
+def GetTChain(inputFolder,treename):
+    _list=GetInputList(inputFolder)
+    chain = ROOT.TChain(treename)
+    for _l in _list:
+       chain.AddFile(_l)
+    return chain    
+
 def createRatioCanvas(Name = "cs", w = 1200, h = 800):
     cRatioCanvas = ROOT.TCanvas(Name,"",0,0,int(w),int(h))
     cRatioCanvas.GetFrame().SetBorderMode(0)

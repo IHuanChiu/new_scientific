@@ -16,7 +16,7 @@ from printInfo import checkTree
 
 class Processor():
       
-      def __init__(self,ifilelist=None,ofile=None,addname=None,ncores=None,nevents=None,efile=None,dtype=None,ecut=None,deltae=None): 
+      def __init__(self,ifilelist=None,ofile=None,addname=None,ncores=None,nevents=None,efile=None,dtype=None,ecut=None,deltae=None,initUT=None): 
           # config
           self.ncores = ncores
           self.nevents = nevents
@@ -27,6 +27,7 @@ class Processor():
           self.dtype = dtype
           self.ecut = ecut
           self.deltae = deltae
+          self.initUT = initUT
           
           # members
           self.ifilename = None
@@ -71,7 +72,7 @@ class Processor():
              printname = self.ifilename.split("/")[-1]
              log().info("Total passed events : %d / %d (%s, %d/%d)"%(self.skimmingtree.GetN(),self.Nevents,printname,nfile,len(self.ifilelist)))
 
-             self.T = tran_process(ifile=self.ifilename, tree=self.tree, event_list=self.skimmingtree ,efile=self.efile, dtype=self.dtype, ecut=self.ecut, deltae=self.deltae)        
+             self.T = tran_process(ifile=self.ifilename, tree=self.tree, event_list=self.skimmingtree ,efile=self.efile, dtype=self.dtype, ecut=self.ecut, deltae=self.deltae,initUT=self.initUT)        
              self.register(self.ifilename, self.T.drawables) 
              #self.T.h1_event_cutflow.Fill(0,self.Nevents)
              #selectorjob_list.append(SelectorCfg(tree=self.skimmingtree, tran=self.T))

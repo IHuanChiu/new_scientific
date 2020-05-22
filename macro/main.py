@@ -21,16 +21,20 @@ import time
 from time import localtime, asctime
 from array import array
 import logging
-from utils.helpers import GetInputList 
+from utils.helpers import GetInputList, GetInitUnixTime 
 from process import Processor
 from image import Baseplot
 
 def main(args):
     
     ilist = GetInputList(args.inputFolder)
+    if "CdTe" in args.dtype: inittime = GetInitUnixTime("/Users/chiu.i-huan/Desktop/new_scientific/data/CdTedata/20200307a_00057_001.root")
+    else: inittime = GetInitUnixTime("/Users/chiu.i-huan/Desktop/new_scientific/data/20200305/root/test_f_00001_001.root")
+
     outname = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/"
-    p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype, ecut = args.cut, deltae=args.delta)
+    p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype, ecut = args.cut, deltae=args.delta, initUT=inittime)
     p.mainprocess()
+
     if p.fout is not None:
        b = Baseplot(infile=p.fout,outname=p.fout.GetName().split("/")[-1].split(".root")[0],dtype=args.dtype)
        b.plots()
