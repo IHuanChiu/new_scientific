@@ -200,11 +200,7 @@ def getContent(ibinx, ibiny, ibinz, h2, h2name, _h3):
     return _x,_y,_z, _content
 
 def run3Dimage(args):
-    log().info("Preparing 3D image...")
     ti = time.time()
-    treesum = GetTChain(args.inputFolder,"tree")         
-    ihlist = makeTH2D(treesum,args.dtype)
-
     h3d = ROOT.TH3D("solid","solid",128,-16,16,128,-16,16,128,-16,16)
     h3d_t = ROOT.TH3D("solid_t","solid_t",32,-16,16,32,-16,16,32,-16,16)
     h3d.SetXTitle("x")
@@ -215,6 +211,11 @@ def run3Dimage(args):
     h3d_t.SetZTitle("z")
 
     if args.input3Dhist is None: 
+       log().info("Preparing 2D image...")
+       treesum = GetTChain(args.inputFolder,"tree")         
+       ihlist = makeTH2D(treesum,args.dtype)
+
+       log().info("Reconstructing 3D image...")
        numoff=0 
        for h2 in ihlist:
           numoff+=1
@@ -234,11 +235,11 @@ def run3Dimage(args):
        r3dfile  =  ROOT.TFile(args.input3Dhist)    
        h3d = r3dfile.Get("solid")
 
-    cv  = createRatioCanvas("cv", 1600, 1600)
     log().info("Making 3D plots")
+    cv  = createRatioCanvas("cv", 1600, 1600)
     _h3d_t = h3d.Clone()
     _h3d_t.Rebin3D(4,4,4)
-    cut_cont = 280
+    cut_cont = 250
     for _ix in range(1,_h3d_t.GetXaxis().GetNbins()+1):
        for _iy in range(1,_h3d_t.GetYaxis().GetNbins()+1):
           for _iz in range(1,_h3d_t.GetZaxis().GetNbins()+1):
@@ -250,20 +251,25 @@ def run3Dimage(args):
     cv.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image.ROOT.pdf")
 
     # === make slices for xyz-sxis ===
-    SetMyPalette("Bird",1)
-    _MS = MakeSlicePlots(_hist3=h3d)
-    h2_list_x, h2_list_y, h2_list_z = _MS.GetSlices("x"), _MS.GetSlices("y"), _MS.GetSlices("z")
+    if args.input3Dhist is None: 
+       log().info("Making 2D Slices")
+       SetMyPalette("Bird",1)
+       _MS = MakeSlicePlots(_hist3=h3d)
+       h2_list_x, h2_list_y, h2_list_z = _MS.GetSlices("x"), _MS.GetSlices("y"), _MS.GetSlices("z")
 
-    _out = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage" 
-    if args.output is not None: outname = _out + "_" +args.output + ".root"
-    else: outname = _out+".root"
-    log().info("Output : %s, figs: /Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image.ROOT.pdf"%(outname))
-    f = ROOT.TFile( outname, 'recreate' )
-    f.cd()
+       log().info("Storing all 2D & 3D plots")
+       _out = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage" 
+       if args.output is not None: outname = _out + "_" +args.output + ".root"
+       else: outname = _out+".root"
+       log().info("Output : %s, figs: /Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image.ROOT.pdf"%(outname))
+       f = ROOT.TFile( outname, 'recreate' )
+       f.cd()
 
-    h3d_t.Write()
-    h3d.Write()
-    f.Write()    
+       for _h2 in ihlist: 
+          _h2.Write()
+       h3d_t.Write()
+       h3d.Write()
+       f.Write()    
         
 if __name__ == "__main__":
 
