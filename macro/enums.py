@@ -6,6 +6,8 @@ EnergyCut      = 8
 ADCUpperBound  = 1000
 DeltaEnergy    = 5
 ClusterMatch   = 10
+UTOfRotation   = 1583670785
+DEG = u"\xb0"
 
 DEFAULT  = u'\x1b[39;49m'
 BLUE     = u'\x1b[34m'
@@ -19,6 +21,7 @@ UNSET    = u'\x1b[0m'
 import math
 def getangle(hist_name):
     nstep = 16 # number of roration steps
+    initposition = 0 # if the rotation is not start from 0 angle
     if "20200307a" in hist_name:
        if "00057" in hist_name:   return 0  * 2*(math.pi)/nstep
        elif "00058" in hist_name: return 1  * 2*(math.pi)/nstep
@@ -96,23 +99,22 @@ def getangle(hist_name):
        elif "00056" in hist_name: return 7  * 2*(math.pi)/nstep
        elif "00057" in hist_name: return 8  * 2*(math.pi)/nstep
     else:
-       if    "==0" in hist_name: return 0   * 2*(math.pi)/nstep
-       elif  "==1" in hist_name: return 1   * 2*(math.pi)/nstep
-       elif  "==2" in hist_name: return 2   * 2*(math.pi)/nstep
-       elif  "==3" in hist_name: return 3   * 2*(math.pi)/nstep
-       elif  "==4" in hist_name: return 4   * 2*(math.pi)/nstep
-       elif  "==5" in hist_name: return 5   * 2*(math.pi)/nstep
-       elif  "==6" in hist_name: return 6   * 2*(math.pi)/nstep
-       elif  "==7" in hist_name: return 7   * 2*(math.pi)/nstep
-       elif  "==8" in hist_name: return 8   * 2*(math.pi)/nstep
-       elif  "==9" in hist_name: return 9   * 2*(math.pi)/nstep
-       elif "==10" in hist_name: return 10  * 2*(math.pi)/nstep
-       elif "==11" in hist_name: return 11  * 2*(math.pi)/nstep
-       elif "==12" in hist_name: return 12  * 2*(math.pi)/nstep
-       elif "==13" in hist_name: return 13  * 2*(math.pi)/nstep
-       elif "==14" in hist_name: return 14  * 2*(math.pi)/nstep
-       elif "==15" in hist_name: return 15  * 2*(math.pi)/nstep
-       elif "==16" in hist_name: return 16  * 2*(math.pi)/nstep
+       if    "==0)" in hist_name: return (initposition + 0 )  * 2*(math.pi)/nstep
+       elif  "==1)" in hist_name: return (initposition + 1 )  * 2*(math.pi)/nstep
+       elif  "==2)" in hist_name: return (initposition + 2 )  * 2*(math.pi)/nstep
+       elif  "==3)" in hist_name: return (initposition + 3 )  * 2*(math.pi)/nstep
+       elif  "==4)" in hist_name: return (initposition + 4 )  * 2*(math.pi)/nstep
+       elif  "==5)" in hist_name: return (initposition + 5 )  * 2*(math.pi)/nstep
+       elif  "==6)" in hist_name: return (initposition + 6 )  * 2*(math.pi)/nstep
+       elif  "==7)" in hist_name: return (initposition + 7 )  * 2*(math.pi)/nstep
+       elif  "==8)" in hist_name: return (initposition + 8 )  * 2*(math.pi)/nstep
+       elif  "==9)" in hist_name: return (initposition + 9 )  * 2*(math.pi)/nstep
+       elif "==10)" in hist_name: return (initposition + 10)  * 2*(math.pi)/nstep
+       elif "==11)" in hist_name: return (initposition + 11)  * 2*(math.pi)/nstep
+       elif "==12)" in hist_name: return (initposition + 12)  * 2*(math.pi)/nstep
+       elif "==13)" in hist_name: return (initposition + 13)  * 2*(math.pi)/nstep
+       elif "==14)" in hist_name: return (initposition + 14)  * 2*(math.pi)/nstep
+       elif "==15)" in hist_name: return (initposition + 15)  * 2*(math.pi)/nstep
        else:
           print("Check hist name !")
 
