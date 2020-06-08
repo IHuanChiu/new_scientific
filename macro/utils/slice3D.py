@@ -132,7 +132,7 @@ class MakeSlicePlots():
              return None
          
 def makeTH2D(_chain,dtype):
-    _nsteps = 16
+    _nsteps = 31
     _timerange = 1800
     _it = enums.UTOfRotation
     h2list=[]
@@ -146,3 +146,14 @@ def makeTH2D(_chain,dtype):
        _chain.Draw("x:y >> h{}(128,-16,16,128,-16,16)".format(_i),icut,"colz")
        h2list.append(gDirectory.Get("h{}".format(_i)))
     return h2list
+
+def mergeTH2D(_h2list):
+    # merge hist. with same angle
+    _n_angle_step, _n_step=16, 31
+    h2list=[]
+    h2list.append(_h2list[0])
+    for _i in range(1,_n_angle_step):
+       _h2list[_i].Add(_h2list[_n_step-_i])
+       h2list.append(_h2list[_i])
+    return h2list
+    

@@ -22,7 +22,7 @@ import time
 from logger import log, supports_color
 from utils.helpers import GetTChain, createRatioCanvas
 from utils.color import SetMyPalette
-from slice3D import MakeSlicePlots, makeTH2D 
+from slice3D import MakeSlicePlots, makeTH2D, mergeTH2D 
 import enums
 from enums import getangle
 
@@ -203,7 +203,7 @@ def getContent(ibinx, ibiny, ibinz, h2, h2name, _h3):
 def run3Dimage(args):
     ti = time.time()
     h3d = ROOT.TH3D("solid","solid",128,-16,16,128,-16,16,128,-16,16)
-    h3d_t = ROOT.TH3D("solid_t","solid_t",32,-16,16,32,-16,16,32,-16,16)
+    h3d_t = ROOT.TH3D("solid_t_{}".format(args.cut),"solid_t_{}".format(args.cut),32,-16,16,32,-16,16,32,-16,16)
     h3d.SetXTitle("x")
     h3d.SetYTitle("y")
     h3d.SetZTitle("z")
@@ -214,7 +214,8 @@ def run3Dimage(args):
     if args.input3Dhist is None: 
        log().info("Preparing 2D image...")
        treesum = GetTChain(args.inputFolder,"tree")         
-       ihlist = makeTH2D(treesum,args.dtype)
+       _ihlist = makeTH2D(treesum,args.dtype)
+       ihlist  = mergeTH2D(_ihlist)
 
        log().info("Reconstructing 3D image...")
        numoff=0 
@@ -248,8 +249,8 @@ def run3Dimage(args):
              if(_h3d_t.GetBinContent(_bin) > args.cut): h3d_t.Fill(_x,_y,_z,_h3d_t.GetBinContent(_bin))
     SetMyPalette("RB",0.5)
     h3d_t.Draw("BOX2Z")
-    if args.output is not None: _outfig = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image."+args.dtype+"."+args.output+".ROOT.pdf" 
-    else: _outfig = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image.ROOT."+args.dtype+".pdf"
+    if args.output is not None: _outfig = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image."+args.dtype+"."+args.output+"_cut{}.ROOT.pdf".format(args.cut) 
+    else: _outfig = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image."+args.dtype+"_cut{}.ROOT.pdf".format(args.cut)
     cv.Print(_outfig)
 
     # === make slices for xyz-sxis & projection ===
@@ -278,7 +279,7 @@ def run3Dimage(args):
        h2_list_x, h2_list_y, h2_list_z = _MS.GetSlices("x"), _MS.GetSlices("y"), _MS.GetSlices("z")
 
        log().info("Storing all 2D & 3D plots")
-       _out = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage"+"."+args.dtype+"."
+       _out = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage"+"."+args.dtype
        if args.output is not None: outname = _out + "_" +args.output + ".root"
        else: outname = _out+".root"
        log().info("Output : %s, figs: /Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image.ROOT.pdf"%(outname))
@@ -290,6 +291,14 @@ def run3Dimage(args):
        h3d_t.Write()
        h3d.Write()
        f.Write()    
+
+    else: 
+       _out = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage"+"."+args.dtype
+       if args.output is not None: outname = _out + "_" +args.output + ".root"
+       else: outname = _out+".root"
+       f = ROOT.TFile( outname, 'update' )
+       f.cd()
+       h3d_t.Write()
         
 if __name__ == "__main__":
 
