@@ -35,24 +35,27 @@ void tran(std::string input_name, std::string output_name){
   cout << "number of channels : " << nch << endl;
   
   struct Event{
-    Double_t channel;
+    Int_t channel;
+    Double_t energy;
     Double_t count;
   };
   Event eve;
-  TFile * outputTfile = new TFile (Form("../data/%s.root",output_name.c_str()),"RECREATE");
-  TTree * tree = new TTree ("tree","Event data from ascii file");
-  tree->Branch("Count",&eve.count,"count/D");
-  tree->Branch("Channel",&eve.channel,"count/D");
+  TFile * outputTfile = new TFile (Form("%s.root",(input_name+output_name).c_str()),"RECREATE");
+  TTree * tree = new TTree ("tree","Event tree from ascii file");
+  tree->Branch("channel",&eve.channel,"channel/I");
+  tree->Branch("energy",&eve.energy,"energy/I");
   TH1F * h1 = new TH1F ("spectrum","spectrum",nch,0,nch);
  
   while(getline(fin,str))
   { 
-      eve.channel = inti_channel;
       str.erase(str.end()-1, str.end()); //remove "," from string
-      eve.count = stod(str);
+      eve.count = stod(str);//number of event in each channel
+
+      eve.channel = inti_channel;//find channel
+      eve.energy = inti_channel;//find energy (TODO)
 
       cout << eve.channel << "|" << eve.count << " ";
-      tree->Fill();
+      for (int ie=0; ie < eve.count; ie++) tree->Fill();
       h1->Fill(eve.channel,eve.count);
       inti_channel++;
   }
@@ -71,12 +74,16 @@ void tran(std::string input_name, std::string output_name){
   tree->Print();
   h1->Write();
   outputTfile->Write();
-  cout << "output : " <<Form("../data/%s.root",output_name.c_str()) << endl;
+  cout << "output : " <<Form("%s.root",(input_name+output_name).c_str()) << endl;
 
 }
 
 int main(int argc, char *argv[]){
-  if(argc != 3){ 
+  
+  if(argc < 3){
+    argv[2] = "";
+  }
+  if(argc < 2){
     usage();
     exit(1);
   }
