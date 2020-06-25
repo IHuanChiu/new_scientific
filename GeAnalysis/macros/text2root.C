@@ -3,6 +3,7 @@
 #include <TROOT.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TH1F.h>
 
 using namespace std;
 
@@ -15,6 +16,9 @@ int usage(void)
 
 void tran(std::string input_name, std::string output_name){
   int skiplines = 18;//skip haed lines
+  int nch=8192;
+  int inti_channel = 1;
+  string str, str_temp;
   std::ifstream fin;
   fin.open(input_name);
 
@@ -22,44 +26,50 @@ void tran(std::string input_name, std::string output_name){
     std::cerr << "ERROR: Cannot open " << input_name << std::endl;
     return;
   }
-  for(int i = 0; i < skiplines; i++) fin.ignore(1000,'\n');
+  for(int i = 0; i < skiplines-1; i++) fin.ignore(1000,'\n');
 
+  //get real nch for data
+  getline(fin,str_temp);
+  str_temp.erase(str_temp.begin(), str_temp.begin()+2); 
+  nch = stod(str_temp); 
+  cout << "number of channels : " << nch << endl;
+  
   struct Event{
     Double_t channel;
     Double_t count;
   };
-
   Event eve;
   TFile * outputTfile = new TFile (Form("../data/%s.root",output_name.c_str()),"RECREATE");
   TTree * tree = new TTree ("tree","Event data from ascii file");
   tree->Branch("Count",&eve.count,"count/D");
   tree->Branch("Channel",&eve.channel,"count/D");
+  TH1F * h1 = new TH1F ("spectrum","spectrum",nch,0,nch);
  
-  double start = 0;
-  string str;
   while(getline(fin,str))
   { 
-      eve.channel = start;
+      eve.channel = inti_channel;
       str.erase(str.end()-1, str.end()); //remove "," from string
       eve.count = stod(str);
 
-      cout << "  " << eve.count << " ";
+      cout << eve.channel << "|" << eve.count << " ";
       tree->Fill();
-      start++;
+      h1->Fill(eve.channel,eve.count);
+      inti_channel++;
   }
       cout << endl;
 
 //  while(!fin.eof())
 //  { 
-//      eve.channel = start;
+//      eve.channel = inti_channel;
 //      fin >> eve.count;
 //      cout << "  " << eve.count << " ";
 //      tree->Fill();
-//      start++;
+//      inti_channel++;
 //  }
 
   fin.close();
   tree->Print();
+  h1->Write();
   outputTfile->Write();
   cout << "output : " <<Form("../data/%s.root",output_name.c_str()) << endl;
 
