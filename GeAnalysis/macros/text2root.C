@@ -43,7 +43,7 @@ void tran(std::string input_name, std::string output_name){
   TFile * outputTfile = new TFile (Form("%s.root",(input_name+output_name).c_str()),"RECREATE");
   TTree * tree = new TTree ("tree","Event tree from ascii file");
   tree->Branch("channel",&eve.channel,"channel/I");
-  tree->Branch("energy",&eve.energy,"energy/I");
+  tree->Branch("energy",&eve.energy,"energy/D");
   TH1F * h1 = new TH1F ("spectrum","spectrum",nch,0,nch);
  
   while(getline(fin,str))
@@ -52,7 +52,9 @@ void tran(std::string input_name, std::string output_name){
       eve.count = stod(str);//number of event in each channel
 
       eve.channel = inti_channel;//find channel
-      eve.energy = inti_channel;//find energy (TODO)
+      if(input_name.find("CH3") != string::npos) eve.energy = (inti_channel+13.467)/19.833;
+      if(input_name.find("CH5") != string::npos) eve.energy = (inti_channel);
+      if(input_name.find("CH7") != string::npos) eve.energy = (inti_channel+11.467)/19.833;
 
       cout << eve.channel << "|" << eve.count << " ";
       for (int ie=0; ie < eve.count; ie++) tree->Fill();
