@@ -51,9 +51,14 @@ def findadccut(line, dtype, ecut):
     for ch in range(0, 256): 
        cut_flag = 0
        for iadc in range(20,500):
-          if (line[ch].Eval(iadc) > applyEcut) and (cut_flag is 0): 
-             adccut.append(iadc)
-             cut_flag = 1
+          if ch < 128: #asic 0~3
+             if (line[ch].Eval(iadc) > applyEcut) and (cut_flag is 0): 
+                adccut.append(iadc)
+                cut_flag = 1
+          else: #asic 4~7
+             if (line[ch].Eval(iadc) > (applyEcut/2.)) and (cut_flag is 0): 
+                adccut.append(iadc)
+                cut_flag = 1
        if cut_flag is 0: adccut.append(enums.ADCUpperBound)# not find a good cut value for adc, drop this channel
     return adccut 
 
