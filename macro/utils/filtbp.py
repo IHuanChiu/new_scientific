@@ -1,0 +1,132 @@
+#!/usr/bin/env python    
+#-*- coding:utf-8 -*-   
+"""
+This module provides the filter back projection
+"""
+__author__    = "I-Huan CHIU"
+__email__     = "ichiu@chem.sci.osaka-u.ac.jp"
+__created__   = "2020-07-07"
+__copyright__ = "Copyright 2019 I-Huan CHIU"
+__license__   = "GPL http://www.gnu.org/licenses/gpl.html"
+
+# modules
+import sys,os,random,math,time,ROOT
+from ROOT import TFile, TTree, gROOT, TCut, gDirectory
+ROOT.gROOT.SetBatch(1)
+import argparse
+ROOT.gErrorIgnoreLevel = ROOT.kWarning
+import enums
+from enums import getangle
+
+from root_numpy import hist2array, array2hist, tree2array
+import numpy as np
+from scipy.fftpack import fft, fftshift, ifft, dct, idct
+
+def arangeMod(start, stop=None, step=1, nx=1, ny=1):
+    """#Modified version of numpy.arange which corrects error associated with non-integer step size"""
+    if stop == None:
+        a = np.arange(start)
+    else:
+        a = np.arange(start, stop, step).reshape(nx,ny)
+        if a[-1][-1] > stop-step:
+            a = np.delete(a, -1)
+    return a
+
+class SimpleBackProjection():
+      def __init__(self, h2list=None):
+          self.ihlist = h2list
+          self.h3d = self.process()
+
+      def process(self):
+          _h3d = ROOT.TH3D("solid","solid",128,-16,16,128,-16,16,128,-16,16)
+          _h3d.SetXTitle("x")
+          _h3d.SetYTitle("y")
+          _h3d.SetZTitle("z")
+          ti = time.time()
+          numoff=0
+          for h2 in self.ihlist:
+             numoff+=1
+             h2name = h2.GetTitle()
+      #       rfile   =  ROOT.TFile(ifile)
+      #       h2   =  rfile.Get("h2")
+      #       h2name = ifile.split("/")[-1]
+      #       log().info("Current file : %s , Angle is %.1f\u00b0"%(h2name, math.degrees(getangle(h2name))))
+             log().info("Current Angle is %.1f\u00b0"%(math.degrees(getangle(h2name))))
+             for ibinx in range(1,h3d.GetXaxis().GetNbins()+1):
+                for ibiny in range(1,h3d.GetYaxis().GetNbins()+1):
+                   for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
+                      x,y,z,content = self.getContent(ibinx, ibiny, ibinz, h2, h2name, h3d)
+                      _h3d.Fill(x,y,z,content)
+             log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(self.ihlist))) 
+          return _h3d  
+
+      def getContent(self,ibinx, ibiny, ibinz, h2, h2name, _h3):
+          _angle=getangle(h2name)
+          _content = h2.GetBinContent(ibinx,ibiny)
+          _x,_y,_z = self.GetRotation(_h3.GetXaxis().GetBinCenter(ibinx), _h3.GetYaxis().GetBinCenter(ibiny), _h3.GetYaxis().GetBinCenter(ibinz),_angle)
+          return _x,_y,_z, _content
+
+      def GetRotation(self,_x,_y,_z,_angle):
+          c, s = np.cos(_angle), np.sin(_angle)
+          #R = np.matrix([[c, -s, 0], [s, c,0], [0,0,1]]) # around z-axis
+          #R = np.matrix([[c,0,s], [0,1,0], [-s,0,c]]) # around y-axis
+          R = np.matrix([[1,0,0], [0,c,-s], [0,s,c]]) # around x-axis
+          v = np.matrix( [ _x, _y, _z ])
+          new_v = R*v.reshape(3,1)
+          return new_v[0,0], new_v[1,0], new_v[2,0]
+
+class Filter():
+      def __init__(self, h2list=None):
+          self.h2list = h2list
+          self.myarray, self.myangle = self.defProj()
+          self.filtarray = self.defFilter()
+          self.filtH3 = self.getBackProject()
+
+      def defProj(self):
+          h2arraylist = np.zeros((len(self.h2list),self.h2list[0].GetNbinsX(),self.h2list[0].GetNbinsY()), dtype=int)
+          _alist = []
+          for ih2 in range(len(self.h2list)):
+            h2arraylist[ih2,:] = hist2array(self.h2list[ih2])
+            _alist.append(getangle(self.h2list[ih2]..GetTitle()))
+          return h2arraylist, np.array(_alist)
+      
+      def defFilter(self): 
+          numAngles, projLenX, projLenY = self.myarray.shape
+          step = 2*np.pi/(projLenX*projLenY)
+#          w = arangeMod(-np.pi, np.pi, step, projLenX, projLenY)
+          w = np.arange(-np.pi, np.pi, step).reshape(projLenX,projLenY)
+
+          # === ramp filter ===
+          a = 0.1;
+          rn1 = abs(2/a*np.sin(a*w/2))
+          rn2 = np.sin(a*w/2)/(a*w/2)
+          r = rn1*(rn2)**2
+          filt = fftshift(r)
+
+          filtSino = np.zeros((numAngles,projLenX,projLenY), dtype=int)
+          for i in range(numAngles):
+             projfft = fft(self.myarray[i,:])
+             filtProj = projfft*filt# accumulate, convolution
+             filtSino[i,:] = np.real(ifft(filtProj)) #get real part (Filtered projection data)
+          return filtSino
+      
+      def getBackProject(self):
+          LenOfHist = self.filtarray.shape[1]
+          reconMatrix = ((LenOfHist,LenOfHist,LenOfHist), dtype=int)
+          numAngles = self.filtarray.shape[0]
+          for i in range(numAngles):
+             _angle = self.myangle[i]
+             _filth2 = self.filtarray[i,:]
+             m0, m1, m2 = np.where((XYrotCor >= 0) & (XYrotCor <= (imageLen-1)))
+
+             projMatrix = np.zeros((LenOfHist, LenOfHist, LenOfHist)dtype=int)
+             s2 = self.filtarray[i,:]
+             projMatrix[m0, m1, m2] = s2[m0, m1, m2]
+             reconMatrix += projMatrix
+
+          recon = ROOT.TH3D("solid","solid",reconMatrix.shape[0],-16,16,reconMatrix.shape[1],-16,16,reconMatrix.shape[2],-16,16)
+          array2hist(reconMatrix,recon)
+          recon.SetXTitle("x")
+          recon.SetYTitle("y")
+          recon.SetZTitle("z")
+          return recon

@@ -120,7 +120,7 @@ def getangle(hist_name):
        elif "==18)" in hist_name: return (initposition + 13)  * 2*(math.pi)/n_angle_step
        elif "==19)" in hist_name: return (initposition + 12)  * 2*(math.pi)/n_angle_step
        elif "==20)" in hist_name: return (initposition + 11)  * 2*(math.pi)/n_angle_step
-       elif "==21)" in hist_name: return (initposition + 10 ) * 2*(math.pi)/n_angle_step
+       elif "==21)" in hist_name: return (initposition + 10)  * 2*(math.pi)/n_angle_step
        elif "==22)" in hist_name: return (initposition + 9 )  * 2*(math.pi)/n_angle_step
        elif "==23)" in hist_name: return (initposition + 8 )  * 2*(math.pi)/n_angle_step
        elif "==24)" in hist_name: return (initposition + 7 )  * 2*(math.pi)/n_angle_step

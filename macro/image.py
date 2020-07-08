@@ -18,13 +18,11 @@ sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 #gROOT.ProcessLine("gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;")
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
-import time
 from logger import log, supports_color
 from utils.helpers import GetTChain, createRatioCanvas
 from utils.color import SetMyPalette
 from slice3D import MakeSlicePlots, makeTH2D, mergeTH2D 
-import enums
-from enums import getangle
+from utils.filtbp import Filter, SimpleBackProjection 
 
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -39,7 +37,6 @@ def getBIN(h):
     xlow = h.GetBinLowEdge(1)
     xhigh = h.GetBinLowEdge(n)+h.GetBinWidth(n)
     return (n,xlow,xhigh)
-    
 
 def gettreename(treename):
       
@@ -185,28 +182,8 @@ class Baseplot():
           cv.Print(printname+".pdf")
 #          log().info("Finished plots!")
 
-def GetRotation(_x,_y,_z,_angle):
-    c, s = np.cos(_angle), np.sin(_angle)
-    #R = np.matrix([[c, -s, 0], [s, c,0], [0,0,1]]) # around z-axis
-    #R = np.matrix([[c,0,s], [0,1,0], [-s,0,c]]) # around y-axis
-    R = np.matrix([[1,0,0], [0,c,-s], [0,s,c]]) # around x-axis
-    v = np.matrix( [ _x, _y, _z ])
-    new_v = R*v.reshape(3,1)
-    return new_v[0,0], new_v[1,0], new_v[2,0]    
-
-def getContent(ibinx, ibiny, ibinz, h2, h2name, _h3):
-    _angle=getangle(h2name)
-    _content = h2.GetBinContent(ibinx,ibiny)
-    _x,_y,_z = GetRotation(_h3.GetXaxis().GetBinCenter(ibinx), _h3.GetYaxis().GetBinCenter(ibiny), _h3.GetYaxis().GetBinCenter(ibinz),_angle)
-    return _x,_y,_z, _content
-
 def run3Dimage(args):
-    ti = time.time()
-    h3d = ROOT.TH3D("solid","solid",128,-16,16,128,-16,16,128,-16,16)
     h3d_t = ROOT.TH3D("solid_t_{}".format(args.cut),"solid_t_{}".format(args.cut),32,-16,16,32,-16,16,32,-16,16)
-    h3d.SetXTitle("x")
-    h3d.SetYTitle("y")
-    h3d.SetZTitle("z")
     h3d_t.SetXTitle("x")
     h3d_t.SetYTitle("y")
     h3d_t.SetZTitle("z")
@@ -217,22 +194,13 @@ def run3Dimage(args):
        _ihlist = makeTH2D(treesum,args.dtype)
        ihlist  = mergeTH2D(_ihlist)
 
-       log().info("Reconstructing 3D image...")
-       numoff=0 
-       for h2 in ihlist:
-          numoff+=1
-          h2name = h2.GetTitle()
-#          rfile   =  ROOT.TFile(ifile)
-#          h2   =  rfile.Get("h2")
-#          h2name = ifile.split("/")[-1]
-#          log().info("Current file : %s , Angle is %.1f\u00b0"%(h2name, math.degrees(getangle(h2name))))
-          log().info("Current Angle is %.1f\u00b0"%(math.degrees(getangle(h2name))))
-          for ibinx in range(1,h3d.GetXaxis().GetNbins()+1):
-             for ibiny in range(1,h3d.GetYaxis().GetNbins()+1):
-                for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
-                   x,y,z,content = getContent(ibinx, ibiny, ibinz, h2, h2name, h3d)
-                   h3d.Fill(x,y,z,content)
-          log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(ihlist)))         
+       log().info("Processing Back Projection...")
+       SBP = SimpleBackProjection(h2list=ihlist)
+       h3d=SBP.h3d
+
+#       FBP = Filter(h2list=ihlist)
+#       h3d=FBP.filtH3
+
     else:
        r3dfile  =  ROOT.TFile(args.input3Dhist)    
        h3d = r3dfile.Get("solid")
@@ -262,12 +230,13 @@ def run3Dimage(args):
           cv2.Divide(4,4) 
           for _ih in range(len(ihlist)): 
              cv2.cd(_ih+1).SetRightMargin(0.18)
-             ihlist[_ih].Rebin2D(4,4)
-             ihlist[_ih].SetStats(0)
-             ihlist[_ih].SetXTitle("x")
-             ihlist[_ih].SetYTitle("y")
-             ihlist[_ih].SetTitle("angle : %.1f%s"%(360./len(ihlist)*_ih,enums.DEG))
-             ihlist[_ih].Draw("colz")
+             _tempih = ihlist[_ih].Clone()
+             _tempih.Rebin2D(4,4)
+             _tempih.SetStats(0)
+             _tempih.SetXTitle("x")
+             _tempih.SetYTitle("y")
+             _tempih.SetTitle("angle : %.1f%s"%(360./len(ihlist)*_ih,enums.DEG))
+             _tempih.Draw("colz")
           _out2dfig = _outfig.replace("hist_3D_image", "hist_2D_image")
           cv2.Print(_out2dfig)
        else: 
@@ -288,6 +257,7 @@ def run3Dimage(args):
 
        for _h2 in ihlist: 
           _h2.Write()
+       cv2.Write()
        h3d_t.Write()
        h3d.Write()
        f.Write()    
