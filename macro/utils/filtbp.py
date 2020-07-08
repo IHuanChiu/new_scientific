@@ -15,6 +15,7 @@ from ROOT import TFile, TTree, gROOT, TCut, gDirectory
 ROOT.gROOT.SetBatch(1)
 import argparse
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
+from logger import log, supports_color
 import enums
 from enums import getangle
 
@@ -52,10 +53,10 @@ class SimpleBackProjection():
       #       h2name = ifile.split("/")[-1]
       #       log().info("Current file : %s , Angle is %.1f\u00b0"%(h2name, math.degrees(getangle(h2name))))
              log().info("Current Angle is %.1f\u00b0"%(math.degrees(getangle(h2name))))
-             for ibinx in range(1,h3d.GetXaxis().GetNbins()+1):
-                for ibiny in range(1,h3d.GetYaxis().GetNbins()+1):
-                   for ibinz in range(1,h3d.GetZaxis().GetNbins()+1):
-                      x,y,z,content = self.getContent(ibinx, ibiny, ibinz, h2, h2name, h3d)
+             for ibinx in range(1,_h3d.GetXaxis().GetNbins()+1):
+                for ibiny in range(1,_h3d.GetYaxis().GetNbins()+1):
+                   for ibinz in range(1,_h3d.GetZaxis().GetNbins()+1):
+                      x,y,z,content = self.getContent(ibinx, ibiny, ibinz, h2, h2name, _h3d)
                       _h3d.Fill(x,y,z,content)
              log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(self.ihlist))) 
           return _h3d  
@@ -87,7 +88,7 @@ class Filter():
           _alist = []
           for ih2 in range(len(self.h2list)):
             h2arraylist[ih2,:] = hist2array(self.h2list[ih2])
-            _alist.append(getangle(self.h2list[ih2]..GetTitle()))
+            _alist.append(getangle(self.h2list[ih2].GetTitle()))
           return h2arraylist, np.array(_alist)
       
       def defFilter(self): 
@@ -112,17 +113,30 @@ class Filter():
       
       def getBackProject(self):
           LenOfHist = self.filtarray.shape[1]
-          reconMatrix = ((LenOfHist,LenOfHist,LenOfHist), dtype=int)
           numAngles = self.filtarray.shape[0]
+          reconMatrix = np.zeros((LenOfHist,LenOfHist,LenOfHist), dtype=int)
+
+          # === coordinate rotation === 
+          x = np.arange(LenOfHist)-LenOfHist/2 # centered at (0,0,0)
+          y, z = x.copy(), x.copy()
+          X, Y, Z = np.meshgrid(x, y, z) # make rotation xyz-axis
+   
           for i in range(numAngles):
              _angle = self.myangle[i]
              _filth2 = self.filtarray[i,:]
-             m0, m1, m2 = np.where((XYrotCor >= 0) & (XYrotCor <= (imageLen-1)))
 
-             projMatrix = np.zeros((LenOfHist, LenOfHist, LenOfHist)dtype=int)
-             s2 = self.filtarray[i,:]
-             projMatrix[m0, m1, m2] = s2[m0, m1, m2]
-             reconMatrix += projMatrix
+             #TODO how to rotation the axis for 3D image 
+             Xrot = # Xrot is a 128*128*128 3D matrix
+             XYrotCor = np.round(Xrot+LenOfHist/2) # shift back to original image coordinates, round values to make indices
+             XYrotCor = XrotCor.astype('int')
+             m0, m1, m2 = np.where((XYrotCor >= 0) & (XYrotCor <= (LenOfHist-1)))# find index, condition: after rotation, XYrotCor doesn't exceed the size of the original
+             # m0, m1, m2 are 2097152 1D matrix, to find correspoding positon of XYrotCor
+
+             projMatrix = np.zeros((LenOfHist, LenOfHist, LenOfHist), dtype=int) # new proj for each angle
+             s2 = self.filtarray[i,:] # get 128*128 2D matrix
+             projMatrix[m0, m1, m2] = s2[XYrotCor[m0, m1, m2]]# backproject, projMatrix is 2097152 1D matrix
+             reconMatrix += projMatrix # integral
+             reconMatrix.reshape(LenOfHist,LenOfHist,LenOfHist) # back to 128*128*128 3D matrix
 
           recon = ROOT.TH3D("solid","solid",reconMatrix.shape[0],-16,16,reconMatrix.shape[1],-16,16,reconMatrix.shape[2],-16,16)
           array2hist(reconMatrix,recon)

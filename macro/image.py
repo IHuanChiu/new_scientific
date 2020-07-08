@@ -23,6 +23,7 @@ from utils.helpers import GetTChain, createRatioCanvas
 from utils.color import SetMyPalette
 from slice3D import MakeSlicePlots, makeTH2D, mergeTH2D 
 from utils.filtbp import Filter, SimpleBackProjection 
+import enums
 
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))

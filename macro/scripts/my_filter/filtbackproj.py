@@ -127,12 +127,15 @@ def backproject(sinogram, theta):
         XrotCor = np.round(Xrot+imageLen/2) #(return int value only) shift back to original image coordinates, round values to make indices
         XrotCor = XrotCor.astype('int')
         projMatrix = np.zeros((imageLen, imageLen))
+        if n is 0: print ("pre projMatrix : ", projMatrix.shape)
         if n is 0: print("m0, m1 = ",np.where((XrotCor >= 0) & (XrotCor <= (imageLen-1))))
         m0, m1 = np.where((XrotCor >= 0) & (XrotCor <= (imageLen-1))) #after rotating, you'll inevitably have new coordinates that exceed the size of the original
+        if n is 0: print ("pre projMatrix[m0, m1] : ", projMatrix[m0, m1].shape)
 
         s = sinogram[:,n] #get projection
-        if n is 0: print("s: ", s)
+        if n is 0: print("s shape: ", s.shape)
         projMatrix[m0, m1] = s[XrotCor[m0, m1]]  #backproject in-bounds data
+        if n is 0: print ("new projMatrix[m0, m1] : ", projMatrix[m0, m1].shape)
         reconMatrix += projMatrix # same with TH3D.Fill in ROOT
 
         # following lines are no need for 3D image analysis
