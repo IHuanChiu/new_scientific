@@ -81,7 +81,7 @@ def projFilter(sino):
     inputs: sino - [n x m] numpy array where n is the number of projections and m is the number of angles used.
     outputs: filtSino - [n x m] filtered sinogram array"""
     
-    a = 0.1;
+    a = 1;
     projLen, numAngles = sino.shape # get number of pixels & number of plots/angle from matrix
     step = 2*np.pi/projLen
     w = arange2(-np.pi, np.pi, step)

@@ -93,12 +93,12 @@ class Filter():
       
       def defFilter(self): 
           numAngles, projLenX, projLenY = self.myarray.shape
-          step = 2*np.pi/(projLenX*projLenY)
 #          w = arangeMod(-np.pi, np.pi, step, projLenX, projLenY)
+          step = 2*np.pi/(projLenX*projLenY)
           w = np.arange(-np.pi, np.pi, step).reshape(projLenX,projLenY)
 
           # === ramp filter ===
-          a = 0.1;
+          a = 1
           rn1 = abs(2/a*np.sin(a*w/2))
           rn2 = np.sin(a*w/2)/(a*w/2)
           r = rn1*(rn2)**2
@@ -109,11 +109,11 @@ class Filter():
 #             projfft = fft(self.myarray[i,:])
 #             filtProj = projfft*filt# accumulate, convolution
 #             filtSino[i,:] = np.real(ifft(filtProj)) #get real part (Filtered projection data)
-              filtSino[i,:] = self.myarray[i,:]
+             filtSino[i,:] = self.myarray[i,:] # same with SBP
           return filtSino
       
       def getBackProject(self):
-          H2UpperRange=16 #mm
+          H2Range=16 #mm
           LenOfHist = self.filtarray.shape[1]
           numAngles = self.filtarray.shape[0]
           reconMatrix = np.zeros((LenOfHist,LenOfHist,LenOfHist), dtype=int)
@@ -127,7 +127,15 @@ class Filter():
              _angle = self.myangle[i]
              _filth2 = self.filtarray[i,:]# 128*128 matrix
 
-             Yrot = Y*np.sin(_angle)-Z*np.cos(_angle)# Xrot is a 128*128*128 3D matrix
+             """  
+             Explanation: 
+             rotation around x-axis, Xrot = X, Yrot = Y*cos - Z*sin, Zrot = Y*sin + Z*cos (try np.einsum ?)
+             after rotantion, use Xrot and Yrot to get entry from _filth2 (so Xrot and Yrot can not exceed the size of the original)
+             get the 3D index from rotantion coordinates (m0, m1, m2), and then make plot in projMatrix (back projection)
+             no index (exceed the size of _filth2) will be zero
+             reconMatrix is used to integral all BP plots
+             """
+             Yrot = Y*np.sin(_angle)-Z*np.cos(_angle)# Yrot is a 128*128*128 3D matrix
              YrotCor = np.round(Yrot+LenOfHist/2) # shift back to original image coordinates, round values to make indices
              YrotCor = YrotCor.astype('int')
              XCor = np.round(X+LenOfHist/2)
@@ -139,7 +147,7 @@ class Filter():
              reconMatrix += projMatrix # integral
              reconMatrix.reshape(LenOfHist,LenOfHist,LenOfHist) # back to 128*128*128 3D matrix
 
-          recon = ROOT.TH3D("solid","solid",reconMatrix.shape[0],-16,16,reconMatrix.shape[1],-16,16,reconMatrix.shape[2],-16,16)
+          recon = ROOT.TH3D("solid","solid",reconMatrix.shape[0],-H2Range,H2Range,reconMatrix.shape[1],-H2Range,H2Range,reconMatrix.shape[2],-H2Range,H2Range)
           array2hist(reconMatrix,recon)
           recon.SetXTitle("x")
           recon.SetYTitle("y")
