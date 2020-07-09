@@ -209,7 +209,7 @@ def run3Dimage(args):
     log().info("Making 3D plots")
     cv  = createRatioCanvas("cv", 1600, 1600)
     _h3d_t = h3d.Clone()
-    _h3d_t.Rebin3D(4,4,4)
+    if (_h3d_t.GetNbinsX() >= 128) : _h3d_t.Rebin3D(4,4,4)
     for _ix in range(1,_h3d_t.GetXaxis().GetNbins()+1):
        for _iy in range(1,_h3d_t.GetYaxis().GetNbins()+1):
           for _iz in range(1,_h3d_t.GetZaxis().GetNbins()+1):
@@ -228,16 +228,15 @@ def run3Dimage(args):
        if len(ihlist) is 16:
           SetMyPalette("Bird",1)
           cv2  = createRatioCanvas("cv2", 3600, 3600)
-          cv2.Divide(4,4) 
+          cv2.Divide(4,4)
           for _ih in range(len(ihlist)): 
              cv2.cd(_ih+1).SetRightMargin(0.18)
-             _tempih = ihlist[_ih].Clone()
-             _tempih.Rebin2D(4,4)
-             _tempih.SetStats(0)
-             _tempih.SetXTitle("x")
-             _tempih.SetYTitle("y")
-             _tempih.SetTitle("angle : %.1f%s"%(360./len(ihlist)*_ih,enums.DEG))
-             _tempih.Draw("colz")
+             if (ihlist[_ih].GetNbinsX() >= 128): ihlist[_ih].Rebin2D(4,4)
+             ihlist[_ih].SetStats(0)
+             ihlist[_ih].SetXTitle("x")
+             ihlist[_ih].SetYTitle("y")
+             ihlist[_ih].SetTitle("angle : %.1f%s"%(360./len(ihlist)*_ih,enums.DEG))
+             ihlist[_ih].Draw("colz")
           _out2dfig = _outfig.replace("hist_3D_image", "hist_2D_image")
           cv2.Print(_out2dfig)
        else: 
@@ -252,7 +251,7 @@ def run3Dimage(args):
        _out = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage"+"."+args.dtype
        if args.output is not None: outname = _out + "_" +args.output + ".root"
        else: outname = _out+".root"
-       log().info("Output : %s, figs: /Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_3D_image.ROOT.pdf"%(outname))
+       log().info("Output : %s, in: /Users/chiu.i-huan/Desktop/new_scientific/run/figs"%(outname))
        f = ROOT.TFile( outname, 'recreate' )
        f.cd()
 
@@ -278,7 +277,7 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output", type=str, default=None, help="Output file")
     parser.add_argument("-p", "--input3Dhist", type=str, default=None, help="Input 3D file")
     parser.add_argument("-d", "--dtype", dest="dtype", type=str, default = "CdTe", help="Si or CdTe" )
-    parser.add_argument("-c", "--cut", type=int, default = 50, help="count cut for 3D image" )
+    parser.add_argument("-c", "--cut", type=int, default = 250, help="count cut for 3D image" )
     args = parser.parse_args()
     
     run3Dimage( args )

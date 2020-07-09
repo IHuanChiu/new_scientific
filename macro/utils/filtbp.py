@@ -106,29 +106,32 @@ class Filter():
 
           filtSino = np.zeros((numAngles,projLenX,projLenY), dtype=int)
           for i in range(numAngles):
-             projfft = fft(self.myarray[i,:])
-             filtProj = projfft*filt# accumulate, convolution
-             filtSino[i,:] = np.real(ifft(filtProj)) #get real part (Filtered projection data)
+#             projfft = fft(self.myarray[i,:])
+#             filtProj = projfft*filt# accumulate, convolution
+#             filtSino[i,:] = np.real(ifft(filtProj)) #get real part (Filtered projection data)
+              filtSino[i,:] = self.myarray[i,:]
           return filtSino
       
       def getBackProject(self):
+          H2UpperRange=16 #mm
           LenOfHist = self.filtarray.shape[1]
           numAngles = self.filtarray.shape[0]
           reconMatrix = np.zeros((LenOfHist,LenOfHist,LenOfHist), dtype=int)
 
-          # === coordinate rotation === 
-          x = np.arange(LenOfHist)-LenOfHist/2 # centered at (0,0,0)
+          # === coordinate rotation ===
+          x = np.arange(LenOfHist)-LenOfHist/2 # set -16 to 16 and centered at 0 
           y, z = x.copy(), x.copy()
-          X, Y, Z = np.meshgrid(x, y, z) # make rotation xyz-axis
+          X, Z, Y = np.meshgrid(x, y, z) # make rotation xyz-axis
    
           for i in range(numAngles):
              _angle = self.myangle[i]
-             _filth2 = self.filtarray[i,:]
+             _filth2 = self.filtarray[i,:]# 128*128 matrix
 
-             Yrot = X*np.sin(_angle)-Z*np.cos(_angle)# Xrot is a 128*128*128 3D matrix
+             Yrot = Y*np.sin(_angle)-Z*np.cos(_angle)# Xrot is a 128*128*128 3D matrix
              YrotCor = np.round(Yrot+LenOfHist/2) # shift back to original image coordinates, round values to make indices
              YrotCor = YrotCor.astype('int')
-             XCor = X.astype('int')
+             XCor = np.round(X+LenOfHist/2)
+             XCor = XCor.astype('int')
              m0, m1, m2 = np.where((YrotCor >= 0) & (YrotCor <= (LenOfHist-1)))# find index, condition: after rotation, YrotCor doesn't exceed the size of the original
 
              projMatrix = np.zeros((LenOfHist, LenOfHist, LenOfHist), dtype=int) # new proj for each angle
