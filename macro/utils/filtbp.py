@@ -125,16 +125,14 @@ class Filter():
              _angle = self.myangle[i]
              _filth2 = self.filtarray[i,:]
 
-             #TODO how to rotation the axis for 3D image 
-             Xrot = # Xrot is a 128*128*128 3D matrix
-             XYrotCor = np.round(Xrot+LenOfHist/2) # shift back to original image coordinates, round values to make indices
-             XYrotCor = XrotCor.astype('int')
-             m0, m1, m2 = np.where((XYrotCor >= 0) & (XYrotCor <= (LenOfHist-1)))# find index, condition: after rotation, XYrotCor doesn't exceed the size of the original
-             # m0, m1, m2 are 2097152 1D matrix, to find correspoding positon of XYrotCor
+             Yrot = X*np.sin(_angle)-Z*np.cos(_angle)# Xrot is a 128*128*128 3D matrix
+             YrotCor = np.round(Yrot+LenOfHist/2) # shift back to original image coordinates, round values to make indices
+             YrotCor = YrotCor.astype('int')
+             XCor = X.astype('int')
+             m0, m1, m2 = np.where((YrotCor >= 0) & (YrotCor <= (LenOfHist-1)))# find index, condition: after rotation, YrotCor doesn't exceed the size of the original
 
              projMatrix = np.zeros((LenOfHist, LenOfHist, LenOfHist), dtype=int) # new proj for each angle
-             s2 = self.filtarray[i,:] # get 128*128 2D matrix
-             projMatrix[m0, m1, m2] = s2[XYrotCor[m0, m1, m2]]# backproject, projMatrix is 2097152 1D matrix
+             projMatrix[m0, m1, m2] = _filth2[XCor[m0, m1, m2],YrotCor[m0, m1, m2]]# backproject, projMatrix is 2097152 1D matrix
              reconMatrix += projMatrix # integral
              reconMatrix.reshape(LenOfHist,LenOfHist,LenOfHist) # back to 128*128*128 3D matrix
 
@@ -144,3 +142,4 @@ class Filter():
           recon.SetYTitle("y")
           recon.SetZTitle("z")
           return recon
+

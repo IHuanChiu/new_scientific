@@ -1,4 +1,4 @@
-import sys
+import sys, math
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image, ImageChops
@@ -121,21 +121,26 @@ def backproject(sinogram, theta):
     numAngles = len(theta)
 
     for n in range(numAngles):
-        if n is 0: print("shape : ", X.shape, " X: ", X)
+        if n is 8: print("X shape : ", X.shape, " X: ", X)
+        if n is 8: print("theta shape : ", theta.shape, " theta: ", math.degrees(theta[n]))
         Xrot = X*np.sin(theta[n])-Y*np.cos(theta[n]) #determine rotated x-coordinate about origin in mesh grid form
-        if n is 0: print("shape : ", Xrot.shape, "Xrot : ",Xrot)
+        if n is 8: print(" Xrot shape : ", Xrot.shape, "Xrot : ",Xrot)
         XrotCor = np.round(Xrot+imageLen/2) #(return int value only) shift back to original image coordinates, round values to make indices
         XrotCor = XrotCor.astype('int')
+        if n is 8: print("XrotCor : ",XrotCor)
         projMatrix = np.zeros((imageLen, imageLen))
-        if n is 0: print ("pre projMatrix : ", projMatrix.shape)
-        if n is 0: print("m0, m1 = ",np.where((XrotCor >= 0) & (XrotCor <= (imageLen-1))))
+        if n is 8: print ("make projMatrix : ", projMatrix.shape)
+        if n is 8: print("m0, m1 = ",np.where((XrotCor >= 0) & (XrotCor <= (imageLen-1))))
+        if n is 8: print("error = ",np.where((XrotCor > (imageLen-1))))
         m0, m1 = np.where((XrotCor >= 0) & (XrotCor <= (imageLen-1))) #after rotating, you'll inevitably have new coordinates that exceed the size of the original
-        if n is 0: print ("pre projMatrix[m0, m1] : ", projMatrix[m0, m1].shape)
 
         s = sinogram[:,n] #get projection
-        if n is 0: print("s shape: ", s.shape)
+        if n is 8: print("s shape: ", s.shape, "  ", s[XrotCor[m0, m1]], "  ", s[XrotCor[m0, m1]].shape)
+        if n is 8: print("XrotCor[m0, m1]: ", XrotCor[m0, m1].shape , " ",  XrotCor[m0, m1])        
+        if n is 8: print("projMatrix[m0, m1]: ", projMatrix[m0, m1].shape, "  ", projMatrix[m0, m1])        
         projMatrix[m0, m1] = s[XrotCor[m0, m1]]  #backproject in-bounds data
-        if n is 0: print ("new projMatrix[m0, m1] : ", projMatrix[m0, m1].shape)
+        if n is 8: print ("new projMatrix : ", projMatrix.shape)
+        if n is 8: print ("new reconMatrix : ", reconMatrix.shape)
         reconMatrix += projMatrix # same with TH3D.Fill in ROOT
 
         # following lines are no need for 3D image analysis

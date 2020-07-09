@@ -196,11 +196,11 @@ def run3Dimage(args):
        ihlist  = mergeTH2D(_ihlist)
 
        log().info("Processing Back Projection...")
-       SBP = SimpleBackProjection(h2list=ihlist)
-       h3d=SBP.h3d
+#       SBP = SimpleBackProjection(h2list=ihlist)
+#       h3d=SBP.h3d
 
-#       FBP = Filter(h2list=ihlist)
-#       h3d=FBP.filtH3
+       FBP = Filter(h2list=ihlist)
+       h3d=FBP.filtH3
 
     else:
        r3dfile  =  ROOT.TFile(args.input3Dhist)    

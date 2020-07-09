@@ -143,9 +143,9 @@ def makeTH2D(_chain,dtype):
     UTcut = "((unixtime-{0}) > 0)".format(_it)
     for _i in range(_nsteps):
        icut = TCut(cutname+"&&"+UTcut+"&&"+"(int(((unixtime-{0})/{1})%{2})=={3})".format(_it,_timerange,_nsteps,_i)) 
-#       _chain.Draw("x:y >> h{}(128,-16,16,128,-16,16)".format(_i),icut,"colz")
-       realsize = 113./78
-       _chain.Draw("x*{0}:y*{0} >> h{1}(128,-25,25,128,-25,25)".format(realsize,_i),icut,"colz")
+       _chain.Draw("x:y >> h{}(128,-16,16,128,-16,16)".format(_i),icut,"colz")
+#       realsize = 113./78
+#       _chain.Draw("x*{0}:y*{0} >> h{1}(128,-25,25,128,-25,25)".format(realsize,_i),icut,"colz")
        h2list.append(gDirectory.Get("h{}".format(_i)))
     return h2list
 
