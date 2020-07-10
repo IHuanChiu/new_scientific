@@ -79,6 +79,7 @@ class SimpleBackProjection():
 class Filter():
       def __init__(self, h2list=None):
           self.h2list = h2list
+          self.filth2 = []
           self.myarray, self.myangle = self.defProj()
           self.filtarray = self.defFilter()
           self.filtH3 = self.getBackProject()
@@ -106,10 +107,14 @@ class Filter():
 
           filtSino = np.zeros((numAngles,projLenX,projLenY), dtype=int)
           for i in range(numAngles):
-#             projfft = fft(self.myarray[i,:])
-#             filtProj = projfft*filt# accumulate, convolution
-#             filtSino[i,:] = np.real(ifft(filtProj)) #get real part (Filtered projection data)
-             filtSino[i,:] = self.myarray[i,:] # same with SBP
+             projfft = fft(self.myarray[i,:])
+             filtProj = projfft*filt# accumulate, convolution
+             filtSino[i,:] = np.real(ifft(filtProj)) #get real part (Filtered projection data)
+#             filtSino[i,:] = self.myarray[i,:] # same with SBP
+             _filth2 = ROOT.TH2D("h{}_filt".format(i),"h{}_filt".format(i),128,-16,16,128,-16,16)
+             array2hist(filtSino[i,:], _filth2)
+             _filth2.Rebin2D(4,4)
+             self.filth2.append(_filth2)
           return filtSino
       
       def getBackProject(self):

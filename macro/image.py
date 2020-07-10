@@ -257,6 +257,9 @@ def run3Dimage(args):
 
        for _h2 in ihlist: 
           _h2.Write()
+       for _ih2 in range(len(FBP.filth2)): 
+          FBP.filth2[_ih2].SetTitle("Filt, angle : %.1f%s"%(360./len(FBP.filth2)*_ih2,enums.DEG))
+          FBP.filth2[_ih2].Write()           
        cv2.Write()
        h3d_t.Write()
        h3d.Write()
