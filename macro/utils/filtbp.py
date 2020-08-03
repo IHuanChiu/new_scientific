@@ -21,7 +21,7 @@ from enums import getangle
 
 from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
-from scipy.fftpack import fft, fftshift, ifft, dct, idct
+from scipy.fftpack import fft, ifftshift, fftshift, ifft, dct, idct, fft2, ifft2
 
 def arangeMod(start, stop=None, step=1, nx=1, ny=1):
     """#Modified version of numpy.arange which corrects error associated with non-integer step size"""
@@ -32,6 +32,29 @@ def arangeMod(start, stop=None, step=1, nx=1, ny=1):
         if a[-1][-1] > stop-step:
             a = np.delete(a, -1)
     return a
+
+def distance(point1,point2):
+    return np.sqrt((point1[0]-point2[0])**2 + (point1[1]-point2[1])**2)
+
+def idealFilterLP(D0,imgShape):
+    base = np.zeros(imgShape.shape)
+    rows, cols = imgShape.shape
+    center = (rows/2,cols/2)
+    for x in range(cols):
+        for y in range(rows):
+           if distance((y,x),center) < D0:
+              base[y,x] = 1
+    return base
+
+def idealFilterHP(D0,imgShape):
+    base = np.ones(imgShape.shape)
+    rows, cols = imgShape.shape
+    center = (rows/2,cols/2)
+    for x in range(cols):
+        for y in range(rows):
+           if distance((y,x),center) < D0:
+              base[y,x] = 0
+    return base
 
 class SimpleBackProjection():
       def __init__(self, h2list=None):
@@ -79,7 +102,7 @@ class SimpleBackProjection():
 class Filter():
       def __init__(self, h2list=None):
           self.h2list = h2list
-          self.filth2 = []
+          self.h2FFT, self.hFilter, self.filth2 = [],[],[]
           self.myarray, self.myangle = self.defProj()
           self.filtarray = self.defFilter()
           self.filtH3 = self.getBackProject()
@@ -94,11 +117,10 @@ class Filter():
       
       def defFilter(self): 
           numAngles, projLenX, projLenY = self.myarray.shape
-#          w = arangeMod(-np.pi, np.pi, step, projLenX, projLenY)
-          step = 2*np.pi/(projLenX*projLenY)
-          w = np.arange(-np.pi, np.pi, step).reshape(projLenX,projLenY)
 
           # === ramp filter ===
+          step = 2*np.pi/(projLenX*projLenY)
+          w = np.arange(-np.pi, np.pi, step).reshape(projLenX,projLenY)
           a = 1
           rn1 = abs(2/a*np.sin(a*w/2))
           rn2 = np.sin(a*w/2)/(a*w/2)
@@ -107,13 +129,27 @@ class Filter():
 
           filtSino = np.zeros((numAngles,projLenX,projLenY), dtype=int)
           for i in range(numAngles):
-             projfft = fft(self.myarray[i,:])
-             filtProj = projfft*filt# accumulate, convolution
-             filtSino[i,:] = np.real(ifft(filtProj)) #get real part (Filtered projection data)
+             projfft = fft2(self.myarray[i,:])
+             center = fftshift(projfft)
+             PassCenter = center * idealFilterLP(75,projfft)
+#             PassCenter = center * idealFilterHP(25,projfft)
+             filtProj = ifftshift(PassCenter)
+#             filtProj = projfft*filt# accumulate, convolution with ramp filter
+             filtSino[i,:] = np.real(ifft2(filtProj)) #get real part (Filtered projection data)
+
 #             filtSino[i,:] = self.myarray[i,:] # same with SBP
+
+             # make plots
+             _h2FFT = ROOT.TH2D("h{}_FFT".format(i),"h{}_FFT".format(i),128,-16,16,128,-16,16)
+             _hFilter = ROOT.TH2D("h{}_filiter".format(i),"h{}_filter".format(i),128,-16,16,128,-16,16)
              _filth2 = ROOT.TH2D("h{}_filt".format(i),"h{}_filt".format(i),128,-16,16,128,-16,16)
+             array2hist(np.real(fftshift(projfft)), _h2FFT)
+             array2hist(np.real(PassCenter), _hFilter)
+#             array2hist(np.real(filt), _hFilter)
              array2hist(filtSino[i,:], _filth2)
              _filth2.Rebin2D(4,4)
+             self.h2FFT.append(_h2FFT)
+             self.hFilter.append(_hFilter)
              self.filth2.append(_filth2)
           return filtSino
       

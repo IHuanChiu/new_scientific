@@ -46,7 +46,7 @@ int usage(void)
     return 0;
 }
 
-void make_scpectum(){
+void make_scpectum_si(){
   #ifdef __CINT__
     gROOT->LoadMacro("AtlasLabels.C");
     gROOT->LoadMacro("AtlasUtils.C");
@@ -58,7 +58,7 @@ void make_scpectum(){
   TCanvas *c1 = new TCanvas("c1","Energy Spectum",10,10,1600,800);
   c1->Divide(2,1);
 
-  TFile *file, *outfile; 
+  TFile *file; 
   TTree *mytree;
   TH1D *h_all_pa, *h_all_na,*h_all_ps, *h_all_ps_m, *h_all_ns, *h_all_ns_m, *h_all_nb, *h_all_pb;
   TH2D* h_image;
@@ -72,9 +72,7 @@ void make_scpectum(){
   double e_max = 15;
   double e_min = 10;
 
-  file = new TFile("/Users/chiu.i-huan/Desktop/CdTe_merge.root","READ");
-  outfile = new TFile("/Users/chiu.i-huan/Desktop/CdTe_merge_split.root","RECREATE");
-//  file = new TFile("/Users/chiu.i-huan/Desktop/Si_merge.root","READ");
+  file = new TFile("/Users/chiu.i-huan/Desktop/Si_merge.root","READ");
   mytree = (TTree*)file->Get("tree");
      
 //  mytree->SetBranchAddress("energy_p",e_p);
@@ -85,15 +83,9 @@ void make_scpectum(){
 //  mytree->SetBranchAddress("nhitx",&nhitx);
 //  mytree->SetBranchAddress("nhity",&nhity);
 
-  TCut cut_energy = Form("energy_p > %f && energy_p < %f", e_min, e_max);
-  TCut cut_signal_lv1 = "(Poi_y_lv1 > -5 && Poi_x_lv1 < 8 && Poi_x_lv1 > -7)";
-  TCut cut_bkg_lv1 = "(Poi_y_lv1 < -5) || (Poi_y_lv1  > -5 && Poi_x_lv1 < -7) || (Poi_x_lv1 > 8 && Poi_y_lv1  > -5)";
-  TCut cut_signal_lv2 = "(Poi_y_lv2 > -5 && Poi_x_lv2 < 8 && Poi_x_lv2 > -7)";
-  TCut cut_bkg_lv2 = "(Poi_y_lv2 < -5) || (Poi_y_lv2  > -5 && Poi_x_lv2 < -7) || (Poi_x_lv2 > 8 && Poi_y_lv2  > -5)";
-  TCut cut_signal = "((x < 5 && x > -5) && (y < 10 && y > -6))";
-  TCut cut_bkg = "!((x < 5 && x > -5) && (y < 10 && y > -6))";
-  TCut cut_basic = "((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253))";
-  TCut cut_addition = "(nsignalx_lv1 != 0 && nsignaly_lv1 !=0)";
+  TCut cut_signal = "((x < 7 && x > -3) && (y < 7 && y > -6))";
+  TCut cut_bkg = "!((x < 7 && x > -3) && (y < 7 && y > -6))";
+  TCut cut_basic = "((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))";
   
   c1->cd(1);
   mytree->Draw("energy_p >> h_all_pa(300,0,150)",cut_basic,"");
@@ -108,7 +100,7 @@ void make_scpectum(){
   double prate = nsig/nbkg;
   h_all_ps_m = (TH1D*)h_all_ps->Clone();
   h_all_ps_m->Scale(prate);
-//  h_all_ps->Add(h_all_ps_m,-1);
+  h_all_ps->Add(h_all_ps_m,-1);
 
 //  gPad->SetLogy(1);
   h_all_pa->SetTitle("Energy Spectrum");
@@ -151,7 +143,7 @@ void make_scpectum(){
   double nrate = nsig/nbkg;
   h_all_ns_m = (TH1D*)h_all_ns->Clone();
   h_all_ns_m->Scale(nrate);
-//  h_all_ns->Add(h_all_ns_m,-1);
+  h_all_ns->Add(h_all_ns_m,-1);
 
 //  gPad->SetLogy(1);
   h_all_na->SetTitle("Energy Spectrum");
@@ -190,18 +182,8 @@ void make_scpectum(){
 //  gStyle->SetPalette(53);
 //  h_image->Draw("colz");
   
-  sprintf(name, "../../run/figs/hist_comparison_e.pdf");
+  sprintf(name, "../../run/figs/hist_comparison_e_si_m.pdf");
   c1->SaveAs(name);
-
-  outfile->cd();
-  c1->Write();
-  h_all_na->Write();
-  h_all_ns->Write();
-  h_all_nb->Write();
-  h_all_pa->Write();
-  h_all_ps->Write();
-  h_all_pb->Write();
-  outfile->Write();
 
  }
 
