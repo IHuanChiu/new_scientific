@@ -171,35 +171,35 @@ def GetEventTree(tree, adccut, coef_R, dtype):
              m_rawdata.coef_R     = coef_R
              m_rawdata.adccut     = adccut[index]
 
-             if (idet*nasic+iasic) is 0: 
+             if (idet*nasic+iasic) == 0: 
                 m_rawdata.adc    = tree.adc0[istrip]
                 m_rawdata.cmn    = tree.cmn0
                 m_rawdata.adcm   = tree.adc0[istrip] - tree.cmn0
-             elif (idet*nasic+iasic) is 1: 
+             elif (idet*nasic+iasic) == 1: 
                 m_rawdata.adc    = tree.adc1[istrip]
                 m_rawdata.cmn    = tree.cmn1
                 m_rawdata.adcm   = tree.adc1[istrip] - tree.cmn1
-             elif (idet*nasic+iasic) is 2: 
+             elif (idet*nasic+iasic) == 2: 
                 m_rawdata.adc    = tree.adc2[istrip]
                 m_rawdata.cmn    = tree.cmn2
                 m_rawdata.adcm   = tree.adc2[istrip] - tree.cmn2
-             elif (idet*nasic+iasic) is 3: 
+             elif (idet*nasic+iasic) == 3: 
                 m_rawdata.adc    = tree.adc3[istrip]
                 m_rawdata.cmn    = tree.cmn3
                 m_rawdata.adcm   = tree.adc3[istrip] - tree.cmn3
-             elif (idet*nasic+iasic) is 4: 
+             elif (idet*nasic+iasic) == 4: 
                 m_rawdata.adc    = tree.adc4[istrip]
                 m_rawdata.cmn    = tree.cmn4
                 m_rawdata.adcm   = tree.adc4[istrip] - tree.cmn4
-             elif (idet*nasic+iasic) is 5: 
+             elif (idet*nasic+iasic) == 5: 
                 m_rawdata.adc    = tree.adc5[istrip]
                 m_rawdata.cmn    = tree.cmn5
                 m_rawdata.adcm   = tree.adc5[istrip] - tree.cmn5
-             elif (idet*nasic+iasic) is 6:
+             elif (idet*nasic+iasic) == 6:
                 m_rawdata.adc    = tree.adc6[istrip]
                 m_rawdata.cmn    = tree.cmn6
                 m_rawdata.adcm   = tree.adc6[istrip] - tree.cmn6
-             elif (idet*nasic+iasic) is 7: 
+             elif (idet*nasic+iasic) == 7: 
                 m_rawdata.adc    = tree.adc7[istrip]
                 m_rawdata.cmn    = tree.cmn7
                 m_rawdata.adcm   = tree.adc7[istrip] - tree.cmn7
@@ -277,8 +277,8 @@ class tran_process():
           self.tout.Branch( 'y',        AddressOf( struct, 'axis_y' ),    'y[nhit]/D' )
           self.tout.Branch( 'type',        AddressOf( struct, 'type' ),   'type[nhit]/D' )
 
-          self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[ncluster]/D' )
-          self.tout.Branch( 'E_n',     AddressOf( struct, 'E_n' ),        'E_n[ncluster]/D' )
+#          self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[ncluster]/D' )
+#          self.tout.Branch( 'E_n',     AddressOf( struct, 'E_n' ),        'E_n[ncluster]/D' )
           self.tout.Branch( 'E_p_lv1', AddressOf( struct, 'E_p_lv1' ),    'E_p_lv1[nsignalx_lv1]/D' )
           self.tout.Branch( 'E_n_lv1', AddressOf( struct, 'E_n_lv1' ),    'E_n_lv1[nsignaly_lv1]/D' )
           self.tout.Branch( 'E_p_lv2', AddressOf( struct, 'E_p_lv2' ),    'E_p_lv2[nsignalx_lv2]/D' )
@@ -288,10 +288,10 @@ class tran_process():
 
           self.tout.Branch( 'Poi_x',     AddressOf( struct, 'Poi_x' ),    'Poi_x[ncluster]/D' )
           self.tout.Branch( 'Poi_y',     AddressOf( struct, 'Poi_y' ),    'Poi_y[ncluster]/D' )
-          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),'Poi_x_lv1[nsignalx_lv1]/D' )
-          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
-          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
-          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
+#          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),'Poi_x_lv1[nsignalx_lv1]/D' )
+#          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
+#          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
+#          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
 
           self.tout.Branch( 'DeltaE',  AddressOf( struct, 'DeltaE' ),     'DeltaE[ncluster]/D' )
           self.tout.Branch( 'Nstrips_x', AddressOf( struct, 'Nstrips_x' ),'Nstrips_x[ncluster]/D' )
@@ -332,7 +332,7 @@ class tran_process():
           self.h2_cutflow_x.Fill(1, len(hitx_lv1))
           self.h2_cutflow_y.Fill(1, len(hity_lv1))
 
-          if len(hitx_lv1) is not 0 and len(hity_lv1) is not 0:
+          if len(hitx_lv1) != 0 and len(hity_lv1) != 0:
              hitx_lv2, hity_lv2 = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
              self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
              self.h2_cutflow_x.Fill(2, len(hitx_lv2))
@@ -340,7 +340,7 @@ class tran_process():
              for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
              for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
 
-          if len(hitx_lv2) is not 0 and len(hity_lv2) is not 0:   
+          if len(hitx_lv2) != 0 and len(hity_lv2) != 0:   
              cluster = findcluster(hitx_lv2, hity_lv2)#Slow
 #             hit_signal = ClusterCategory(cluster)#Slow
              hit_signal = matchLv2(hitx_lv2, hity_lv2, self.deltae)

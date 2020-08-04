@@ -225,7 +225,7 @@ def run3Dimage(args):
     # === make slices for xyz-sxis & projection ===
     if args.input3Dhist is None: 
 
-       if len(ihlist) is 16:
+       if len(ihlist) == 16:
           SetMyPalette("Bird",1)
           cv2  = createRatioCanvas("cv2", 3600, 3600)
           cv2.Divide(4,4)

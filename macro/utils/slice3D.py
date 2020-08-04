@@ -124,12 +124,25 @@ class MakeSlicePlots():
           return h_list
 
       def GetSlices(self, _axisname):
-          if _axisname is "z" or _axisname is "Z":   return self.h_xy_list
-          elif _axisname is "y" or _axisname is "Y": return self.h_xz_list
-          elif _axisname is "x" or _axisname is "X": return self.h_yz_list
+          if _axisname == "z" or _axisname == "Z":   return self.h_xy_list
+          elif _axisname == "y" or _axisname == "Y": return self.h_xz_list
+          elif _axisname == "x" or _axisname == "X": return self.h_yz_list
           else:
              print("Wrong axis !!! ")
              return None
+
+def _getUTcut(_iplot):
+    _nsteps = 31
+    _timerange = 1800
+    _timerange2 = 4500
+    _group1 = "((unixtime > 1583670785 && unixtime < 1583727074) && (int(((unixtime-1583670785)/{0})%{1})=={2}))".format(_timerange,_nsteps,_iplot)
+    _group2 = "((unixtime > 1583736900 && unixtime < 1583758670) && (int(((unixtime-1583736900)/{0})%{1})=={2}))".format(_timerange,_nsteps,_iplot)
+    _group3 = "((unixtime > 1583758670 && unixtime < 1583793160) && (int(((unixtime-1583758670)/{0})%{1})=={2}) && ({3}>=10))".format(_timerange,_nsteps,(_iplot-10),_iplot)#from 225
+    _group4 = "((unixtime > 1583797637 && unixtime < 1583798147) && ({0}==0))".format(_iplot)
+    _group5 = "((unixtime > 1583798147 && unixtime < 1583802651) && ({0}==1))".format(_iplot)
+    _group6 = "((unixtime > 1583802651) && (int(((unixtime-1583802651)/{0})%{1})=={2}) && ({3}%2==1) && ({3}>=3))".format(_timerange2,(_nsteps-1)/2,(_iplot-1)/2,_iplot)#from 67.5
+    _utcut_name = "("+_group1+"||"+_group2+"||"+_group3+"||"+_group4+"||"+_group5+"||"+_group6+")"
+    return _utcut_name
          
 def makeTH2D(_chain,dtype):
     _nsteps = 31
@@ -142,7 +155,8 @@ def makeTH2D(_chain,dtype):
        cutname = "((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630)) && (energy_p > 12 && energy_p < 16)" 
     UTcut = "((unixtime-{0}) > 0)".format(_it)
     for _i in range(_nsteps):
-       icut = TCut(cutname+"&&"+UTcut+"&&"+"(int(((unixtime-{0})/{1})%{2})=={3})".format(_it,_timerange,_nsteps,_i)) 
+#       icut = TCut(cutname+"&&"+UTcut+"&&"+"(int(((unixtime-{0})/{1})%{2})=={3})".format(_it,_timerange,_nsteps,_i)) 
+       icut = TCut(cutname+"&&"+UTcut+"&&"+_getUTcut(_i))
        _chain.Draw("x:y >> h{}(128,-16,16,128,-16,16)".format(_i),icut,"colz")
 #       realsize = 113./78
 #       _chain.Draw("x*{0}:y*{0} >> h{1}(128,-25,25,128,-25,25)".format(realsize,_i),icut,"colz")
