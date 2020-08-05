@@ -99,37 +99,37 @@ def getangle(hist_name):
        elif "00056" in hist_name: return 7  * 2*(math.pi)/n_angle_step
        elif "00057" in hist_name: return 8  * 2*(math.pi)/n_angle_step
     else:
-       if    "==0)" in hist_name: return (initposition + 0 )  * 2*(math.pi)/n_angle_step
-       elif  "==1)" in hist_name: return (initposition + 1 )  * 2*(math.pi)/n_angle_step
-       elif  "==2)" in hist_name: return (initposition + 2 )  * 2*(math.pi)/n_angle_step
-       elif  "==3)" in hist_name: return (initposition + 3 )  * 2*(math.pi)/n_angle_step
-       elif  "==4)" in hist_name: return (initposition + 4 )  * 2*(math.pi)/n_angle_step
-       elif  "==5)" in hist_name: return (initposition + 5 )  * 2*(math.pi)/n_angle_step
-       elif  "==6)" in hist_name: return (initposition + 6 )  * 2*(math.pi)/n_angle_step
-       elif  "==7)" in hist_name: return (initposition + 7 )  * 2*(math.pi)/n_angle_step
-       elif  "==8)" in hist_name: return (initposition + 8 )  * 2*(math.pi)/n_angle_step
-       elif  "==9)" in hist_name: return (initposition + 9 )  * 2*(math.pi)/n_angle_step
-       elif "==10)" in hist_name: return (initposition + 10)  * 2*(math.pi)/n_angle_step
-       elif "==11)" in hist_name: return (initposition + 11)  * 2*(math.pi)/n_angle_step
-       elif "==12)" in hist_name: return (initposition + 12)  * 2*(math.pi)/n_angle_step
-       elif "==13)" in hist_name: return (initposition + 13)  * 2*(math.pi)/n_angle_step
-       elif "==14)" in hist_name: return (initposition + 14)  * 2*(math.pi)/n_angle_step
-       elif "==15)" in hist_name: return (initposition + 15)  * 2*(math.pi)/n_angle_step
-       elif "==16)" in hist_name: return (initposition + 15)  * 2*(math.pi)/n_angle_step
-       elif "==17)" in hist_name: return (initposition + 14)  * 2*(math.pi)/n_angle_step
-       elif "==18)" in hist_name: return (initposition + 13)  * 2*(math.pi)/n_angle_step
-       elif "==19)" in hist_name: return (initposition + 12)  * 2*(math.pi)/n_angle_step
-       elif "==20)" in hist_name: return (initposition + 11)  * 2*(math.pi)/n_angle_step
-       elif "==21)" in hist_name: return (initposition + 10)  * 2*(math.pi)/n_angle_step
-       elif "==22)" in hist_name: return (initposition + 9 )  * 2*(math.pi)/n_angle_step
-       elif "==23)" in hist_name: return (initposition + 8 )  * 2*(math.pi)/n_angle_step
-       elif "==24)" in hist_name: return (initposition + 7 )  * 2*(math.pi)/n_angle_step
-       elif "==25)" in hist_name: return (initposition + 6 )  * 2*(math.pi)/n_angle_step
-       elif "==26)" in hist_name: return (initposition + 5 )  * 2*(math.pi)/n_angle_step
-       elif "==27)" in hist_name: return (initposition + 4 )  * 2*(math.pi)/n_angle_step
-       elif "==28)" in hist_name: return (initposition + 3 )  * 2*(math.pi)/n_angle_step
-       elif "==29)" in hist_name: return (initposition + 2 )  * 2*(math.pi)/n_angle_step
-       elif "==30)" in hist_name: return (initposition + 1 )  * 2*(math.pi)/n_angle_step
+       if   "h0_2d"  in hist_name: return (initposition + 0 )  * 2*(math.pi)/n_angle_step
+       elif "h1_2d"  in hist_name: return (initposition + 1 )  * 2*(math.pi)/n_angle_step
+       elif "h2_2d"  in hist_name: return (initposition + 2 )  * 2*(math.pi)/n_angle_step
+       elif "h3_2d"  in hist_name: return (initposition + 3 )  * 2*(math.pi)/n_angle_step
+       elif "h4_2d"  in hist_name: return (initposition + 4 )  * 2*(math.pi)/n_angle_step
+       elif "h5_2d"  in hist_name: return (initposition + 5 )  * 2*(math.pi)/n_angle_step
+       elif "h6_2d"  in hist_name: return (initposition + 6 )  * 2*(math.pi)/n_angle_step
+       elif "h7_2d"  in hist_name: return (initposition + 7 )  * 2*(math.pi)/n_angle_step
+       elif "h8_2d"  in hist_name: return (initposition + 8 )  * 2*(math.pi)/n_angle_step
+       elif "h9_2d"  in hist_name: return (initposition + 9 )  * 2*(math.pi)/n_angle_step
+       elif "h10_2d" in hist_name: return (initposition + 10)  * 2*(math.pi)/n_angle_step
+       elif "h11_2d" in hist_name: return (initposition + 11)  * 2*(math.pi)/n_angle_step
+       elif "h12_2d" in hist_name: return (initposition + 12)  * 2*(math.pi)/n_angle_step
+       elif "h13_2d" in hist_name: return (initposition + 13)  * 2*(math.pi)/n_angle_step
+       elif "h14_2d" in hist_name: return (initposition + 14)  * 2*(math.pi)/n_angle_step
+       elif "h15_2d" in hist_name: return (initposition + 15)  * 2*(math.pi)/n_angle_step
+       elif "h16_2d" in hist_name: return (initposition + 15)  * 2*(math.pi)/n_angle_step
+       elif "h17_2d" in hist_name: return (initposition + 14)  * 2*(math.pi)/n_angle_step
+       elif "h18_2d" in hist_name: return (initposition + 13)  * 2*(math.pi)/n_angle_step
+       elif "h19_2d" in hist_name: return (initposition + 12)  * 2*(math.pi)/n_angle_step
+       elif "h20_2d" in hist_name: return (initposition + 11)  * 2*(math.pi)/n_angle_step
+       elif "h21_2d" in hist_name: return (initposition + 10)  * 2*(math.pi)/n_angle_step
+       elif "h22_2d" in hist_name: return (initposition + 9 )  * 2*(math.pi)/n_angle_step
+       elif "h23_2d" in hist_name: return (initposition + 8 )  * 2*(math.pi)/n_angle_step
+       elif "h24_2d" in hist_name: return (initposition + 7 )  * 2*(math.pi)/n_angle_step
+       elif "h25_2d" in hist_name: return (initposition + 6 )  * 2*(math.pi)/n_angle_step
+       elif "h26_2d" in hist_name: return (initposition + 5 )  * 2*(math.pi)/n_angle_step
+       elif "h27_2d" in hist_name: return (initposition + 4 )  * 2*(math.pi)/n_angle_step
+       elif "h28_2d" in hist_name: return (initposition + 3 )  * 2*(math.pi)/n_angle_step
+       elif "h29_2d" in hist_name: return (initposition + 2 )  * 2*(math.pi)/n_angle_step
+       elif "h30_2d" in hist_name: return (initposition + 1 )  * 2*(math.pi)/n_angle_step
        else:
           print("Check hist name !")
 

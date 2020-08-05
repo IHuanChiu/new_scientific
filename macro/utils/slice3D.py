@@ -157,10 +157,12 @@ def makeTH2D(_chain,dtype):
     for _i in range(_nsteps):
 #       icut = TCut(cutname+"&&"+UTcut+"&&"+"(int(((unixtime-{0})/{1})%{2})=={3})".format(_it,_timerange,_nsteps,_i)) 
        icut = TCut(cutname+"&&"+UTcut+"&&"+_getUTcut(_i))
-       _chain.Draw("x:y >> h{}(128,-16,16,128,-16,16)".format(_i),icut,"colz")
+       _chain.Draw('x:y >> h{}(128,-16,16,128,-16,16)'.format(_i),icut,"colz")
 #       realsize = 113./78
 #       _chain.Draw("x*{0}:y*{0} >> h{1}(128,-25,25,128,-25,25)".format(realsize,_i),icut,"colz")
        h2list.append(gDirectory.Get("h{}".format(_i)))
+    for _ih in range(len(h2list)): 
+       h2list[_ih].SetTitle("h{}_2d".format(_ih))
     return h2list
 
 def mergeTH2D(_h2list):

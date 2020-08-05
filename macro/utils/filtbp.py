@@ -84,7 +84,7 @@ class SimpleBackProjection():
              log().info("Running time : %.1f s , (%s/%s) files "%(time.time() - ti, numoff, len(self.ihlist))) 
           return _h3d  
 
-      def getContent(self,ibinx, ibiny, ibinz, h2, h2name, _h3):
+      def getContent(self,ibinx, ibiny, ibinz, h2, h2name, _h3):          
           _angle=getangle(h2name)
           _content = h2.GetBinContent(ibinx,ibiny)
           _x,_y,_z = self.GetRotation(_h3.GetXaxis().GetBinCenter(ibinx), _h3.GetYaxis().GetBinCenter(ibiny), _h3.GetYaxis().GetBinCenter(ibinz),_angle)
@@ -111,8 +111,8 @@ class Filter():
           h2arraylist = np.zeros((len(self.h2list),self.h2list[0].GetNbinsX(),self.h2list[0].GetNbinsY()), dtype=int)
           _alist = []
           for ih2 in range(len(self.h2list)):
-            h2arraylist[ih2,:] = hist2array(self.h2list[ih2])
-            _alist.append(getangle(self.h2list[ih2].GetTitle()))
+             h2arraylist[ih2,:] = hist2array(self.h2list[ih2])
+             _alist.append(getangle(self.h2list[ih2].GetTitle()))            
           return h2arraylist, np.array(_alist)
       
       def defFilter(self): 

@@ -79,6 +79,7 @@ class hitcluster:
 class hitphoton:     
       def __init__(self): 
           self.options = list()
+          self.declare_option("energy")
           self.declare_option("energy_p")
           self.declare_option("energy_n")
           self.declare_option("adc_p")

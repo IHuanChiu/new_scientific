@@ -45,6 +45,7 @@ gROOT.ProcessLine(
    Int_t      nsignaly_lv1;\
    Int_t      nsignalx_lv2;\
    Int_t      nsignaly_lv2;\
+   Double_t  energy[128];\
    Double_t  energy_p[128];\
    Double_t  energy_n[128];\
    Double_t     adc_p[128];\
@@ -125,6 +126,7 @@ def makentuple(signal, cluster, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
     for n in range(1,len(signal)+1):          
        struct.adc_p[n-1]        = signal[n].adc_p
        struct.adc_n[n-1]        = signal[n].adc_n
+       struct.energy[n-1]       = signal[n].energy
        struct.energy_p[n-1]     = signal[n].energy_p
        struct.energy_n[n-1]     = signal[n].energy_n
        struct.axis_x[n-1]       = signal[n].x
@@ -269,6 +271,7 @@ class tran_process():
           self.tout.SetDirectory(0)
           self.tout.Branch( 'intvar', struct, 'trigger/I:unixtime:initUT:nhit:ncluster:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' )  
 
+          self.tout.Branch( 'energy', AddressOf( struct, 'energy' ),  'energy[nhit]/D' )
           self.tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),  'energy_p[nhit]/D' )
           self.tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ),  'energy_n[nhit]/D' )
           self.tout.Branch( 'adc_p',    AddressOf( struct, 'adc_p' ),     'adc_p[nhit]/D' )
