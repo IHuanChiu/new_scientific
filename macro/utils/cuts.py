@@ -19,7 +19,7 @@ from logger import log
 def PreEventSelection(ifile, tree, nmax):
     if not nmax: nmax = tree.GetEntries()
     cut = TCut("1")
-    if "test" in ifile : cut = TCut("integral_livetime > 500 && integral_livetime < 1500")
+    if "test_f_" in ifile : cut = TCut("integral_livetime > 500 && integral_livetime < 1500")
     if "20200307a" in ifile : cut = TCut("integral_livetime > 220 && integral_livetime < 380")
     cut += TCut("Entry$ < {}".format(nmax))
     cv = ROOT.TCanvas("","")
@@ -52,13 +52,13 @@ def findadccut(line, dtype, ecut):
        cut_flag = 0
        for iadc in range(20,500):
           if ch < 128: #asic 0~3
-             if (line[ch].Eval(iadc) > applyEcut) and (cut_flag is 0): 
+             if (line[ch].Eval(iadc) > applyEcut) and (cut_flag == 0): 
                 adccut.append(iadc)
                 cut_flag = 1
           else: #asic 4~7
-             if (line[ch].Eval(iadc) > (applyEcut/2.)) and (cut_flag is 0): 
+             if (line[ch].Eval(iadc) > (applyEcut/2.)) and (cut_flag == 0): 
                 adccut.append(iadc)
                 cut_flag = 1
-       if cut_flag is 0: adccut.append(enums.ADCUpperBound)# not find a good cut value for adc, drop this channel
+       if cut_flag == 0: adccut.append(enums.ADCUpperBound)# not find a good cut value for adc, drop this channel
     return adccut 
 

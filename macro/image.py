@@ -83,20 +83,28 @@ def image(tree, icut, position):
 
 
 def spectrum(tree, scut):
-    h1_p = ROOT.TH1F("Spectrum_pside","Spectrum pside", 100,0,100)
-    h1_n = ROOT.TH1F("Spectrum_nside","Spectrum nside", 100,0,100)
+    h1_s = ROOT.TH1F("Spectrum_allside","Spectrum allside", 300,0,150)
+    h1_p = ROOT.TH1F("Spectrum_pside","Spectrum pside", 300,0,150)
+    h1_n = ROOT.TH1F("Spectrum_nside","Spectrum nside", 300,0,150)
 
-    tree.Draw("energy_p >> h1_p(100,0,100)",scut,"")
-    tree.Draw("energy_n >> h1_n(100,0,100)",scut,"same")
+    tree.Draw("energy >> h1_s(300,0,150)",scut,"")
+    tree.Draw("energy_p >> h1_p(300,0,150)",scut,"same")
+    tree.Draw("energy_n >> h1_n(300,0,150)",scut,"same")
+    h1_s=gDirectory.Get("h1_s")
     h1_p=gDirectory.Get("h1_p")
     h1_n=gDirectory.Get("h1_n")
 #    h1_p.SetTitle(scut.GetTitle())
+    h1_s.SetStats(0)
+    h1_p.SetStats(0)
+    h1_n.SetStats(0)
+    h1_s.GetXaxis().SetTitle("energy [keV]")
+    h1_s.GetYaxis().SetTitle("Counts")
     h1_p.GetXaxis().SetTitle("energy [keV]")
     h1_p.GetYaxis().SetTitle("Counts")
     h1_n.GetXaxis().SetTitle("energy [keV]")
     h1_n.GetYaxis().SetTitle("Counts")
 
-    return h1_p, h1_n
+    return h1_s, h1_p, h1_n
 
 class Baseplot():
 
@@ -125,6 +133,7 @@ class Baseplot():
              mytree.Draw("trigger >> h_trigger(300,550,850)","","")
           h_tri = gDirectory.Get("h_trigger")
           h_tri.SetTitle("trigger time")
+          h_tri.SetStats(0)
           h_tri.GetXaxis().SetTitle("trigger")
           h_tri.GetYaxis().SetTitle("count")
           h_tri.Write()         
@@ -141,22 +150,29 @@ class Baseplot():
           h_nhit.Write()
  
           cv.cd(3)
-          if "CdTe" in self.dtype:
+          if "Lab" in self.dtype or "lab" in self.dtype:
+             Cut = makecut(basecut="1")
+          elif "CdTe" in self.dtype:
              Cut = makecut(basecut="((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253))")
           else:
              Cut = makecut(basecut="((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))")
           cut = Cut.get()
-          hist_spectrum_p, hist_spectrum_n = spectrum(mytree,cut)
+          hist_spectrum_s, hist_spectrum_p, hist_spectrum_n = spectrum(mytree,cut)
+          hist_spectrum_s.Write()
           hist_spectrum_p.Write()
           hist_spectrum_n.Write()
+          hist_spectrum_s.SetLineColor(1)
+          hist_spectrum_s.SetLineWidth(1)
+          hist_spectrum_s.SetMaximum(hist_spectrum_s.GetMaximum()*1.3);
           hist_spectrum_p.SetLineColor(ROOT.kPink+9)
-          hist_spectrum_p.SetLineWidth(2)
-          hist_spectrum_p.SetMaximum(hist_spectrum_p.GetMaximum()*1.3);
+          hist_spectrum_p.SetLineWidth(1)
           hist_spectrum_n.SetLineColor(ROOT.kAzure-1)
-          hist_spectrum_n.SetLineWidth(2)
-          hist_spectrum_p.Draw()
+          hist_spectrum_n.SetLineWidth(1)
+          hist_spectrum_s.Draw()
+          hist_spectrum_p.Draw("same")
           hist_spectrum_n.Draw("same")
           leg = ROOT.TLegend(.55,.78,.75,.90)
+          leg.AddEntry(hist_spectrum_s,  "E #gamma", "l")
           leg.AddEntry(hist_spectrum_p,  "P-side", "l")
           leg.AddEntry(hist_spectrum_n,  "N-side", "l")
           leg.Draw("same")
@@ -165,18 +181,24 @@ class Baseplot():
           cv.cd(4)
           gPad.SetLeftMargin(0.15)
           gPad.SetBottomMargin(0.15)
-          if "CdTe" in self.dtype:
-             Cut.add("(energy_p > 72 && energy_p < 78)")
+          if "Lab" in self.dtype or "lab" in self.dtype:
+             Cut.add("1")
+          elif "CdTe" in self.dtype:
+             Cut.add("(energy > 72 && energy < 78)")
           else:
-             Cut.add("(energy_p > 12 && energy_p < 16)")
+             Cut.add("(energy > 12 && energy < 16)")
           cut = Cut.get()
           hist_image = image(mytree,cut,"all")
           hist_image.Write()
           gPad.SetLogz(0) 
           gStyle.SetPalette(56)
           gPad.SetRightMargin(0.15)
-          hist_image.RebinX(4)
-          hist_image.RebinY(4)
+          if "Lab" in self.dtype or "lab" in self.dtype:
+             hist_image.RebinX(1)
+             hist_image.RebinY(1)
+          else:
+             hist_image.RebinX(4)
+             hist_image.RebinY(4)
           hist_image.Draw("colz")
 
           outf.Write()
@@ -198,7 +220,6 @@ def run3Dimage(args):
        log().info("Processing Back Projection...")
 #       SBP = SimpleBackProjection(h2list=ihlist)
 #       h3d=SBP.h3d
-
        FBP = Filter(h2list=ihlist)
        h3d=FBP.filtH3
 

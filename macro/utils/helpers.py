@@ -51,7 +51,6 @@ def GetInputList(inputFolder):
 def GetInitUnixTime(flist):
     _ifile = ROOT.TFile(flist)# first file
     _tree = _ifile.Get("eventtree")
-    print(_tree.GetEntries()) 
     _tree.Draw("unixtime >> temp_h1","Entry$ == 1","") # first event
     _h1 = ROOT.gDirectory.Get("temp_h1")
     return _h1.GetXaxis().GetBinCenter( _h1.GetMaximumBin() )
