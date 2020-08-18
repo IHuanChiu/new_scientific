@@ -37,7 +37,7 @@ def SelectEnergy(_ex, _ey):
     return True
 
 def isAdjacent(i, _hit):
-    if (i-1) is 0 : return False # first
+    if (i-1) == 0 or (i-1) == 128 : return False # first x or y
     if _hit[i].channel - _hit[i-1].channel is 1 : return True
     else: return False
 
@@ -48,7 +48,7 @@ def reset(index, _lv1hit, nad, _mhit):
        adc += _lv1hit[index-i].adc
     _mhit.energy, _mhit.adc = energy, adc
 
-    if nad is 1:  # one adjacent channel
+    if nad is 1:  # only one adjacent channel
        if _lv1hit[index].energy > _lv1hit[index -1].energy: _mhit.channel, _mhit.position = _lv1hit[index].channel, _lv1hit[index].position
        else: _mhit.channel, _mhit.position = _lv1hit[index-1].channel, _lv1hit[index-1].position
     else: 

@@ -38,6 +38,13 @@ def main(args):
     if p.fout is not None:
        b = Baseplot(infile=p.fout,outname=p.fout.GetName().split("/")[-1].split(".root")[0],dtype=args.dtype)
        b.plots()
+
+    if os.path.isfile(outname+"latest"):
+       os.system("cd %s"%(outname))
+       os.system("rm -f latest")
+    os.system("cd %s"%(outname))
+    os.system("ln -sf %s latest"%(p.fout.GetName()))
+    os.system("cd -")
     exit(0)
 
 if __name__ == "__main__":

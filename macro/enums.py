@@ -137,4 +137,5 @@ def findangle(UTtime):
     _nstep=16 
     _RT=1800 # rotation time 1800 s
     return (int(UTtime/_RT)%_nstep) * 2*(math.pi)/_nstep
+
 ## EOF
