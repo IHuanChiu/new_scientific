@@ -40,7 +40,7 @@ class hitchannel: # level-1 and level-2
           self.declare_option("adc", 0)
           self.declare_option("energy", 0)
           self.declare_option("position", 0)
-          self.declare_option("channel", 0)
+          self.declare_option("stripid", 0)
           self.declare_option("asic", 0)
           self.declare_option("nstrips", 0)
           self.declare_option("Lv1index", None)
@@ -95,10 +95,11 @@ class hitphoton:
 
 
 class database:
-      def __init__(self,detid,asicid,channel,posx,posy,widthx,widthy,ecut,calfunc):
+      def __init__(self,detid,asicid,channel,stripid,posx,posy,widthx,widthy,ecut,calfunc):
           self.detid   = detid
           self.asicid  = asicid
           self.channel = channel
+          self.stripid = stripid
           self.posx    = posx
           self.posy    = posy
           self.widthx  = widthx

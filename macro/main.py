@@ -23,7 +23,7 @@ from array import array
 import logging
 from utils.helpers import GetInputList, GetInitUnixTime 
 from process import Processor
-from image import Baseplot
+from plot import Baseplot
 
 def main(args):
     

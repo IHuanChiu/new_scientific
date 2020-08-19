@@ -80,7 +80,7 @@ def getlineEnergy(energyFile, name, channel):
     if "spline_maxbin" in name : return energyFile.Get('Calline%s'%(channel))
     # return energyFile.Get('spline_%s'%(channel)) #TODO calibration data is not good enough
     else:       
-       if channel is 240: return energyFile.Get('spline_%s'%(239))
+       if channel == 240: return energyFile.Get('spline_%s'%(239))
        elif channel >= 154 and channel <= 165:  return energyFile.Get('spline_%s'%(153))
        elif channel >= 219 and channel <= 225:  return energyFile.Get('spline_%s'%(218))
        else: return energyFile.Get('spline_%s'%(channel))
@@ -117,8 +117,8 @@ def Getdatabase():
     mdatabase = []
     for m in dbtree:
        func = m.calfunc.Clone()
-       D = database(m.detid,m.asicid,m.asicch,m.posx,m.posy,m.widthx,m.widthy,m.ethre,func)
-       mdatabase.append(D) # List for id 
+       D = database(m.detid,m.asicid,m.asicch,m.stripid,m.posx,m.posy,m.widthx,m.widthy,m.ethre,func)
+       mdatabase.append(D) # List for asicid (0-7) -> asicch (0-62)
     f.Close()
     return mdatabase
     
@@ -349,7 +349,7 @@ class tran_process():
              hit_signal = matchLv2(hitx_lv2, hity_lv2, self.deltae)
 
           if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 
-          if len(hit_signal) is 0: return 0 # skip 0 hit events
+          if len(hit_signal) == 0: return 0 # skip 0 hit events
 
           # varaibles of ntuple 
           struct.nsignalx_lv1 = len(hitx_lv1)
