@@ -81,9 +81,10 @@ def getlineEnergy(energyFile, name, channel):
     # return energyFile.Get('spline_%s'%(channel)) #TODO calibration data is not good enough
     else:       
        if channel == 240: return energyFile.Get('spline_%s'%(239))
-       elif channel >= 154 and channel <= 165:  return energyFile.Get('spline_%s'%(153))
-       elif channel >= 219 and channel <= 225:  return energyFile.Get('spline_%s'%(218))
-       else: return energyFile.Get('spline_%s'%(channel))
+       if channel >= 154 and channel <= 165:  return energyFile.Get('spline_%s'%(153))
+       if channel >= 219 and channel <= 225:  return energyFile.Get('spline_%s'%(218))
+       if channel == 127:  return energyFile.Get('spline_%s'%(126))
+       return energyFile.Get('spline_%s'%(channel))
        
 
 def getTSpline(self,fname, efname, dblist):
@@ -312,8 +313,8 @@ class tran_process():
           self.hist_list.append(self.h2_lv2)
           self.hist_list.append(self.hx)
           self.hist_list.append(self.hy)
-          self.hist_list.append(self.h2_cutflow_x)
-          self.hist_list.append(self.h2_cutflow_y)
+#          self.hist_list.append(self.h2_cutflow_x)
+#          self.hist_list.append(self.h2_cutflow_y)
           self.hist_list.append(self.h1_lv2_x_nstrips)
           self.hist_list.append(self.h1_lv2_y_nstrips)
 #          self.hist_list.append(self.h1_event_cutflow)
@@ -325,27 +326,20 @@ class tran_process():
           hitx_lv2, hity_lv2, cluster, hit_signal = {},{},{},{}
           self.tree.GetEntry(self.event_list.GetEntry(ie))
 
-          self.h2_cutflow_x.Fill(0, 128)
-          self.h2_cutflow_y.Fill(0, 128)
 
 #          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 #          hitx_lv1, hity_lv1 = Level1HitAll(rawdata_list, self.line, self.dblist)
           hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.cut, self.coef_R, self.dblist, self.efile, self.line, self.dtype)#Slow
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
-          self.h2_cutflow_x.Fill(1, len(hitx_lv1))
-          self.h2_cutflow_y.Fill(1, len(hity_lv1))
 
-          if len(hitx_lv1) != 0 and len(hity_lv1) != 0:
-             hitx_lv2, hity_lv2 = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
-             self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
-             self.h2_cutflow_x.Fill(2, len(hitx_lv2))
-             self.h2_cutflow_y.Fill(2, len(hity_lv2))
-             for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
-             for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
+          hitx_lv2, hity_lv2 = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
+          self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
+          for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
+          for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
 
           if len(hitx_lv2) != 0 and len(hity_lv2) != 0:   
              cluster = findcluster(hitx_lv2, hity_lv2)#Slow
-#             hit_signal = ClusterCategory(cluster)#Slow
+   #          hit_signal = ClusterCategory(cluster)#Slow
              hit_signal = matchLv2(hitx_lv2, hity_lv2, self.deltae)
 
           if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 

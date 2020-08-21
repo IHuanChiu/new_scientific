@@ -217,79 +217,89 @@ class EventCategory():
                 _dic.update({_n:self.case5[_i]})
           return _dic
 
-      def get1and1(self, _x0, _y0):
+      def get1and1(self, _x0, _y0, _type=None):
+          if _type is None: _t = 1
+          else: _t = _type
           _d, _n={}, 0
-          _p = setphoton((_x0.energy+_y0.energy)*0.5, _x0.energy,_y0.energy,_x0.adc,_y0.adc,_x0.position,_y0.position,1)
+          _p = setphoton((_x0.energy+_y0.energy)*0.5, _x0.energy,_y0.energy,_x0.adc,_y0.adc,_x0.position,_y0.position,_t)
           _n+=1
           _d.update({_n:_p})
           return _d
 
-      def get1and2(self, _x0, _y0, _y1):
+      def get1and2(self, _x0, _y0, _y1, _type=None):
+          if _type is None: _t = 2
+          else: _t = _type
           _d, _n={}, 0
           Ex0, Ey0, Ey1 = _x0.energy, _y0.energy, _y1.energy
-          if( math.fabs(Ex0 - (Ey0+Ey1)) < self.DeltaEnergy): # Two photons
-             _p = setphoton(Ey0, Ex0*Ey0/(Ey0+Ey1), Ey0, _x0.adc*Ey0/(Ey0+Ey1), _y0.adc, _x0.position, _y0.position, 2)
+          if( math.fabs(Ex0 - (Ey0+Ey1)) <= self.DeltaEnergy): # Two photons
+             _p = setphoton(Ey0, Ex0*Ey0/(Ey0+Ey1), Ey0, _x0.adc*Ey0/(Ey0+Ey1), _y0.adc, _x0.position, _y0.position, _t)
              _n+=1
              _d.update({_n:_p})
-             _p = setphoton(Ey1, Ex0*Ey1/(Ey0+Ey1), Ey1, _x0.adc*Ey1/(Ey0+Ey1), _y1.adc, _x0.position, _y1.position, 2)
+             _p = setphoton(Ey1, Ex0*Ey1/(Ey0+Ey1), Ey1, _x0.adc*Ey1/(Ey0+Ey1), _y1.adc, _x0.position, _y1.position, _t)
              _n+=1
              _d.update({_n:_p})               
           else: # One noise
-             if(math.fabs(Ex0 - Ey0) < math.fabs(Ex0 - Ey1)) and (math.fabs(Ex0 - Ey0) < self.DeltaEnergy):
-                _d = self.get1and1(_x0, _y0)
-             if (math.fabs(Ex0 - Ey1) < math.fabs(Ex0 - Ey1)) and (math.fabs(Ex0 - Ey1) < self.DeltaEnergy):
-                _d = self.get1and1(_x0, _y1)
+             if(math.fabs(Ex0 - Ey0) < math.fabs(Ex0 - Ey1)) and (math.fabs(Ex0 - Ey0) <= self.DeltaEnergy):
+                _d = self.get1and1(_x0, _y0, 2)
+             if (math.fabs(Ex0 - Ey0) > math.fabs(Ex0 - Ey1)) and (math.fabs(Ex0 - Ey1) <= self.DeltaEnergy):
+                _d = self.get1and1(_x0, _y1, 2)
           return _d
                         
-      def get2and1(self, _x0, _x1, _y0):
+      def get2and1(self, _x0, _x1, _y0, _type=None):
+          if _type is None: _t = 3
+          else: _t = _type
           _d, _n={}, 0
           Ex0, Ex1, Ey0 = _x0.energy, _x1.energy, _y0.energy
-          if( math.fabs(Ey0 - (Ex0+Ex1)) < self.DeltaEnergy):
-             _p = setphoton(Ex0, Ex0, Ey0*Ex0/(Ex0+Ex1), _x0.adc, _y0.adc*Ex0/(Ex0+Ex1), _x0.position, _y0.position, 3) 
+          if( math.fabs(Ey0 - (Ex0+Ex1)) <= self.DeltaEnergy):
+             _p = setphoton(Ex0, Ex0, Ey0*Ex0/(Ex0+Ex1), _x0.adc, _y0.adc*Ex0/(Ex0+Ex1), _x0.position, _y0.position, _t) 
              _n+=1
              _d.update({_n:_p})
 
-             _p = setphoton(Ex1, Ex1, Ey0*Ex1/(Ex0+Ex1), _x1.adc, _y0.adc*Ex1/(Ex0+Ex1), _x1.position, _y0.position, 3) 
+             _p = setphoton(Ex1, Ex1, Ey0*Ex1/(Ex0+Ex1), _x1.adc, _y0.adc*Ex1/(Ex0+Ex1), _x1.position, _y0.position, _t) 
              _n+=1
              _d.update({_n:_p})               
           else: 
-             if(math.fabs(Ey0 - Ex0) < math.fabs(Ey0 - Ex1)) and (math.fabs(Ey0 - Ex0) < self.DeltaEnergy):
-                _d = self.get1and1(_x0, _y0)
-             if (math.fabs(Ey0 - Ex1) < math.fabs(Ey0 - Ex1)) and (math.fabs(Ey0 - Ex1) < self.DeltaEnergy):
-                _d = self.get1and1(_x1, _y0)
+             if(math.fabs(Ey0 - Ex0) < math.fabs(Ey0 - Ex1)) and (math.fabs(Ey0 - Ex0) <= self.DeltaEnergy):
+                _d = self.get1and1(_x0, _y0, 3)
+             if (math.fabs(Ey0 - Ex0) > math.fabs(Ey0 - Ex1)) and (math.fabs(Ey0 - Ex1) <= self.DeltaEnergy):
+                _d = self.get1and1(_x1, _y0, 3)
           return _d
 
-      def get2and2(self, _x0, _x1, _y0, _y1):
+      def get2and2(self, _x0, _x1, _y0, _y1, _type=None):
+          if _type is None: _t = 4
+          else: _t = _type
           _d, _n={}, 0
           Ex0, Ex1, Ey0, Ey1 = _x0.energy, _x1.energy, _y0.energy, _y1.energy
-          if(math.fabs(Ex0+Ex1-Ey0-Ey1)  < self.DeltaEnergy ):#four photons
-             if(math.fabs(Ex0-Ey0) < self.DeltaEnergy) and (math.fabs(Ex1-Ey1) < self.DeltaEnergy):
-                _p = setphoton(_x0.energy, _x0.energy, _y0.energy, _x0.adc, _y0.adc, _x0.position, _y0.position, 4)
+          if(math.fabs(Ex0+Ex1-Ey0-Ey1)  <= self.DeltaEnergy ):#two photons
+             if(math.fabs(Ex0-Ey0) <= self.DeltaEnergy) and (math.fabs(Ex1-Ey1) <= self.DeltaEnergy):
+                _p = setphoton(_x0.energy, _x0.energy, _y0.energy, _x0.adc, _y0.adc, _x0.position, _y0.position, _t)
                 _n+=1
                 _d.update({_n:_p})
-                _p = setphoton(_x1.energy, _x1.energy, _y1.energy, _x1.adc, _y1.adc, _x1.position, _y1.position, 4)
+                _p = setphoton(_x1.energy, _x1.energy, _y1.energy, _x1.adc, _y1.adc, _x1.position, _y1.position, _t)
                 _n+=1
                 _d.update({_n:_p})
-             elif (math.fabs(Ex0-Ey1) < self.DeltaEnergy) and (math.fabs(Ex1-Ey0) < self.DeltaEnergy):
-                _p = setphoton(_x0.energy, _x0.energy, _y1.energy, _x0.adc, _y1.adc, _x0.position, _y1.position, 4)
+             elif (math.fabs(Ex0-Ey1) <= self.DeltaEnergy) and (math.fabs(Ex1-Ey0) <= self.DeltaEnergy):
+                _p = setphoton(_x0.energy, _x0.energy, _y1.energy, _x0.adc, _y1.adc, _x0.position, _y1.position, _t)
                 _n+=1
                 _d.update({_n:_p})
-                _p = setphoton(_x1.energy, _x1.energy, _y0.energy, _x1.adc, _y0.adc, _x1.position, _y0.position, 4)
+                _p = setphoton(_x1.energy, _x1.energy, _y0.energy, _x1.adc, _y0.adc, _x1.position, _y0.position, _t)
                 _n+=1
                 _d.update({_n:_p})
           elif ((Ey0+Ey1) > (Ex0+Ex1)):# one noise in y-side -> return case3 (2*1)
-             if  (((Ex0+Ex1) - Ey0) < self.DeltaEnergy):                   
-                _d = self.get2and1(_x0,_x1,_y0)
-             elif (((Ex0+Ex1) - Ey1) < self.DeltaEnergy):
-                _d = self.get2and1(_x0,_x1,_y1)
+             if  (((Ex0+Ex1) - Ey0) <= self.DeltaEnergy):                   
+                _d = self.get2and1(_x0,_x1,_y0, 4)
+             elif (((Ex0+Ex1) - Ey1) <= self.DeltaEnergy):
+                _d = self.get2and1(_x0,_x1,_y1, 4)
           else:# one noise in x-side -> return case2 (1*2)
-             if  (((Ey0+Ey1) - Ex0) < self.DeltaEnergy):
-                _d = self.get1and2(_x0,_y0,_y1)
-             elif (((Ey0+Ey1) - Ex1) < self.DeltaEnergy):
-                _d = self.get1and2(_x1,_y0,_y1)
+             if  (((Ey0+Ey1) - Ex0) <= self.DeltaEnergy):
+                _d = self.get1and2(_x0,_y0,_y1, 4)
+             elif (((Ey0+Ey1) - Ex1) <= self.DeltaEnergy):
+                _d = self.get1and2(_x1,_y0,_y1, 4)
           return _d
 
-      def getother(self, _xlist, _ylist):
+      def getother(self, _xlist, _ylist, _type=None):
+          if _type is None: _t = 5
+          else: _t = _type
           _d, _n, point={}, 0, 0
           maxpoint=min(len(_xlist),len(_ylist))
           xElist, yElist = setEnergyindex(_xlist), setEnergyindex(_ylist)
@@ -297,8 +307,8 @@ class EventCategory():
              xi, Ex = xElist[i]
              yi, Ey = yElist[i]
              xhit, yhit = _xlist[xi], _ylist[yi]
-             if math.fabs(Ex-Ey) < self.DeltaEnergy:
-                _p = setphoton((xhit.energy+yhit.energy)*0.5, xhit.energy, yhit.energy, xhit.adc, yhit.adc, xhit.position, yhit.position, 5)
+             if math.fabs(Ex-Ey) <= self.DeltaEnergy:
+                _p = setphoton((xhit.energy+yhit.energy)*0.5, xhit.energy, yhit.energy, xhit.adc, yhit.adc, xhit.position, yhit.position, _t)
                 _n+=1
                 _d.update({_n:_p})
           return _d

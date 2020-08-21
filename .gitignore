@@ -7,7 +7,9 @@ run/*
 *.root
 *.pyc
 macro/__pycache__/
+macro/latest
 macro/utils/__pycache__/
 macro/__pycache__/*
 macro/utils/__pycache__/*
+macro/scripts/filt-back-proj
 .DS_Store

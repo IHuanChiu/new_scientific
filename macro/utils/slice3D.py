@@ -143,7 +143,7 @@ def _getUTcut(_iplot):
     _group6 = "((unixtime > 1583802651) && (int(((unixtime-1583802651)/{0})%{1})=={2}) && ({3}%2==1) && ({3}>=3))".format(_timerange2,(_nsteps-1)/2,(_iplot-1)/2,_iplot)#from 67.5
     _utcut_name = "("+_group1+"||"+_group2+"||"+_group3+"||"+_group4+"||"+_group5+"||"+_group6+")"
     return _utcut_name
-         
+
 def makeTH2D(_chain,dtype):
     _nsteps = 31
     _timerange = 1800
