@@ -36,7 +36,18 @@ def mkSystemResponse(filename,n_images):
     print(_sr[0])
     return _sr
 
-def run(args):
+def GuessInitObjectSpace(_object):
+    # make inital object 
+    return _obforSR
+
+def getImageSpace(_object):
+    _image = _object*A # ???
+    return _image
+
+def IterativeMLEM(_sysRespond, _object, _image):
+    return 0
+
+def testrun(args):
     _sr=mkSystemResponse(args.inputFolder, args.nimages)
 
     #no need
@@ -55,4 +66,4 @@ if __name__=="__main__":
    parser.add_argument("-n","--nimages",dest="nimages",type=int, default=125, help="Number of images")
    args = parser.parse_args()
 
-   run(args)
+   testrun(args)
