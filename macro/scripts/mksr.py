@@ -21,6 +21,24 @@ import enums
 from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
 
+def GetImageSpace(filename,npixels,mypoint):
+    # Object spcae to image spcae
+    weight, sumw = 0,0
+    imagearray_list, weight_list=[],[]
+    f=ROOT.TFile(filename,"read")
+    for i in range(n_images):
+      _name = "image_pos"+str(i)
+      imagearray_list.append(hist2array(f.Get(_name)))
+    for i in range(len(imagearray_list)):
+       # TODO make mypoint and pixel_axis
+       # mypoint, and pixel_axis[i] are array [x,y,z]
+       weight=np.sum((mypoint-pixel_axis[i])**2)#Inverse square distance
+       sumw+=weight
+       weight_list.append(weight)# use this weight_list to find image for mypoint
+    for i in range(len(imagearray_list)):
+       myimageA+=imagearray_list[i]*weight_list[i]
+    return myimageA
+
 def mkSystemResponse(filename,n_images):
     am241_intensity = 363.1*1000 #Bq
     _time=600 #second
@@ -30,6 +48,7 @@ def mkSystemResponse(filename,n_images):
        _name = "image_pos"+str(i)
        image_list.append(f.Get(_name))
     _sr=np.zeros((len(image_list),image_list[0].GetNbinsX(),image_list[0].GetNbinsY()),dtype=float)
+    print(image_list[0].GetXaxis().GetBinCenter(1))
     for i in range(len(image_list)):
        _sr[i]=hist2array(image_list[i])
     _sr = _sr/(am241_intensity*_time)
@@ -40,9 +59,9 @@ def GuessInitObjectSpace(_object):
     # make inital object 
     return _obforSR
 
-def getImageSpace(_object):
-    _image = _object*A # ???
-    return _image
+#def getImageSpace(_object):
+#    _image = _object*A # ???
+#    return _image
 
 def IterativeMLEM(_sysRespond, _object, _image):
     return 0
