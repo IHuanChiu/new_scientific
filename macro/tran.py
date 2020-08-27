@@ -326,7 +326,6 @@ class tran_process():
           hitx_lv2, hity_lv2, cluster, hit_signal = {},{},{},{}
           self.tree.GetEntry(self.event_list.GetEntry(ie))
 
-
 #          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 #          hitx_lv1, hity_lv1 = Level1HitAll(rawdata_list, self.line, self.dblist)
           hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.cut, self.coef_R, self.dblist, self.efile, self.line, self.dtype)#Slow
