@@ -11,7 +11,7 @@ __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 
 # modules
 import sys,os,random,math,time,ROOT,argparse
-from ROOT import TFile, TTree, gROOT, TCut, gDirectory
+from ROOT import TFile, TTree, gROOT, TCut, gDirectory, TMinuit, Long, Double
 gROOT.SetBatch(1)
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/')
@@ -20,6 +20,74 @@ from logger import log, supports_color
 import enums
 from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
+
+class SystemResponse():
+      def __init__(self,filename=None,npoints=None,stepsize=None,npixels=None,nbins=None):
+          self.filename=filename
+          self.npoints=npoints
+          self.stepsize=stepsize
+          self.npixels=npixels
+          self.nbins=nbins
+
+      def getimages(self):
+          imagearray, pixel_axis=[], []
+          f=ROOT.TFile(self.filename,"read")
+          for ix in range(self.npoints):
+             for iy in range(self.npoints):
+                for iz in range(self.npoints):
+                   index=ix+iy*5+iz*25
+                   pixel_axis.append([(ix-2)*self.stepsize, (iy-2)*self.stepsize, (iz-2)*self.stepsize])
+                   _name = "image_pos"+str(i)
+                   imagearray.append(hist2array(f.Get(_name)))
+                   imagelist.append(f.Get(_name))
+          return imagelist, imagearray, pixel_axis
+
+      def getfunc(name, _down, _up):
+          myfunction = "gaus"
+          return ROOT.TF1(name,myfunction,_down,_up)
+
+      def fitting_para(self, imagelist):
+          paramater_list=[]
+          fit_range,fit_step=3,7.5
+          index, xup, xdown, yup, ydown=0,0,0,0,0
+          for ix in range(self.npoints):
+             for iy in range(self.npoints):
+                for iz in range(self.npoints):                
+                   xup=16-fit_step*ix+fit_range
+                   xdown=16-fit_step*ix-fit_range
+                   yup=16-fit_step*iy+fit_range
+                   ydown=16-fit_step*iy-fit_range
+                   gx=self.getfunc("gx",xdown,xup)
+                   gy=self.getfunc("gy",ydown,yup)
+                   hx=imagelist[index].ProjectionX()
+                   hy=imagelist[index].ProjectionY()
+                   hx.Fit("gx","QR")
+                   hy.Fit("gy","QR")                  
+                   mean_x, mean_y, sigma_x, sigma_y = gx.GetParameter(1), gy.GetParameter(1), gx.GetParameter(2), gy.GetParameter(2)
+                   paramater_list.append([mean_x, mean_y, sigma_x, sigma_y])
+                   index+=1
+          return paramater_list         
+
+      # TODO use TMinuit in python (check testfit.py !)
+      # or save fitting_par, pixel_axis, .... in a rootfile and do TMinuit by c++ and get result by 
+      # ROOT.gROOT.ProcessLine(".L fit.cxx+"),  ROOT.MyResult.aaaa , MyResult.aaaa is a function in fit.cxx
+      def deffunc(self,fitting_par,pixel_axis):
+          srf_par0, srf_par1, srf_par2, srf_par3 = 0,0,0,0
+          D2_x,D2_y,D2_xsig,D2_ysig=0,0,0,0
+          for _index in range(pow(self.npoints,3)):
+              func=srf_par0+srf_par1*pixel_axis[_index][0]+srf_par2*pixel_axis[_index][1]+srf_par3*pixel_axis[_index][2]
+              D2_x+=pow((fitting_par[_index][0] - func),2)
+              D2_y+=pow((fitting_par[_index][1] - func),2)
+              D2_xsig+=pow((fitting_par[_index][2] - func),2)
+              D2_ysig+=pow((fitting_par[_index][3] - func),2)
+              # four function
+
+      def srf(self:#system response function
+                    
+
+class MLEM():
+      def __init__(self,srf=None):
+          self.srf=srf          
 
 def GetImageSpace(filename,npixels,npoints,nbins,mypoint):
     # Object spcae to image spcae (by weighting image)
@@ -93,7 +161,7 @@ def testrun(args):
 if __name__=="__main__":
 
    parser = argparse.ArgumentParser(description='Process some integers.')
-   parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_calidata_split.root", help="Input File Name")
+   parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root", help="Input File Name")
    parser.add_argument("-n","--nimages",dest="nimages",type=int, default=125, help="Number of images")
    args = parser.parse_args()
 
