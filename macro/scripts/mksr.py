@@ -178,7 +178,7 @@ class MLEM():
       def __init__(self,para_dic=None,nbins=None):
           self.nbins=nbins
           self.para_dic=para_dic
-          self.image_var=self.srf(3,3,20)
+          self.image_var=self.srf(0,0,0)
           self.mlemh2,self.mlemhx,self.mlemhy=self.mkimage()
           self.mlemtree=self.mktree()
 
@@ -270,7 +270,7 @@ def mkSystemResponse(filename,_np):
 def testrun(args):
     log().info("Test run...")
     _sr=mkSystemResponse(args.inputFolder, args.npoints)
-    testpoint=np.array([10,10,10])
+    testpoint=np.array([0,0,0])
     testimage = GetImageSpace(args.inputFolder,128,5,128,testpoint)
 
     log().info("System response...")
@@ -286,9 +286,9 @@ def testrun(args):
 
     log().info("Making MLEM plots...")
     ML.mlemtree.Write()
-    ML.mlemh2.Write()
     ML.mlemhx.Write()
     ML.mlemhy.Write()
+    ML.mlemh2.Write()
 
     h2=ROOT.TH2D("h2","h2",testimage.shape[0], -16, 16,testimage.shape[1], -16, 16)
     array2hist(testimage,h2)

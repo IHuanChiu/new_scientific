@@ -58,7 +58,7 @@ def run3Dimage(args):
     log().info("Making 3D plots")
     cv  = createRatioCanvas("cv", 1600, 1600)
     _h3d_t = h3d.Clone()
-    if (_h3d_t.GetNbinsX() >= 128) : _h3d_t.Rebin3D(4,4,4)
+    if (_h3d_t.GetNbinsX() >= 128) : _h3d_t.Rebin3D(2,2,2)
     for _ix in range(1,_h3d_t.GetXaxis().GetNbins()+1):
        for _iy in range(1,_h3d_t.GetYaxis().GetNbins()+1):
           for _iz in range(1,_h3d_t.GetZaxis().GetNbins()+1):
