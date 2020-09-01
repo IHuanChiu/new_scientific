@@ -11,7 +11,7 @@ __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 
 # modules
 import sys,os,random,math,time,ROOT,argparse
-from ROOT import TFile, TTree, gROOT, TCut, gDirectory, TMinuit, Long, Double
+from ROOT import TFile, TTree, gROOT, TCut, gDirectory, TMinuit, Long, Double, TMath, AddressOf
 gROOT.SetBatch(1)
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/')
@@ -23,9 +23,17 @@ import numpy as np
 import ctypes
 from array import array;
 
+gROOT.ProcessLine(
+"struct MLEMStruct {\
+   Double_t  mlemx[128];\
+   Double_t  mlemy[128];\
+};"
+);
+
+from ROOT import MLEMStruct
+mlstruct = MLEMStruct()
+
 # ======================= find paramater for fitting ===================
-global paramater_list
-global pixel_axis
 class PrepareParameters():
       def __init__(self,filename=None,npoints=None,stepsize=None,npixels=None,nbins=None):
           self.filename=filename
@@ -70,9 +78,10 @@ class PrepareParameters():
                    _hx=h2.ProjectionX()
                    _hy=h2.ProjectionY()
                    _hx.Fit("gx","QR")
-                   _hy.Fit("gy","QR")                  
+                   _hy.Fit("gy","QR")                 
                    mean_x, mean_y, sigma_x, sigma_y = gx.GetParameter(1), gy.GetParameter(1), gx.GetParameter(2), gy.GetParameter(2)
-                   _paramater_list.append([mean_x, mean_y, sigma_x, sigma_y])                   
+                   intensity= _hx.GetEntries()
+                   _paramater_list.append([mean_x, mean_y, sigma_x, sigma_y, intensity])                   
                    index+=1
           return _paramater_list
 
@@ -104,17 +113,24 @@ def fcn_ysig(npar, gin, f, par, iflag):
     for _index in range(pow(nbins,3)):
        chisq += pow((paramater_list[_index][3] - deffunc(pixel_axis[_index][0],pixel_axis[_index][1],pixel_axis[_index][2],par)),2)
     f[0] = chisq
+def fcn_inten(npar, gin, f, par, iflag):
+    chisq, nbins = 0., 5
+    for _index in range(pow(nbins,3)):
+       chisq += pow((paramater_list[_index][4] - deffunc(pixel_axis[_index][0],pixel_axis[_index][1],pixel_axis[_index][2],par)),2)
+    f[0] = chisq
 
 class SystemResponse():
       def __init__(self):
-          self.par_x_y_xs_ys_list = self.GetSRpar()
+          self.par_x_y_xs_ys_inten = self.GetSRpar()
 
       def dofit(self, parname):
           if parname == "x": fcn = fcn_x
           if parname == "y": fcn = fcn_y
           if parname == "xsig": fcn = fcn_xsig
           if parname == "ysig": fcn = fcn_ysig
+          if parname == "inten": fcn = fcn_inten
           gMinuit = TMinuit(4)
+          gMinuit.SetPrintLevel(-1) # -1  quiet, 0  normal, 1  verbose
           gMinuit.SetFCN( fcn )
           arglist = array( 'd', 10*[0.] )
           ierflg = ctypes.c_int(1982)
@@ -148,19 +164,63 @@ class SystemResponse():
           return [par0,par1,par2,par3]
 
       def GetSRpar(self):
-          _par_x_y_xs_ys_list=[]
-          _par_x_y_xs_ys_list.append(self.dofit("x"))
-          _par_x_y_xs_ys_list.append(self.dofit("y"))
-          _par_x_y_xs_ys_list.append(self.dofit("xsig"))
-          _par_x_y_xs_ys_list.append(self.dofit("ysig"))
-          return _par_x_y_xs_ys_list
+          _par_x_y_xs_ys_inten={}
+          _par_x_y_xs_ys_inten.update({"x":self.dofit("x")})
+          _par_x_y_xs_ys_inten.update({"y":self.dofit("y")})
+          _par_x_y_xs_ys_inten.update({"xsig":self.dofit("xsig")})
+          _par_x_y_xs_ys_inten.update({"ysig":self.dofit("ysig")})
+          _par_x_y_xs_ys_inten.update({"intensity":self.dofit("inten")})
+          return _par_x_y_xs_ys_inten
 
+
+# ======================= Maximum Likelihood Expectation Maximization ===================
 class MLEM():
-      def __init__(self,srf=None):
-          self.srf=srf          
+      def __init__(self,para_dic=None,nbins=None):
+          self.nbins=nbins
+          self.para_dic=para_dic
+          self.image_var=self.srf(3,3,20)
+          self.mlemh2,self.mlemhx,self.mlemhy=self.mkimage()
+          self.mlemtree=self.mktree()
 
-#      def srf(self):#system response function
+      def srf(self,_x,_y,_z):
+          # system response function: 
+          # input : object(x,y,z)
+          # output : image(x,y,xsig,ysig,intensity)
+          par_x, par_y, par_xsig, par_ysig, par_inten = self.para_dic["x"], self.para_dic["y"], self.para_dic["xsig"], self.para_dic["ysig"], self.para_dic["intensity"]
+          image_x = par_x[0].value+par_x[1].value*_x+par_x[2].value*_y+par_x[3].value*_z
+          image_y = par_y[0].value+par_y[1].value*_x+par_y[2].value*_y+par_y[3].value*_z
+          image_xsig = par_xsig[0].value+par_xsig[1].value*_x+par_xsig[2].value*_y+par_xsig[3].value*_z
+          image_ysig = par_ysig[0].value+par_ysig[1].value*_x+par_ysig[2].value*_y+par_ysig[3].value*_z
+          image_intensity = par_inten[0].value+par_inten[1].value*_x+par_inten[2].value*_y+par_inten[3].value*_z
+          return [image_x,image_y,image_xsig,image_ysig,image_intensity]
 
+      def mktree(self):
+          _tree=TTree('tree','tree')          
+          _tree.SetDirectory(0)
+          _tree.Branch( 'mlemx', AddressOf( mlstruct, 'mlemx' ),  'mlemx/D' )
+          _tree.Branch( 'mlemy', AddressOf( mlstruct, 'mlemy' ),  'mlemy/D' )
+          for ie in range(int(self.image_var[4])):
+             _tree.Fill()
+          return _tree
+
+      def mkimage(self):
+          hx=ROOT.TH1D("hx","hx",self.nbins,-16,16)
+          hy=ROOT.TH1D("hy","hy",self.nbins,-16,16)
+          h2=ROOT.TH2D("image","image",self.nbins,-16,16,self.nbins,-16,16)
+          hx_gaus = ROOT.TF1("hx_gaus","TMath::Gaus(x,{0},{1})".format(self.image_var[0],self.image_var[2]),-16,16)
+          hy_gaus = ROOT.TF1("hy_gaus","TMath::Gaus(x,{0},{1})".format(self.image_var[1],self.image_var[3]),-16,16)
+          hx.FillRandom("hx_gaus",int(self.image_var[4]))
+          hy.FillRandom("hy_gaus",int(self.image_var[4]))
+          for ix in range(128):
+             for iy in range(128):
+                xvalue=hx.GetBinContent(ix+1)
+                yvalue=hy.GetBinContent(iy+1)
+                _bin=h2.GetBin(ix,iy)
+                if(xvalue!=0 and yvalue!=0): h2.SetBinContent(_bin,(xvalue+yvalue)/2)
+          return h2,hx,hy
+
+      def iterate(self):
+          return 0
 
 # ======================= test part ===================
 def GetImageSpace(filename,npixels,npoints,nbins,mypoint):
@@ -206,27 +266,39 @@ def mkSystemResponse(filename,_np):
     _sr = _sr/(am241_intensity*_time)
     return _sr
 
-
-
 # ======================= run ===================
 def testrun(args):
+    log().info("Test run...")
     _sr=mkSystemResponse(args.inputFolder, args.npoints)
-    testpoint=np.array([5,5,5])
+    testpoint=np.array([10,10,10])
     testimage = GetImageSpace(args.inputFolder,128,5,128,testpoint)
+
+    log().info("System response...")
     SR=SystemResponse()# fitting and print result
-    print(SR.par_x_y_xs_ys_list)
+    ML=MLEM(para_dic=SR.par_x_y_xs_ys_inten,nbins=128)
 
     #no need
     fout=ROOT.TFile("/Users/chiu.i-huan/Desktop/mytesth3output.root", 'recreate' )
     h3=ROOT.TH3D("h3","h3",_sr.shape[0], 0, 125,_sr.shape[1], -16, 16,_sr.shape[2],-16,16)
     array2hist(_sr,h3)
     fout.cd()
-    h3.Write()
+#    h3.Write()
+
+    log().info("Making MLEM plots...")
+    ML.mlemtree.Write()
+    ML.mlemh2.Write()
+    ML.mlemhx.Write()
+    ML.mlemhy.Write()
 
     h2=ROOT.TH2D("h2","h2",testimage.shape[0], -16, 16,testimage.shape[1], -16, 16)
     array2hist(testimage,h2)
+    _h1x=h2.ProjectionX()
+    _h1y=h2.ProjectionY()
+    _h1x.Write()
+    _h1y.Write()
     h2.Write()
 
+    log().info("Output : %s"%("/Users/chiu.i-huan/Desktop/mytesth3output.root"))
     exit(0)
 
 if __name__=="__main__":
