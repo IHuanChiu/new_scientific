@@ -56,11 +56,12 @@ void make_scpectum(){
   char name[100] = "";
 
   TCanvas *c1 = new TCanvas("c1","Energy Spectum",10,10,1600,800);
+  TCanvas *c2 = new TCanvas("c2","Energy Spectum Sum",10,10,800,800);
   c1->Divide(2,1);
 
   TFile *file, *outfile; 
   TTree *mytree;
-  TH1D *h_all_pa, *h_all_na,*h_all_ps, *h_all_ps_m, *h_all_ns, *h_all_ns_m, *h_all_nb, *h_all_pb;
+  TH1D *h_all_b, *h_all_a,*h_all_s, *h_all_pa, *h_all_na,*h_all_ps, *h_all_ps_m, *h_all_ns, *h_all_ns_m, *h_all_nb, *h_all_pb;
   TH2D* h_image;
   Double_t e_p[2048]; 
   Double_t e_n[2048]; 
@@ -72,7 +73,7 @@ void make_scpectum(){
   double e_max = 15;
   double e_min = 10;
 
-  file = new TFile("/Users/chiu.i-huan/Desktop/CdTe_merge.root","READ");
+  file = new TFile("/Users/chiu.i-huan/Desktop/CdTe_merge_fix.root","READ");
   outfile = new TFile("/Users/chiu.i-huan/Desktop/CdTe_merge_split.root","RECREATE");
 //  file = new TFile("/Users/chiu.i-huan/Desktop/Si_merge.root","READ");
   mytree = (TTree*)file->Get("tree");
@@ -190,17 +191,52 @@ void make_scpectum(){
 //  gStyle->SetPalette(53);
 //  h_image->Draw("colz");
   
-  sprintf(name, "../../run/figs/hist_comparison_e.pdf");
+  sprintf(name, "../../run/figs/hist_comparison_e_cdte.pdf");
   c1->SaveAs(name);
+
+  c2->cd();
+  mytree->Draw("energy >> h_all_a(300,0,150)",cut_basic,"");
+  mytree->Draw("energy >> h_all_s(300,0,150)",cut_basic+cut_signal,"");
+  mytree->Draw("energy >> h_all_b(300,0,150)",cut_basic+cut_bkg,"");
+  h_all_a = (TH1D*)gDirectory->Get("h_all_a");
+  h_all_s = (TH1D*)gDirectory->Get("h_all_s");
+  h_all_b = (TH1D*)gDirectory->Get("h_all_b"); 
+  h_all_a->SetTitle("Energy Spectrum");
+  h_all_a->GetXaxis()->SetTitle("energy [keV]");
+  h_all_a->GetYaxis()->SetTitle("Counts");
+  h_all_a->GetYaxis()->SetNdivisions(5,4,5);
+  h_all_a->SetMaximum(h_all_a->GetMaximum()*1.2);
+  h_all_a->SetMinimum(0);
+  h_all_a->SetLineColor(1);
+  h_all_a->SetLineWidth(1);
+  h_all_s->SetLineColor(kPink+9);
+  h_all_s->SetLineWidth(1);
+  h_all_b->SetLineColor(kAzure-1);
+  h_all_b->SetLineWidth(1);
+  h_all_a->Draw("HIST");
+  h_all_s->Draw("HIST same");
+  h_all_b->Draw("HIST same");
+
+  TLegend* legnew = new TLegend(.65,.75,.85,.90);
+  legnew->AddEntry(h_all_a,  "Sum", "l");
+  legnew->AddEntry(h_all_s,  "Signal", "l");
+  legnew->AddEntry(h_all_b,   "Bkg.",   "l");
+  legnew->Draw("same");
+  sprintf(name, "../../run/figs/hist_comparison_e_all_cdte.pdf");
+  c2->SaveAs(name);
 
   outfile->cd();
   c1->Write();
+  c2->Write();
   h_all_na->Write();
   h_all_ns->Write();
   h_all_nb->Write();
   h_all_pa->Write();
   h_all_ps->Write();
   h_all_pb->Write();
+  h_all_a->Write();
+  h_all_s->Write();
+  h_all_b->Write();
   outfile->Write();
 
  }
