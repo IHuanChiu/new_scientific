@@ -196,6 +196,7 @@ class MLEM():
           self.ori_image_list=self.PP.imagearray
           self.image_hx_hy_list_ori, self.image_hx_hy_list_sr=self.mkimage()
           self.mlemtree=self.mktree()
+          self.image_init=mkInitImage()
 
       def srf(self,_x,_y,_z):
           """
@@ -307,13 +308,16 @@ class MLEM():
           return image_hx_hy_list_ori, image_hx_hy_list_sr
 
       def mkInitImage(self):
+          # return initial image from object
           prog = ProgressBar(ntotal=pow(self.npixels,3),text="Processing image",init_t=time.time())
-          image_repro=ROOT.TH2D("image_repro","image_repro",self.nbins,-16,16,self.nbins,-16,16)
+          _image_init=ROOT.TH2D("image_init","image_init",self.nbins,-16,16,self.nbins,-16,16)
           nevents=200
           nevproc=0
           for _iz in range(self.npixels):
              for _iy in range(self.npixels):
                 for _ix in range(self.npixels):
+                   nevproc+=1
+                   if prog: prog.update(nevproc)
                    _xaxis = -20+_ix*(40./self.npixels)
                    _yaxis = -20+_iy*(40./self.npixels)
                    _zaxis = -20+_iz*(40./self.npixels)
@@ -321,22 +325,58 @@ class MLEM():
                    fx = ROOT.TF1("fx","TMath::Gaus(x,{0},{1})".format(imagespace_vars[0],imagespace_vars[2]),-16,16)
                    fy = ROOT.TF1("fy","TMath::Gaus(x,{0},{1})".format(imagespace_vars[1],imagespace_vars[3]),-16,16)
                    for ie in range(int(nevents)):
-                      image_repro.Fill(fx.GetRandom(-16,16), fy.GetRandom(-16,16))
-                   nevproc+=1
-                   if prog: prog.update(nevproc)
+                      _image_init.Fill(fx.GetRandom(-16,16), fy.GetRandom(-16,16))
           if prog: prog.finalize()
-          return image_repro
+          return _image_init
 
-      def findratio(self):
-          realdata_image=self.ori_image_list[61]
-          reproduction_image=hist2array(self.mkInitImage())
-          print(realdata_image.shape, reproduction_image.shape)
-          image_ratio=ROOT.TH2D("image_ratio","image_ratio",self.nbins,-16,16,self.nbins,-16,16)
-          array2hist(realdata_image/reproduction_image,image_ratio)
-          return image_ratio
+      def findSRImage(self,_object):
+          #TODO nevents is not good
+          _image_update=ROOT.TH2D("image_update","image_update",self.nbins,-16,16,self.nbins,-16,16)
+          for _iz in range(_object.shape[2]):
+             for _iy in range(_object.shape[1]):
+                for _ix in range(_object.shape[0]):
+                   _xaxis = -20+_ix*(40./self.npixels)
+                   _yaxis = -20+_iy*(40./self.npixels)
+                   _zaxis = -20+_iz*(40./self.npixels)
+                   imagespace_vars = self.srf(_xaxis, _yaxis, _zaxis)
+                   fx = ROOT.TF1("fx","TMath::Gaus(x,{0},{1})".format(imagespace_vars[0],imagespace_vars[2]),-16,16)
+                   fy = ROOT.TF1("fy","TMath::Gaus(x,{0},{1})".format(imagespace_vars[1],imagespace_vars[3]),-16,16)
+                   for ie in range(int(nevents)):
+                      _image_init.Fill(fx.GetRandom(-16,16), fy.GetRandom(-16,16))
+          return _image_init
+
+      def findratio(self,h_measurement,h_guess):
+          realdata_image=self.ori_image_list[62]
+          reproduction_image=hist2array(h_guess)
+          _where_0 = np.where(reproduction_image == 0)
+          reproduction_image[_where_0]=1
+          image_ratio=realdata_image/reproduction_image
+
+          hist_image_ratio=ROOT.TH2D("image_ratio","image_ratio",self.nbins,-16,16,self.nbins,-16,16)
+          array2hist(image_ratio,hist_image_ratio) # image_ratio is image ratio
+
+          # TODO next : find object ratio by system response
+          object_ratio=np.ones((self.npixels,self.npixels,self.npixels),dtype=float)
           
-      def iterate(self):                   
-          return 0
+          return hist_image_ratio
+
+      def updateObject(self,object_pre,object_ratio):
+          # update object based on object ratio
+          object_update=object_pre*object_ratio
+          return object_update
+
+      def iterate(self,n_iteration):                   
+          hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+          final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+          for i in range(n_iteration):
+             #TODO loop 16 images???
+             if i == 0: _image = self.image_init 
+             else: _image = self.findSRImage(_object_update)
+             _object_ratio=self.findratio(h_measurement, _image) 
+             _object_update=self.updateObject(_object_update, _object_ratio)
+             final_object+=_object_update             
+          array2hist(final_object,hist_final_object)
+          return hist_final_object
 
       def printoutput(self,RootType_list, _outname, savetype):
           if savetype == "re" or savetype == "RE" or savetype == "Re": _savetype = "recreate"
@@ -417,8 +457,8 @@ def testrun(args):
     ML.printoutput(ML.mlemtree,outfilename,"re")
     ML.printoutput(ML.image_hx_hy_list_ori,outfilename,"up")
     ML.printoutput(ML.image_hx_hy_list_sr,outfilename,"up")
-#    ML.printoutput(ML.mkInitImage(),outfilename,"up")
-#    ML.printoutput(ML.findratio(),outfilename,"up")
+    ML.printoutput(ML.image_init,outfilename,"up")
+    ML.printoutput(ML.findratio(ML.image_init,ML.image_init),outfilename,"up")
 
     # save fitting plots
 #    ML.printoutput(PP.hist_fitx,outfilename,"up")
