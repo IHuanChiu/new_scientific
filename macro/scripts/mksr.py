@@ -17,16 +17,17 @@ sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/')
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
 from logger import log, supports_color
+from helpers import GetTChain, createRatioCanvas, ProgressBar
 import enums
 from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
 import ctypes
-from array import array;
+from array import array
 
 gROOT.ProcessLine(
 "struct MLEMStruct {\
-   Double_t  mlemx[128];\
-   Double_t  mlemy[128];\
+   Double_t  mlemx;\
+   Double_t  mlemy;\
 };"
 );
 
@@ -34,7 +35,7 @@ from ROOT import MLEMStruct
 mlstruct = MLEMStruct()
 paramater_list,point_axis=[],[]
 
-# ======================= find paramater for fitting ===================
+# ======================= find the paramaters by fitting ===================
 class PrepareParameters():
       def __init__(self,filename=None,npoints=None,stepsize=None,npixels=None,nbins=None):
           self.filename=filename
@@ -43,19 +44,20 @@ class PrepareParameters():
           self.npixels=npixels
           self.nbins=nbins
           self.imagearray = self.getimages()
-          self.par_list = self.fitting_para()
+          self.par_list, self.hist_fitx, self.hist_fity = self.fitting_para()
 
       def getimages(self):
           global point_axis
           imagearray,point_axis=[],[]
           f=ROOT.TFile(self.filename,"read")
-          for ix in range(self.npoints):
+          index=0
+          for iz in range(self.npoints):
              for iy in range(self.npoints):
-                for iz in range(self.npoints):
-                   index=ix+iy*5+iz*25
+                for ix in range(self.npoints):
                    point_axis.append([(ix-2)*self.stepsize, (iy-2)*self.stepsize, (iz-2)*self.stepsize])
                    _name = "image_pos"+str(index)
                    imagearray.append(hist2array(f.Get(_name)))
+                   index+=1
           return imagearray
 
       def getfunc(self, name, _down, _up):
@@ -64,32 +66,39 @@ class PrepareParameters():
 
       def fitting_para(self):
           global paramater_list
-          paramater_list=[]
-          fit_range,fit_step=3,7.5
+          paramater_list, hist_fitxlist, hist_fitylist=[], [], []
+          fit_range,fit_step=5,7.5
+          fitz_range=1
           index, xup, xdown, yup, ydown=0,0,0,0,0
-          for ix in range(self.npoints):
+          for iz in range(self.npoints):
              for iy in range(self.npoints):
-                for iz in range(self.npoints):               
+                for ix in range(self.npoints):               
                    _h2name="_image_"+str(index)
                    h2=ROOT.TH2F(_h2name,_h2name,128,-16,16,128,-16,16) 
                    array2hist(self.imagearray[index],h2)
-                   xup=16-fit_step*ix+fit_range
-                   xdown=16-fit_step*ix-fit_range
-                   yup=16-fit_step*iy+fit_range
-                   ydown=16-fit_step*iy-fit_range
-                   gx=self.getfunc("gx",xdown,xup)
-                   gy=self.getfunc("gy",ydown,yup)                
+                   xup=16-fit_step*ix+fit_range+iz*fitz_range
+                   xdown=16-fit_step*ix-fit_range-iz*fitz_range
+                   yup=16-fit_step*iy+fit_range+iz*fitz_range
+                   ydown=16-fit_step*iy-fit_range-iz*fitz_range
+                   gx=self.getfunc("gx"+str(index),xdown,xup)
+                   gy=self.getfunc("gy"+str(index),ydown,yup)                
+#                   gx=self.getfunc("gx"+str(index),-16,16)
+#                   gy=self.getfunc("gy"+str(index),-16,16)                
                    _hx=h2.ProjectionX()
                    _hy=h2.ProjectionY()
-                   _hx.Fit("gx","QR")
-                   _hy.Fit("gy","QR")                 
+                   _hx.Fit("gx"+str(index),"QR")
+                   _hy.Fit("gy"+str(index),"QR")                 
                    mean_x, mean_y, sigma_x, sigma_y = gx.GetParameter(1), gy.GetParameter(1), gx.GetParameter(2), gy.GetParameter(2)
                    intensity= _hx.GetEntries()
-                   paramater_list.append([mean_x, mean_y, sigma_x, sigma_y, intensity])                   
+#                   intensity= gx.Integral(gx.GetXmin(),gx.GetXmax()) # intensity from fitting
+                   paramater_list.append([mean_x, mean_y, sigma_x, sigma_y, intensity])                  
+                   hist_fitxlist.append(_hx)
+                   hist_fitylist.append(_hy)
                    index+=1
-          return paramater_list
+                   del _hx, _hy, gx, gy
+          return paramater_list, hist_fitxlist, hist_fitylist
 
-# ======================= varaible fitting for function ===================
+# ======================= fit with TMinuit for the varaibles of function ===================
 def deffunc(_x,_y,_z,par):         
     func=par[0]+par[1]*_x+par[2]*_y+par[3]*_z
     return func
@@ -175,17 +184,25 @@ class SystemResponse():
 
 # ======================= Maximum Likelihood Expectation Maximization ===================
 class MLEM():
-      def __init__(self,para_dic=None,nbins=None,ori_image_list=None):
+      def __init__(self,PPclass=None,SRclass=None,npoints=None,nbins=None,npixels=None):
+          self.PP=PPclass
+          self.SR=SRclass
           self.nbins=nbins
-          self.para_dic=para_dic
-          self.ori_image_list=ori_image_list
+          self.npoints=npoints
+          self.npixels=npixels
+          self.hist_fitx=self.PP.hist_fitx
+          self.hist_fity=self.PP.hist_fity
+          self.para_dic=self.SR.par_x_y_xs_ys_inten
+          self.ori_image_list=self.PP.imagearray
           self.image_hx_hy_list_ori, self.image_hx_hy_list_sr=self.mkimage()
           self.mlemtree=self.mktree()
 
       def srf(self,_x,_y,_z):
-          # system response function: 
-          # input : object(x,y,z)
-          # output : image(x,y,xsig,ysig,intensity)
+          """
+          system response function: 
+          input : object(x,y,z)
+          output : image(x,y,xsig,ysig,intensity)
+          """
           par_x, par_y, par_xsig, par_ysig, par_inten = self.para_dic["x"], self.para_dic["y"], self.para_dic["xsig"], self.para_dic["ysig"], self.para_dic["intensity"]
           image_x = par_x[0].value+par_x[1].value*_x+par_x[2].value*_y+par_x[3].value*_z
           image_y = par_y[0].value+par_y[1].value*_x+par_y[2].value*_y+par_y[3].value*_z
@@ -195,48 +212,130 @@ class MLEM():
           return [image_x,image_y,image_xsig,image_ysig,image_intensity]
 
       def mktree(self):
+          mypoint=[7,7,7]
+          image_var = self.srf(mypoint[0],mypoint[1],mypoint[2])
           _tree=TTree('tree','tree')          
           _tree.SetDirectory(0)
           _tree.Branch( 'mlemx', AddressOf( mlstruct, 'mlemx' ),  'mlemx/D' )
           _tree.Branch( 'mlemy', AddressOf( mlstruct, 'mlemy' ),  'mlemy/D' )
-          for ie in range(int(100)):
+          hx_gaus = ROOT.TF1("hx_gaus","TMath::Gaus(x,{0},{1})".format(image_var[0],image_var[2]),-16,16)
+          hy_gaus = ROOT.TF1("hy_gaus","TMath::Gaus(x,{0},{1})".format(image_var[1],image_var[3]),-16,16)
+          for ie in range(int(image_var[4])):
+             mlstruct.mlemx=hx_gaus.GetRandom(-16,16)
+             mlstruct.mlemy=hy_gaus.GetRandom(-16,16)
              _tree.Fill()
           return _tree
 
       def mkimage(self):
           # make original vs. system response comparison plots
           image_hx_hy_list_sr, image_hx_hy_list_ori=[],[]
-          for _ip in range(len(point_axis)):
-             # original plots
-             _h2name="image_ori_"+str(_ip)             
-             _h2=ROOT.TH2F(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16) 
-             array2hist(self.ori_image_list[_ip],_h2)
-             image_hx_hy_list_ori.append(_h2)
-             image_hx_hy_list_ori.append(_h2.ProjectionX())
-             image_hx_hy_list_ori.append(_h2.ProjectionY())
+          _ip=0
+          for _iz in range(self.npoints):
+             _cvx  = createRatioCanvas("cvx_{}".format(_iz), 2500, 2500)
+             _cvy  = createRatioCanvas("cvy_{}".format(_iz), 2500, 2500)
+             _cvx.Divide(self.npoints,self.npoints)
+             _cvy.Divide(self.npoints,self.npoints)
+             _cvfitx  = createRatioCanvas("cvfitx_{}".format(_iz), 2500, 2500)
+             _cvfity  = createRatioCanvas("cvfity_{}".format(_iz), 2500, 2500)
+             _cvfitx.Divide(self.npoints,self.npoints)
+             _cvfity.Divide(self.npoints,self.npoints)
+             for _iy in range(self.npoints):
+                for _ix in range(self.npoints):              
+                   # original plots
+                   _h2name="image_ori_"+str(_ip)             
+                   _h2=ROOT.TH2F(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16) 
+                   array2hist(self.ori_image_list[_ip],_h2)
+                   image_hx_hy_list_ori.append(_h2)
+                   image_hx_hy_list_ori.append(_h2.ProjectionX())
+                   image_hx_hy_list_ori.append(_h2.ProjectionY())
 
-             # system response plots
-             image_var = self.srf(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
-             _h2name="image_sr_"+str(_ip)
-             h2=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
-             hx=ROOT.TH1D(_h2name+"hx",_h2name+"hx",self.nbins,-16,16)
-             hy=ROOT.TH1D(_h2name+"hy",_h2name+"hy",self.nbins,-16,16)
-             hx_gaus = ROOT.TF1("hx_gaus","TMath::Gaus(x,{0},{1})".format(image_var[0],image_var[2]),-16,16)
-             hy_gaus = ROOT.TF1("hy_gaus","TMath::Gaus(x,{0},{1})".format(image_var[1],image_var[3]),-16,16)
-             hx.FillRandom("hx_gaus",int(image_var[4]))
-             hy.FillRandom("hy_gaus",int(image_var[4]))
-             for ix in range(self.nbins):
-                for iy in range(self.nbins):
-                   xvalue=hx.GetBinContent(ix+1)
-                   yvalue=hy.GetBinContent(iy+1)
-                   _bin=h2.GetBin(ix,iy)
-                   if(xvalue!=0 and yvalue!=0): h2.SetBinContent(_bin,(xvalue+yvalue)/2)
-             image_hx_hy_list_sr.append(h2)
-             image_hx_hy_list_sr.append(hx)
-             image_hx_hy_list_sr.append(hy)             
+                   # system response plots
+                   image_var = self.srf(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
+                   _h2name="image_sr_"+str(_ip)
+                   h2=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
+                   hx=ROOT.TH1D(_h2name+"hx",_h2name+"hx",self.nbins,-16,16)
+                   hy=ROOT.TH1D(_h2name+"hy",_h2name+"hy",self.nbins,-16,16)
+                   hx_gaus = ROOT.TF1("hx_gaus","TMath::Gaus(x,{0},{1})".format(image_var[0],image_var[2]),-20,20)
+                   hy_gaus = ROOT.TF1("hy_gaus","TMath::Gaus(x,{0},{1})".format(image_var[1],image_var[3]),-20,20)
+                   hx.FillRandom("hx_gaus",int(image_var[4]))
+                   hy.FillRandom("hy_gaus",int(image_var[4]))
+                   for ie in range(int(image_var[4])):
+                      h2.Fill(hx_gaus.GetRandom(-16,16), hy_gaus.GetRandom(-16,16))
+                   image_hx_hy_list_sr.append(h2)
+                   image_hx_hy_list_sr.append(hx)
+                   image_hx_hy_list_sr.append(hy)            
+
+                   # comparison canvas fitting result
+                   _cvfitx.cd((_ix+1)+_iy*self.npoints)
+                   self.hist_fitx[_ip].SetMaximum(350)
+                   self.hist_fitx[_ip].Draw()
+                   _cvfity.cd((_iy+1)+_ix*self.npoints)
+                   self.hist_fity[_ip].SetMaximum(350)
+                   self.hist_fity[_ip].Draw()
+                   # comparison canvas MLEM result
+                   hx_ori=_h2.ProjectionX()
+                   hy_ori=_h2.ProjectionY()
+                   hx_ori.SetStats(0)
+                   hy_ori.SetStats(0)
+                   hx_ori.SetLineColor(1)
+                   hy_ori.SetLineColor(1)
+                   hx.SetStats(0)
+                   hy.SetStats(0)
+                   hx.SetLineColor(2)
+                   hy.SetLineColor(2)
+#                   hx_ori.SetMaximum(hx_ori.GetMaximum()*1.5)
+#                   hy_ori.SetMaximum(hy_ori.GetMaximum()*1.5)
+                   hx_ori.SetMaximum(350)
+                   hy_ori.SetMaximum(350)
+                   _cvx.cd((_ix+1)+_iy*self.npoints) 
+                   hx_ori.Draw()
+                   hx.Draw("same")
+                   _cvy.cd((_iy+1)+_ix*self.npoints) 
+                   hy_ori.Draw()
+                   hy.Draw("same")
+                   del _h2, h2, hx, hy
+                   _ip+=1 
+
+             _pdfname = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/MLEM_comparison_x_z{}.pdf".format(_iz)
+             _cvx.SaveAs(_pdfname)
+             _pdfname = _pdfname.replace("_x_","_y_")
+             _cvy.SaveAs(_pdfname)
+             _pdffit = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/MLEM_comparison_fitx_z{}.pdf".format(_iz)
+             _cvfitx.SaveAs(_pdffit)
+             _pdffit = _pdffit.replace("_fitx_","_fity_")
+             _cvfity.SaveAs(_pdffit)
           return image_hx_hy_list_ori, image_hx_hy_list_sr
 
-      def iterate(self):
+      def mkInitImage(self):
+          prog = ProgressBar(ntotal=pow(self.npixels,3),text="Processing image",init_t=time.time())
+          image_repro=ROOT.TH2D("image_repro","image_repro",self.nbins,-16,16,self.nbins,-16,16)
+          nevents=200
+          nevproc=0
+          for _iz in range(self.npixels):
+             for _iy in range(self.npixels):
+                for _ix in range(self.npixels):
+                   _xaxis = -20+_ix*(40./self.npixels)
+                   _yaxis = -20+_iy*(40./self.npixels)
+                   _zaxis = -20+_iz*(40./self.npixels)
+                   imagespace_vars = self.srf(_xaxis, _yaxis, _zaxis)
+                   fx = ROOT.TF1("fx","TMath::Gaus(x,{0},{1})".format(imagespace_vars[0],imagespace_vars[2]),-16,16)
+                   fy = ROOT.TF1("fy","TMath::Gaus(x,{0},{1})".format(imagespace_vars[1],imagespace_vars[3]),-16,16)
+                   for ie in range(int(nevents)):
+                      image_repro.Fill(fx.GetRandom(-16,16), fy.GetRandom(-16,16))
+                   nevproc+=1
+                   if prog: prog.update(nevproc)
+          if prog: prog.finalize()
+          return image_repro
+
+      def findratio(self):
+          realdata_image=self.ori_image_list[61]
+          reproduction_image=hist2array(self.mkInitImage())
+          print(realdata_image.shape, reproduction_image.shape)
+          image_ratio=ROOT.TH2D("image_ratio","image_ratio",self.nbins,-16,16,self.nbins,-16,16)
+          array2hist(realdata_image/reproduction_image,image_ratio)
+          return image_ratio
+          
+      def iterate(self):                   
           return 0
 
       def printoutput(self,RootType_list, _outname, savetype):
@@ -251,7 +350,7 @@ class MLEM():
              RootType_list.Write()
           fout.Close()
 
-# ======================= test part ===================
+# ======================= test part (old) ===================
 def GetImageSpace(filename,npixels,npoints,nbins,mypoint):
     # Object spcae to image spcae (by weighting image)
     my_axis=[]
@@ -299,17 +398,18 @@ def mkWeightFunc(filename,_np):
 def testrun(args):
     outfilename = "/Users/chiu.i-huan/Desktop/mytesth3output.root"
     log().info("Test run...")
+    image_nbins=128
     _sr=mkWeightFunc(args.inputFolder, args.npoints)
     testpoint=np.array([0,0,0])
-    testimage = GetImageSpace(args.inputFolder,128,5,128,testpoint)
+    testimage = GetImageSpace(args.inputFolder,image_nbins,5,image_nbins,testpoint)
 
     log().info("Progressing System response and making MLEM plots...")
-    PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=args.npixels,nbins=128) # get cali. image list
+    PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=args.npixels,nbins=image_nbins) # get cali. image list
     SR=SystemResponse()# get system response by TMinuit fitting
-    ML=MLEM(para_dic=SR.par_x_y_xs_ys_inten,nbins=128,ori_image_list=PP.imagearray) # do iterate and get final plots
+    ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels) # do iterate and get final plots
 
     #no need
-    h3=ROOT.TH3D("h3","h3",_sr.shape[0], 0, 125,_sr.shape[1], -16, 16,_sr.shape[2],-16,16)
+    h3=ROOT.TH3D("h3","h3",_sr.shape[0],0,125,_sr.shape[1],-16,16,_sr.shape[2],-16,16)
     array2hist(_sr,h3)
 #    ML.printoutput(h3,outfilename,"re")
 
@@ -317,6 +417,12 @@ def testrun(args):
     ML.printoutput(ML.mlemtree,outfilename,"re")
     ML.printoutput(ML.image_hx_hy_list_ori,outfilename,"up")
     ML.printoutput(ML.image_hx_hy_list_sr,outfilename,"up")
+#    ML.printoutput(ML.mkInitImage(),outfilename,"up")
+#    ML.printoutput(ML.findratio(),outfilename,"up")
+
+    # save fitting plots
+#    ML.printoutput(PP.hist_fitx,outfilename,"up")
+#    ML.printoutput(PP.hist_fity,outfilename,"up")
 
     h2=ROOT.TH2D("h2","h2",testimage.shape[0], -16, 16,testimage.shape[1], -16, 16)
     array2hist(testimage,h2)
@@ -331,7 +437,7 @@ if __name__=="__main__":
    parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root", help="Input File Name")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of images")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="Number of images")
-   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=50, help="Number of images")
+   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=10, help="Number of images")
    args = parser.parse_args()
 
    testrun(args)
