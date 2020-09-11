@@ -73,23 +73,6 @@ def run3Dimage(args):
 
     # === make slices for xyz-sxis & projection ===
     if args.input3Dhist is None: 
-
-       if len(ihlist) == 16:
-          SetMyPalette("Bird",1)
-          cv2  = createRatioCanvas("cv2", 3600, 3600)
-          cv2.Divide(4,4)
-          for _ih in range(len(ihlist)): 
-             cv2.cd(_ih+1).SetRightMargin(0.18)
-             if (ihlist[_ih].GetNbinsX() >= 128): ihlist[_ih].Rebin2D(4,4)
-             ihlist[_ih].SetStats(0)
-             ihlist[_ih].SetXTitle("x")
-             ihlist[_ih].SetYTitle("y")
-             ihlist[_ih].SetTitle("angle : %.1f%s"%(360./len(ihlist)*_ih,enums.DEG))
-             ihlist[_ih].Draw("colz")
-          _out2dfig = _outfig.replace("hist_3D_image", "hist_2D_image")
-          cv2.Print(_out2dfig)
-       else: 
-          log.info("Cannot make 2D images, check angle range !")
        
        log().info("Making 2D Slices")
        SetMyPalette("Bird",1)
@@ -109,9 +92,26 @@ def run3Dimage(args):
        for _ih2 in range(len(FBP.filth2)): 
           FBP.filth2[_ih2].SetTitle("Filt, angle : %.1f%s"%(360./len(FBP.filth2)*_ih2,enums.DEG))
           FBP.filth2[_ih2].Write()           
-       cv2.Write()
        h3d_t.Write()
        h3d.Write()
+
+       if len(ihlist) == 16:
+          SetMyPalette("Bird",1)
+          cv2  = createRatioCanvas("cv2", 3600, 3600)
+          cv2.Divide(4,4)
+          for _ih in range(len(ihlist)): 
+             cv2.cd(_ih+1).SetRightMargin(0.18)
+             if (ihlist[_ih].GetNbinsX() >= 128): ihlist[_ih].Rebin2D(4,4)
+             ihlist[_ih].SetStats(0)
+             ihlist[_ih].SetXTitle("x")
+             ihlist[_ih].SetYTitle("y")
+             ihlist[_ih].SetTitle("angle : %.1f%s"%(360./len(ihlist)*_ih,enums.DEG))
+             ihlist[_ih].Draw("colz")
+          _out2dfig = _outfig.replace("hist_3D_image", "hist_2D_image")
+          cv2.Print(_out2dfig)
+       else: 
+          log.info("Cannot make 2D images, check angle range !")
+       cv2.Write()
        f.Write()    
 
     else: 
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output", type=str, default=None, help="Output file")
     parser.add_argument("-p", "--input3Dhist", type=str, default=None, help="Input 3D file")
     parser.add_argument("-d", "--dtype", dest="dtype", type=str, default = "CdTe", help="Si or CdTe" )
-    parser.add_argument("-c", "--cut", type=int, default = 250, help="count cut for 3D image" )
+    parser.add_argument("-c", "--cut", type=int, default = 100, help="count cut for 3D image" )
     args = parser.parse_args()
     
     run3Dimage( args )
