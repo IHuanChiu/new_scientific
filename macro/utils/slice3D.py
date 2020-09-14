@@ -13,7 +13,7 @@ __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 import sys,os,random,math,ROOT
 from ROOT import TFile, TTree, gROOT, gStyle, TCut, gPad, gDirectory
 ROOT.gROOT.SetBatch(1)
-from logger import log, supports_color
+from utils.logger import log, supports_color
 from helpers import createRatioCanvas
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
 import enums

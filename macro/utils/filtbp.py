@@ -15,7 +15,7 @@ from ROOT import TFile, TTree, gROOT, TCut, gDirectory
 ROOT.gROOT.SetBatch(1)
 import argparse
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
-from logger import log, supports_color
+from utils.logger import log, supports_color
 import enums
 from enums import getangle
 

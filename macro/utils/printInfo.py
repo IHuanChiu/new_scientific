@@ -20,7 +20,7 @@ from multiprocessing import Pool, cpu_count
 from array import array
 from random import gauss
 import logging
-from logger import log
+from utils.logger import log
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/')
 
 def test():
@@ -35,7 +35,7 @@ def checkTree(tree, nmax):
        totalyhit += e.nsignaly_lv1
        totalhit += e.nhit
 
-    if totalevent is not 0 :
+    if totalevent != 0 :
        log().info("=========== Summary ===========")
        log().info("Total final events : %s / %s"%(totalevent, nmax))
        log().info("Hits summary (average) =>   X : %s (%.2f);  Y : %s (%.2f);  Point : %s (%.2f);"%(totalxhit, totalxhit/totalevent, totalyhit, totalyhit/totalevent, totalhit, totalhit/totalevent))

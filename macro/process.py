@@ -1,4 +1,3 @@
-from logger import log, supports_color
 import sys
 from array import array
 import ROOT
@@ -10,6 +9,7 @@ from utils.helpers import ProgressBar
 from tran import tran_process
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
+from logger import log, supports_color
 from slimming import DisableBranch
 from utils.cuts import PreEventSelection, findx2yshift, findadccut
 from printInfo import checkTree

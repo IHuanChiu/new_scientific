@@ -14,7 +14,6 @@ import sys,os,random,math,ROOT
 from ROOT import TFile, TTree, TCut, TChain, TSelector
 from ROOT import gROOT, AddressOf
 import enums 
-from logger import log
 from hits import hitphoton
 
 class Category():

@@ -19,10 +19,10 @@ sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
 from logger import log, supports_color
-from utils.helpers import GetTChain, createRatioCanvas
-from utils.color import SetMyPalette
+from helpers import GetTChain, createRatioCanvas
+from color import SetMyPalette
 from slice3D import MakeSlicePlots, makeTH2D, mergeTH2D 
-from utils.filtbp import Filter, SimpleBackProjection 
+from filtbp import Filter, SimpleBackProjection 
 import enums
 
 __location__ = os.path.realpath(

@@ -1,4 +1,4 @@
-from logger import log, supports_color
+from utils.logger import log, supports_color
 import sys
 from array import array
 import glob,ROOT

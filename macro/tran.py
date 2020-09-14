@@ -20,8 +20,6 @@ from multiprocessing import Pool, cpu_count
 import time
 from time import localtime, asctime
 from array import array
-import logging
-from logger import log
 from random import gauss
 import numpy as np
 #sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')

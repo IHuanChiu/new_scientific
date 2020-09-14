@@ -55,7 +55,6 @@ class makecut():
           return TCut(self.base)
 
 def image(tree, icut, position):
-    ROOT.SetAtlasStyle()
 # =============== make image =============
 #    addition_cut = TCut("weight * (energy_p>{} && energy_p < {})".format(e_min, e_max))
 #    icut += addition_cut
@@ -102,6 +101,7 @@ class Baseplot():
 
       def plots(self):
           log().info("Plotting...")
+          ROOT.SetAtlasStyle()
           filename = self.infile.GetName()
           f = ROOT.TFile(filename)
           mytree   =  f.Get("tree")
