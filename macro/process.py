@@ -5,7 +5,7 @@ import os
 import time
 from time import localtime, asctime
 from multiprocessing import Pool, cpu_count
-from utils.helpers import ProgressBar
+from utils.helpers import ProgressBar, GetTChain
 from tran import tran_process
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/utils/')
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
@@ -56,9 +56,9 @@ class Processor():
       def __get_selector__(self):
           log().info("Preparing jobs...")
           selectorjob_list = list()          
-          sele, nfile = 0,0
-          #TODO use TCahin for multi-file
+          sele,nfile = 0,0
           log().info("Current Tpye : %s "%(self.dtype))
+          #MYTIME
           for self.ifilename in self.ifilelist:
              nfile+=1
              self.ifile = ROOT.TFile(self.ifilename)

@@ -26,7 +26,7 @@ import numpy as np
 #sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/macro/scripts/')
 from utils.printInfo import checkTree
 from utils.slimming import DisableBranch
-from utils.countHit import Level1HitAll, Level2Hit, findcluster, ClusterCategory, matchLv2, Level1Hit
+from utils.countHit import Level1HitArray, Level2Hit, findcluster, ClusterCategory, matchLv2, Level1Hit
 from utils.cuts import PreEventSelection, findx2yshift, findadccut
 from utils.hits import database, rawdata_eventtree
 import enums
@@ -321,24 +321,29 @@ class tran_process():
           self.drawables = self.hist_list + self.tree_list
 
       def tran_adc2e(self,ie):
+          tti=time.time()
           hitx_lv2, hity_lv2, cluster, hit_signal = {},{},{},{}
           self.tree.GetEntry(self.event_list.GetEntry(ie))
 
+          tti2=time.time()
 #          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
-#          hitx_lv1, hity_lv1 = Level1HitAll(rawdata_list, self.line, self.dblist)
+#          hitx_lv1, hity_lv1 = Level1HitArray(rawdata_list, self.line, self.dblist)
           hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.cut, self.coef_R, self.dblist, self.efile, self.line, self.dtype)#Slow
-          self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
+#          self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
 
+          tti3=time.time()
           hitx_lv2, hity_lv2 = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
-          self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
-          for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
-          for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
+#          self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
+#          for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
+#          for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
 
+          tti4=time.time()
           if len(hitx_lv2) != 0 and len(hity_lv2) != 0:   
              cluster = findcluster(hitx_lv2, hity_lv2)#Slow
    #          hit_signal = ClusterCategory(cluster)#Slow
              hit_signal = matchLv2(hitx_lv2, hity_lv2, self.deltae)
 
+          tti5=time.time()
           if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 
           if len(hit_signal) == 0: return 0 # skip 0 hit events
 
@@ -353,5 +358,8 @@ class tran_process():
           struct.unixtime = self.tree.unixtime
           struct.initUT   = int(self.initUT)
           makentuple(hit_signal,cluster,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
+          tti6=time.time()
           self.tout.Fill()
+          ttif=tti6-tti
+          print("time ==> ", "GetEntry : ", (tti2-tti)/ttif, "lv1 : ",(tti3-tti2)/ttif, " lv2 : ",(tti4-tti3)/ttif, " match : ",(tti5-tti4)/ttif, " save : ",(tti6-tti5)/ttif )
 
