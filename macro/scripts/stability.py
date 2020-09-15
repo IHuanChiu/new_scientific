@@ -35,52 +35,72 @@ def mkADCplots(chain, initUT, finalUT, timerange):
 #    for i in range(3):
        log().info("unixtime > {0} && unixtime < {1}".format(initUT+timerange*i, initUT+timerange*(i+1)))
        UTcut="unixtime > {0} && unixtime < {1}".format(initUT+timerange*i, initUT+timerange*(i+1))
-       hp=ROOT.TH1D("hpside_{}".format(i),"hpside_{}".format(i),1024,0,1024)
+       hp=ROOT.TH1D("hpside_{}".format(i),"hpside_{}".format(i),994,30,1024)
        for iasic in range(4):
           adc_name, cmn_name = "adc"+str(iasic), "cmn"+str(iasic)
-          chain.Draw(adc_name +"-"+ cmn_name+">> h1(1024,0,1024)",UTcut,"")
+          chain.Draw(adc_name +"-"+ cmn_name+">> h1(994,30,1024)",UTcut,"")
           h1=gDirectory.Get("h1")
           hp.Add(h1)
        hp_list.append(hp)
    
-       hn=ROOT.TH1D("hnside_{}".format(i),"hnside_{}".format(i),1024,0,1024)
+       hn=ROOT.TH1D("hnside_{}".format(i),"hnside_{}".format(i),994,30,1024)
        for iasic in range(4,8):
           adc_name, cmn_name = "adc"+str(iasic), "cmn"+str(iasic)
-          chain.Draw(adc_name +"-"+ cmn_name+">> h1(1024,0,1024)",UTcut,"")
+          chain.Draw(adc_name +"-"+ cmn_name+">> h1(994,30,1024)",UTcut,"")
           h1=gDirectory.Get("h1")
           hn.Add(h1)
        hn_list.append(hn)
     return hp_list, hn_list
 
+def readtree(chain, cutvalue):
+    list_array=[]
+    pha0array=tree2array(chain,branches=['adc0-cmn0','unixtime'],selection='adc0-cmn0 > {}'.format(cutvalue))
+    pha1array=tree2array(chain,branches=['adc1-cmn1','unixtime'],selection='adc1-cmn1 > {}'.format(cutvalue))
+    pha2array=tree2array(chain,branches=['adc2-cmn2','unixtime'],selection='adc2-cmn2 > {}'.format(cutvalue))
+    pha3array=tree2array(chain,branches=['adc3-cmn3','unixtime'],selection='adc3-cmn3 > {}'.format(cutvalue))
+    pha4array=tree2array(chain,branches=['adc4-cmn4','unixtime'],selection='adc4-cmn4 > {}'.format(cutvalue))
+    pha5array=tree2array(chain,branches=['adc5-cmn5','unixtime'],selection='adc5-cmn5 > {}'.format(cutvalue))
+    pha6array=tree2array(chain,branches=['adc6-cmn6','unixtime'],selection='adc6-cmn6 > {}'.format(cutvalue))
+    pha7array=tree2array(chain,branches=['adc7-cmn7','unixtime'],selection='adc7-cmn7 > {}'.format(cutvalue))
+    list_array.append(pha0array)
+    list_array.append(pha1array)
+    list_array.append(pha2array)
+    list_array.append(pha3array)
+    list_array.append(pha4array)
+    list_array.append(pha5array)
+    list_array.append(pha6array)
+    list_array.append(pha7array)
+    return list_array
+
 def mkADCArray(chain, initUT, finalUT, timerange):
-    treearray=tree2array(chain,branches=['adc0-cmn0','adc1-cmn1','adc2-cmn2','adc3-cmn3','adc4-cmn4','adc5-cmn5','adc6-cmn6','adc7-cmn7','unixtime'])
+    ti=time.time()
+    list_treearray=readtree(chain,30)
+    log().info("CPU time for tree2array: {} seconds".format(time.time()-ti))
     nplots=int((finalUT-initUT)/timerange)+1
     hp_list,hn_list =[],[]
-#    for i in range(nplots):
-    for i in range(3):
+    for i in range(nplots):
        UTcutL, UTcutH =initUT+timerange*i, initUT+timerange*(i+1)
        log().info("Current Time range : {0} ~ {1}".format(UTcutL, UTcutH))
-       _treecut="unixtime > {0} && unixtime < {1}".format(UTcutL,UTcutH)
-#       _w = np.where((treearray["unixtime"] > UTcutL) & (treearray["unixtime"] > UTcutH))
+
        hp=ROOT.TH1D("hpside_{}".format(i),"hpside_{}".format(i),1024,0,1024)
        hn=ROOT.TH1D("hnside_{}".format(i),"hnside_{}".format(i),1024,0,1024)
        for iasic in range(8):
-          var_name='adc{}-cmn{}'.format(iasic)
-          _varcut="("+var_name+" > 30"+")"
-          _treecut+=_treecut+"&&"+_varcut
-          treearray=tree2array(chain,branches=[var_name],selection=_treecut)
-          _treearray[var_name]=np.reshape(treearray[var_name],(treearray[var_name].shape[0]*treearray[var_name].shape[1]))
+          var_name='adc{}-cmn{}'.format(iasic,iasic)
+          treearray=list_treearray[iasic]
+          _w = np.where((treearray["unixtime"] > UTcutL) & (treearray["unixtime"] > UTcutH))
+          pha_array=np.reshape(treearray[_w][var_name],(treearray[_w][var_name].shape[0]*treearray[_w][var_name].shape[1]))
           if iasic < 4 : 
-             if iasic == 0: hparray=_treearray[var_name]
-             else: hparray=np.hstack((hparray,_treearray[var_name]))
+             if iasic == 0: hparray=pha_array
+             else: hparray=np.hstack((hparray,pha_array))
           else :
-             if iasic == 4: hnarray=_treearray[var_name]
-             else: hnarray=np.hstack((hnarray,_treearray[var_name]))
+             if iasic == 4: hnarray=pha_array
+             else: hnarray=np.hstack((hnarray,pha_array))
        array2hist(hparray,hp)
        array2hist(hnarray,hn)
        hp_list.append(hp)
        hn_list.append(hn)
     return hp_list, hn_list
+
 
 def getADCplots(plotfilename):
     #TODO fix this
@@ -100,11 +120,10 @@ def getADCplots(plotfilename):
     hn_list.append(hn3)
     return hp_list, hn_list
 
-def mkcv(_hp_list,_hn_list):
+def mkcv(_hp_list,_hn_list,_tr):
     _cv  = createRatioCanvas("cv", 5000, 2500)
     _cv.Divide(2,1)
     _cv.cd(1)
-    leg = ROOT.TLegend(.55,.78,.75,.90)
     gPad.SetLogy()
     for _ip in range(len(_hp_list)):
        _hp_list[_ip].SetStats(0)
@@ -117,11 +136,8 @@ def mkcv(_hp_list,_hn_list):
           _hp_list[_ip].Draw()
        else:
           _hp_list[_ip].Draw("same")
-       leg.AddEntry(_hp_list[_ip],  " Pside, Time step_{}".format(_ip), "l")
-       leg.Draw("same")
     
     _cv.cd(2)
-    leg = ROOT.TLegend(.55,.78,.75,.90)
     gPad.SetLogy()
     for _in in range(len(_hn_list)):
        _hn_list[_in].SetStats(0)
@@ -134,8 +150,10 @@ def mkcv(_hp_list,_hn_list):
           _hn_list[_in].Draw()
        else:
           _hn_list[_in].Draw("same")
-       leg.AddEntry(_hn_list[_in],  "Nside, Time step_{}".format(_in), "l")
-       leg.Draw("same")
+    leg = ROOT.TLegend(.60,.60,.80,.90)
+    for _in in range(len(_hn_list)):
+       leg.AddEntry(_hn_list[_in],  "Time:{0}~{1}hours".format(_in,_in*_tr), "l")
+    leg.Draw("same")
 
     return _cv           
 
@@ -152,7 +170,8 @@ def run(args):
        outputname="/Users/chiu.i-huan/Desktop/new_scientific/run/root/"+"cdte2mmdata_"+args.condition+"_"+args.source+"_"+str(args.timerange)+"h_"+args.output+".root"
        fout=ROOT.TFile(outputname,"recreate")
        fout.cd()
-       hp_list,hn_list=mkADCplots(mychain,initUT,finalUT,timerange)    
+#       hp_list,hn_list=mkADCplots(mychain,initUT,finalUT,timerange)    
+       hp_list,hn_list=mkADCArray(mychain,initUT,finalUT,timerange)    
        for i in range(len(hp_list)):
           hp_list[i].Write()
           hn_list[i].Write()
@@ -161,7 +180,7 @@ def run(args):
     else:
        hp_list,hn_list=getADCplots(args.plots)
 
-    cv=mkcv(hp_list,hn_list)
+    cv=mkcv(hp_list,hn_list,args.timerange)
     outcv_name="/Users/chiu.i-huan/Desktop/"+"cv_"+args.condition+"_"+args.source+"_"+str(args.timerange)+"h_"+args.output+".pdf"
     cv.SaveAs(outcv_name)
 
