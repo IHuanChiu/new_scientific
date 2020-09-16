@@ -32,7 +32,6 @@ def mkADCplots(chain, initUT, finalUT, timerange):
     nplots=int((finalUT-initUT)/timerange)+1
     hp_list,hn_list =[],[]
     for i in range(nplots):
-#    for i in range(3):
        log().info("unixtime > {0} && unixtime < {1}".format(initUT+timerange*i, initUT+timerange*(i+1)))
        UTcut="unixtime > {0} && unixtime < {1}".format(initUT+timerange*i, initUT+timerange*(i+1))
        hp=ROOT.TH1D("hpside_{}".format(i),"hpside_{}".format(i),994,30,1024)
@@ -46,9 +45,9 @@ def mkADCplots(chain, initUT, finalUT, timerange):
        hn=ROOT.TH1D("hnside_{}".format(i),"hnside_{}".format(i),994,30,1024)
        for iasic in range(4,8):
           adc_name, cmn_name = "adc"+str(iasic), "cmn"+str(iasic)
-          chain.Draw(adc_name +"-"+ cmn_name+">> h1(994,30,1024)",UTcut,"")
-          h1=gDirectory.Get("h1")
-          hn.Add(h1)
+          chain.Draw(adc_name +"-"+ cmn_name+">> h2(994,30,1024)",UTcut,"")
+          h2=gDirectory.Get("h2")
+          hn.Add(h2)
        hn_list.append(hn)
     return hp_list, hn_list
 
@@ -127,9 +126,11 @@ def mkcv(_hp_list,_hn_list,_tr):
     gPad.SetLogy()
     for _ip in range(len(_hp_list)):
        _hp_list[_ip].SetStats(0)
-       _hp_list[_ip].SetLineColor(_ip+1)
+       if((_ip+1) < 5): _hp_list[_ip].SetLineColor(_ip+1)
+       else: _hp_list[_ip].SetLineColor(_ip+2)
        if _ip == 0 :
-          _hp_list[_ip].SetMaximum(_hp_list[_ip].GetMaximum()*20)
+#          _hp_list[_ip].SetMaximum(_hp_list[_ip].GetMaximum()*20)
+          _hp_list[_ip].SetMaximum(5000000)
           _hp_list[_ip].SetTitle("P-side")
           _hp_list[_ip].GetXaxis().SetTitle("ADC")
           _hp_list[_ip].GetYaxis().SetTitle("Counts")
@@ -139,20 +140,25 @@ def mkcv(_hp_list,_hn_list,_tr):
     
     _cv.cd(2)
     gPad.SetLogy()
+    leg = ROOT.TLegend(.70,.60,.88,.88)
+    leg.SetFillColor(0)
+    leg.SetLineColor(0)
+    leg.SetBorderSize(0)
     for _in in range(len(_hn_list)):
+       leg.AddEntry(_hn_list[_in],"{0}-{1}hours".format(_in*_tr,(_in+1)*_tr))
        _hn_list[_in].SetStats(0)
-       _hn_list[_in].SetLineColor(_in+1)
+       if((_in+1) < 5): _hn_list[_in].SetLineColor(_in+1)
+       else: _hn_list[_in].SetLineColor(_in+2)
        if _in == 0 :
-          _hn_list[_in].SetMaximum(_hn_list[_in].GetMaximum()*20)
+#          _hn_list[_in].SetMaximum(_hn_list[_in].GetMaximum()*20)
+          _hn_list[_in].SetMaximum(5000000)
           _hn_list[_in].SetTitle("N-side")
           _hn_list[_in].GetXaxis().SetTitle("ADC")
           _hn_list[_in].GetYaxis().SetTitle("Counts")
+          _hn_list[_in].GetListOfFunctions().Add(leg)
           _hn_list[_in].Draw()
        else:
           _hn_list[_in].Draw("same")
-    leg = ROOT.TLegend(.60,.60,.80,.90)
-    for _in in range(len(_hn_list)):
-       leg.AddEntry(_hn_list[_in],  "Time:{0}~{1}hours".format(_in,_in*_tr), "l")
     leg.Draw("same")
 
     return _cv           
@@ -164,14 +170,14 @@ def run(args):
     timerange=args.timerange*3600
     log().info("Total plots : {0} , Time range : {1} hours".format(int((finalUT-initUT)/timerange)+1, args.timerange))
     if(int((finalUT-initUT)/timerange)+1 > 10): 
-       exit(0)
+       log().info("Many plots ! {}".format(int((finalUT-initUT)/timerange)+1))
 
     if args.plots is None:
        outputname="/Users/chiu.i-huan/Desktop/new_scientific/run/root/"+"cdte2mmdata_"+args.condition+"_"+args.source+"_"+str(args.timerange)+"h_"+args.output+".root"
        fout=ROOT.TFile(outputname,"recreate")
        fout.cd()
-#       hp_list,hn_list=mkADCplots(mychain,initUT,finalUT,timerange)    
-       hp_list,hn_list=mkADCArray(mychain,initUT,finalUT,timerange)    
+       hp_list,hn_list=mkADCplots(mychain,initUT,finalUT,timerange)    
+#       hp_list,hn_list=mkADCArray(mychain,initUT,finalUT,timerange)    
        for i in range(len(hp_list)):
           hp_list[i].Write()
           hn_list[i].Write()
