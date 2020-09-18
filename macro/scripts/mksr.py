@@ -82,16 +82,27 @@ class PrepareParameters():
                    yup=ycenter[iy]+fit_range
                    ydown=ycenter[iy]-fit_range
                    gb=self.getfunc("gb"+str(index),xdown,xup,ydown,yup)
-                   gb.SetParameters(h2.GetEntries(),xcenter[ix],0,ycenter[iy],0,0.1)
-#                   gb=self.getfunc("gb"+str(index),-16,16,-16,16)
-                   Chi2=9999999999999999
-                   for fittime in range(5):
-                      h2.Fit("gb"+str(index),"QR")
-                      if Chi2 > gb.GetChisquare():
-                         Chi2=gb.GetChisquare()
-                         constant, mean_x, sigma_x, mean_y, sigma_y, rho = gb.GetParameter(0), gb.GetParameter(1), gb.GetParameter(2), gb.GetParameter(3), gb.GetParameter(4), gb.GetParameter(5)
-                   paramater_list.append([constant, mean_x, sigma_x, mean_y, sigma_y, rho])                  
+                   gb.SetParameters(10,xcenter[ix],0,ycenter[iy],0,0.1)
+                   # TODO bad fitting channels
+                   if index == 1: paramater_list.append([1.74254e+02,8.10055e+00,1.72548e+00,1.50197e+01,1.49098e+00,-9.93072e-02]) 
+                   elif index == 26: paramater_list.append([1.95446e+02,7.34044e+00,1.82564e+00,1.40217e+01,1.73770e+00,2.42294e-02])
+                   elif index == 81: paramater_list.append([1.49021e+02,6.13308e+00,1.74712e+00,5.69160e+00,1.85554e+00,-1.01725e-01])
+                   elif index == 100: paramater_list.append([1.18486e+02,1.12588e+01,1.95410e+00,1.05471e+01,1.80264e+00,-8.80853e-02])
+                   elif index == 110: paramater_list.append([1.41792e+02,1.09893e+01,1.89663e+00,-2.30509e-01,1.95740e+00,9.20033e-02])
+                   elif index == 122: paramater_list.append([1.25659e+02,1.06397e-01,1.69141e+00,-1.10063e+01,1.94154e+00,5.99720e-02])
+                   else:
+                      Chi2=999999999
+                      for fittime in range(5):
+                         h2.Fit("gb"+str(index),"QR")
+                         if Chi2 > gb.GetChisquare():
+                            Chi2=gb.GetChisquare()
+                            constant, mean_x, sigma_x, mean_y, sigma_y, rho = gb.GetParameter(0), gb.GetParameter(1), gb.GetParameter(2), gb.GetParameter(3), gb.GetParameter(4), gb.GetParameter(5)
+                      paramater_list.append([constant, mean_x, sigma_x, mean_y, sigma_y, rho])                  
                    hist_fitlist.append(h2)
+                   # TODO : cheching bad fitting channels
+                   if paramater_list[index][0] > 1000: 
+                      log().warn("bad fitting point : {0}, {1}".format(index, paramater_list[index]))
+
                    index+=1
                    del gb,h2
           return paramater_list, hist_fitlist
@@ -101,39 +112,39 @@ def deffunc(_x,_y,_z,par):
     func=par[0]+par[1]*_x+par[2]*_y+par[3]*_z
     return func
 def fcn_constant(npar, gin, f, par, iflag):
-    chisq, nbins = 0., 5
-    for _index in range(pow(nbins,3)):
+    chisq, npoints = 0., 5
+    for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][0] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
 def fcn_x(npar, gin, f, par, iflag):
-    chisq, nbins = 0., 5
-    for _index in range(pow(nbins,3)):
+    chisq, npoints = 0., 5
+    for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][1] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
 def fcn_xsig(npar, gin, f, par, iflag):
-    chisq, nbins = 0., 5
-    for _index in range(pow(nbins,3)):
+    chisq, npoints = 0., 5
+    for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][2] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
 def fcn_y(npar, gin, f, par, iflag):
-    chisq, nbins = 0., 5
-    for _index in range(pow(nbins,3)):
+    chisq, npoints = 0., 5
+    for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][3] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
 def fcn_ysig(npar, gin, f, par, iflag):
-    chisq, nbins = 0., 5
-    for _index in range(pow(nbins,3)):
+    chisq, npoints = 0., 5
+    for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][4] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
 def fcn_rho(npar, gin, f, par, iflag):
-    chisq, nbins = 0., 5
-    for _index in range(pow(nbins,3)):
+    chisq, npoints = 0., 5
+    for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][5] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
 
 class SystemResponse():
       def __init__(self):
-          self.par_x_y_xs_ys_inten = self.GetSRpar()
+          self.par_con_x_xsig_y_ysig_rho = self.GetSRpar()
 
       def dofit(self, parname):
           if parname == "constant": fcn = fcn_constant
@@ -177,14 +188,14 @@ class SystemResponse():
           return [par0,par1,par2,par3]
 
       def GetSRpar(self):
-          _par_x_y_xs_ys_inten={}
-          _par_x_y_xs_ys_inten.update({"constant":self.dofit("constant")})
-          _par_x_y_xs_ys_inten.update({"x":self.dofit("x")})
-          _par_x_y_xs_ys_inten.update({"xsig":self.dofit("xsig")})
-          _par_x_y_xs_ys_inten.update({"y":self.dofit("y")})
-          _par_x_y_xs_ys_inten.update({"ysig":self.dofit("ysig")})
-          _par_x_y_xs_ys_inten.update({"rho":self.dofit("rho")})
-          return _par_x_y_xs_ys_inten
+          _par_con_x_xsig_y_ysig_rho={}
+          _par_con_x_xsig_y_ysig_rho.update({"constant":self.dofit("constant")})
+          _par_con_x_xsig_y_ysig_rho.update({"x":self.dofit("x")})
+          _par_con_x_xsig_y_ysig_rho.update({"xsig":self.dofit("xsig")})
+          _par_con_x_xsig_y_ysig_rho.update({"y":self.dofit("y")})
+          _par_con_x_xsig_y_ysig_rho.update({"ysig":self.dofit("ysig")})
+          _par_con_x_xsig_y_ysig_rho.update({"rho":self.dofit("rho")})
+          return _par_con_x_xsig_y_ysig_rho
 
 # ======================= Maximum Likelihood Expectation Maximization ===================
 class MLEM():
@@ -199,8 +210,12 @@ class MLEM():
           self.object_range=20 #mm
           # parametor members
           self.hist_fit=self.PP.hist_fit
-          self.para_dic=self.SR.par_x_y_xs_ys_inten
+          self.para_dic=self.SR.par_con_x_xsig_y_ysig_rho
           self.ori_image_list=self.PP.imagearray
+          self.ob2im_dic=self.mksrfdic()
+          self.matrix=self.mkmatrix()
+         
+          # plots
           self.image_hx_hy_list_ori, self.image_hx_hy_list_sr=self.mkimage()
           self.mlemtree=self.mktree()
           self.image_init=self.mkInitImage()
@@ -233,13 +248,28 @@ class MLEM():
           image_rho = par_rho[0].value+par_rho[1].value*_x+par_rho[2].value*_y+par_rho[3].value*_z
           return [image_constant,image_x,image_xsig,image_y,image_ysig,image_rho]
 
+      def mksrfdic(self):
+          srfdic={}
+          _index=0
+          for x in range(self.npixels):
+             for y in range(self.npixels):
+                for z in range(self.npixels):
+                   srfdic.update({_index:self.srf(x,y,z,"bintype")})
+                   _index+=1
+          return srfdic
+
       def mkmatrix(self):
+          prog = ProgressBar(ntotal=pow(self.npixels,3),text="Processing Matrix",init_t=time.time())
           source_intensity = 363.1*1000 #Bq
           matrix=np.ones((self.npixels,self.npixels,self.npixels,self.nbins,self.nbins),dtype=float)          
+          index=0
+          nevproc=0
           for iz in range(self.npixels):
              for iy in range(self.npixels):
                 for ix in range(self.npixels):
-                   image_var = self.srf(_x,_y,_z,"bintype")
+                   nevproc+=1
+                   if prog: prog.update(nevproc)
+                   image_var = self.ob2im_dic[index]
                    h_gaus = ROOT.TF2("h_gaus","bigaus",-16,16,-16,16)
                    h_gaus.SetParameters(image_var[0],image_var[1],image_var[2],image_var[3],image_var[4],image_var[5])
 
@@ -249,6 +279,8 @@ class MLEM():
                          _imagex=-16+0.125+imageix*(32./self.nbins)
                          _imagey=-16+0.125+imageiy*(32./self.nbins)
                          matrix[ix][iy][iz][imageix][imageiy]=(h_gaus.Eval(_imagex,_imagey)/source_intensity)
+                   index+=1
+          if prog: prog.finalize()
           return matrix
 
       def mktree(self):
@@ -279,8 +311,10 @@ class MLEM():
              _cvy  = createRatioCanvas("cvy_{}".format(_iz), 2500, 2500)
              _cvx.Divide(self.npoints,self.npoints)
              _cvy.Divide(self.npoints,self.npoints)
-             _cvfit  = createRatioCanvas("cvfitx_{}".format(_iz), 2500, 2500)
+             _cvfit  = createRatioCanvas("cvfit_{}".format(_iz), 2500, 2500)
              _cvfit.Divide(self.npoints,self.npoints)
+             _cvori  = createRatioCanvas("cvori_{}".format(_iz), 2500, 2500)
+             _cvori.Divide(self.npoints,self.npoints)
              for _iy in range(self.npoints):
                 for _ix in range(self.npoints):              
                    # original plots
@@ -302,7 +336,7 @@ class MLEM():
                       for iy in range(128):
                          _x=h2.GetXaxis().GetBinCenter(ix+1)
                          _y=h2.GetYaxis().GetBinCenter(iy+1)
-                         h2_array[ix][iy]=h_gaus.Eval(_x,_y)
+                         if h_gaus.Eval(_x,_y) > 1: h2_array[ix][iy]=h_gaus.Eval(_x,_y)
                    array2hist(h2_array,h2)
                    hx = h2.ProjectionX()
                    hy = h2.ProjectionY()
@@ -312,9 +346,15 @@ class MLEM():
 
                    # comparison canvas fitting result
                    _cvfit.cd((_ix+1)+_iy*self.npoints)
-                   self.hist_fit[_ip].SetMaximum(350)
-                   self.hist_fit[_ip].SetStats(0)
-                   self.hist_fit[_ip].Draw()
+                   h2.SetStats(0)
+                   h2.Draw("colz")
+                   _cvori.cd((_ix+1)+_iy*self.npoints)
+                   _h2.SetStats(0)
+                   _h2.Draw("colz")
+                   # original fitting plots
+                   #self.hist_fit[_ip].SetMaximum(350)
+                   #self.hist_fit[_ip].SetStats(0)
+                   #self.hist_fit[_ip].Draw()
                    # comparison canvas MLEM result
                    hx_ori=_h2.ProjectionX()
                    hy_ori=_h2.ProjectionY()
@@ -328,50 +368,50 @@ class MLEM():
                    hy.SetLineColor(2)
                    hx_ori.SetMaximum(350)
                    hy_ori.SetMaximum(350)
+                   hx.SetMaximum(350)
+                   hy.SetMaximum(350)
                    _cvx.cd((_ix+1)+_iy*self.npoints) 
                    hx_ori.Draw()
                    hx.Draw("hist same")
                    _cvy.cd((_iy+1)+_ix*self.npoints) 
                    hy_ori.Draw()
                    hy.Draw("hist same")
-                   del _h2, h2, hx, hy
+                   del _h2, h2, hx, hy, h_gaus
                    _ip+=1 
 
              _pdfname = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/MLEM_comparison_x_z{}.pdf".format(_iz)
              _cvx.SaveAs(_pdfname)
              _pdfname = _pdfname.replace("_x_","_y_")
              _cvy.SaveAs(_pdfname)
-             _pdffit = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/MLEM_comparison_fit_z{}.pdf".format(_iz)
-             _cvfit.SaveAs(_pdffit)
+             _pdfname = _pdfname.replace("_y_","_ori_")
+             _cvori.SaveAs(_pdfname)
+             _pdfname = _pdfname.replace("_ori_","_fit_")
+             _cvfit.SaveAs(_pdfname)
           return image_hx_hy_list_ori, image_hx_hy_list_sr
 
       def mkInitImage(self):
           # return initial image from object
-          prog = ProgressBar(ntotal=pow(self.npixels,3),text="Processing image",init_t=time.time())
+          prog = ProgressBar(ntotal=pow(self.npixels,3),text="Processing init. image",init_t=time.time())
           _image_init=ROOT.TH2D("image_init","image_init",self.nbins,-16,16,self.nbins,-16,16)
-          _image_init_array=np.zeros((self.nbins,self.nbins),dtype=float)
-          nevents=1
+          _image_init_array=np.zeros((self.nbins,self.nbins),dtype=float)         
           nevproc=0
-          for _iz in range(self.npixels):
-             for _iy in range(self.npixels):
-                for _ix in range(self.npixels):
-                   nevproc+=1
-                   if prog: prog.update(nevproc)
-                   imagespace_vars = self.srf(_ix, _iy, _iz, "bintype")
-                   fgaus = ROOT.TF2("fgaus","bigaus",-16,16,-16,16)
-                   fgaus.SetParameters(imagespace_vars[0],imagespace_vars[1],imagespace_vars[2],imagespace_vars[3],imagespace_vars[4],imagespace_vars[5])
-                   for ix in range(128):
-                      for iy in range(128):
-                         _x=_image_init.GetXaxis().GetBinCenter(ix+1)
-                         _y=_image_init.GetYaxis().GetBinCenter(iy+1)
-                         _image_init_array[ix][iy]=fgaus.Eval(_x,_y)
-                   del fgaus
+          for index in range(pow(self.npixels,3)):
+             nevproc+=1
+             if prog: prog.update(nevproc)
+             imagespace_vars=self.ob2im_dic[index]
+             fgaus = ROOT.TF2("fgaus","bigaus",-16,16,-16,16)
+             fgaus.SetParameters(imagespace_vars[0],imagespace_vars[1],imagespace_vars[2],imagespace_vars[3],imagespace_vars[4],imagespace_vars[5])
+             for ix in range(128):
+                for iy in range(128):
+                   _x=_image_init.GetXaxis().GetBinCenter(ix+1)
+                   _y=_image_init.GetYaxis().GetBinCenter(iy+1)
+                   _image_init_array[ix][iy]+=fgaus.Eval(_x,_y)
+             del fgaus
           if prog: prog.finalize()
           array2hist(_image_init_array,_image_init)
           return _image_init
 
       def updateImage(self,_object):
-          #TODO nevents is not good
           _image_update=ROOT.TH2D("image_update","image_update",self.nbins,-16,16,self.nbins,-16,16)
           for _iz in range(_object.shape[2]):
              for _iy in range(_object.shape[1]):
