@@ -218,16 +218,19 @@ class MLEM():
           # plots
           self.image_hx_hy_list_ori, self.image_hx_hy_list_sr=self.mkimage()
           self.mlemtree=self.mktree()
-          self.image_init=self.mkInitImage()
+#          self.image_init_loop=self.mkInitImageLoop()
+          self.object_init,self.image_init=self.mkInitImage()
+          self.h_measurement_list=self.getmeasurement()
+          self.mlemhist_list=[]
 
-          # test part
-          self.test_ratio=None
-          self.ff=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage.CdTe_LP_0909.root","read")
-          self.h_measurement_list=[]
+      def getmeasurement(self):
+          # return array type
+          _mlist=[]
+          fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage.CdTe_LP_0909.root","read")
           for i in range(16):
              _name = "h"+str(i)
-             self.h_measurement_list.append(hist2array(self.ff.Get(_name)))
-          self.test_object_ratio=self.findratio(hist2array(self.image_init),self.h_measurement_list[1])
+             _mlist.append(hist2array(fint.Get(_name)))          
+          return _mlist
 
       def srf(self,_x,_y,_z,_type=None):
           """
@@ -389,10 +392,10 @@ class MLEM():
              _cvfit.SaveAs(_pdfname)
           return image_hx_hy_list_ori, image_hx_hy_list_sr
 
-      def mkInitImage(self):
+      def mkInitImageLoop(self):
           # return initial image from object
           prog = ProgressBar(ntotal=pow(self.npixels,3),text="Processing init. image",init_t=time.time())
-          _image_init=ROOT.TH2D("image_init","image_init",self.nbins,-16,16,self.nbins,-16,16)
+          _image_init=ROOT.TH2D("image_init_loop","image_init_loop",self.nbins,-16,16,self.nbins,-16,16)
           _image_init_array=np.zeros((self.nbins,self.nbins),dtype=float)         
           nevproc=0
           for index in range(pow(self.npixels,3)):
@@ -411,19 +414,24 @@ class MLEM():
           array2hist(_image_init_array,_image_init)
           return _image_init
 
+      def mkInitImage(self):
+          source_intensity = 363.1*1000 #Bq
+          _object_init=np.ones((self.npixels,self.npixels,self.npixels),dtype=float)
+          _object_init=_object_init*source_intensity
+
+          _image_init=ROOT.TH2D("image_init","image_init",self.nbins,-16,16,self.nbins,-16,16)
+          _image_array=np.zeros((self.nbins,self.nbins),dtype=float)
+          for imx in range(self.nbins):
+             for imy in range(self.nbins):
+                _image_array[imx][imy]=np.sum(_object_init*self.matrix[:,:,:,imx,imy])
+          array2hist(_image_array,_image_init)
+          return _object_init, _image_init          
+
       def updateImage(self,_object):
-          _image_update=ROOT.TH2D("image_update","image_update",self.nbins,-16,16,self.nbins,-16,16)
-          for _iz in range(_object.shape[2]):
-             for _iy in range(_object.shape[1]):
-                for _ix in range(_object.shape[0]):
-                   _xaxis = -20+_ix*(40./self.npixels)
-                   _yaxis = -20+_iy*(40./self.npixels)
-                   _zaxis = -20+_iz*(40./self.npixels)
-                   imagespace_vars = self.srf(_xaxis, _yaxis, _zaxis)
-                   fx = ROOT.TF1("fx","TMath::Gaus(x,{0},{1})".format(imagespace_vars[0],imagespace_vars[2]),-16,16)
-                   fy = ROOT.TF1("fy","TMath::Gaus(x,{0},{1})".format(imagespace_vars[1],imagespace_vars[3]),-16,16)
-                   for ie in range(int(nevents)):
-                      _image_update.Fill(fx.GetRandom(-16,16), fy.GetRandom(-16,16))
+          _image_update=np.zeros((self.nbins,self.nbins),dtype=float)
+          for imx in range(self.nbins):
+             for imy in range(self.nbins):
+                _image_update[imx][imy]=np.sum(_object*self.matrix[:,:,:,imx,imy])
           return _image_update
 
       def findratio(self,measurement_image_array,reproduction_image_array):
@@ -431,34 +439,41 @@ class MLEM():
           _where_0 = np.where(reproduction_image_array == 0)
           reproduction_image_array[_where_0]=1
           image_ratio=measurement_image_array/reproduction_image_array
+          return image_ratio
 
-          hist_image_ratio=ROOT.TH2D("image_ratio","image_ratio",self.nbins,-16,16,self.nbins,-16,16)
-          array2hist(image_ratio,hist_image_ratio) # image_ratio is image ratio
-          self.test_ratio=hist_image_ratio
-          # TODO next : find object ratio by system response
-          # object_ratio=self.matrix*image_ratio
-          object_ratio=image_ratio
-          return object_ratio
-
-      def updateObject(self,object_pre,object_ratio):
+      def updateObject(self,object_pre,image_ratio):
           # update object based on object ratio
+          object_ratio=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+          for ix in range(self.npixels):
+             for iy in range(self.npixels):
+                for iz in range(self.npixels):
+                   object_ratio[ix][iy][iz]=np.sum(image_ratio*self.matrix[ix][iy][iz])
           object_update=object_pre*object_ratio
           return object_update
 
       def iterate(self,n_iteration):                   
           hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
           final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+          ih=0
           for h_measurement_array in self.h_measurement_list:
-             _object_pre=np.ones((self.npixels,self.npixels,self.npixels),dtype=float)# training object space
              for i in range(n_iteration):
                 if i == 0: 
-                   _image = self.image_init
-                   _object_update=_object_pre
-                else: 
-                   _image = self.updateImage(_object_update)
-                _object_ratio=self.findratio(h_measurement_array, hist2array(_image)) 
-                _object_update=self.updateObject(_object_update, _object_ratio)
-                final_object+=_object_update# projeaction of all images
+                   _image=hist2array(self.image_init)
+                   _object=self.object_init
+                _image_ratio=self.findratio(h_measurement_array, _image) 
+                _object=self.updateObject(_object, _image_ratio)
+                _image = self.updateImage(_object)
+                hist_image_ratio=ROOT.TH2D("image_ratio_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
+                hist_process_image=ROOT.TH2D("image_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
+                array2hist(_image_ratio,hist_image_ratio)
+                array2hist(_image,hist_process_image)
+                self.mlemhist_list.append(hist_image_ratio)
+                self.mlemhist_list.append(hist_process_image)
+             final_object+=_object# projeaction of all images
+             ih+=1
+          # TODO test
+          w_0=np.where(final_object <  20)
+          final_object[w_0]=0
           array2hist(final_object,hist_final_object)
           return hist_final_object
 
@@ -527,18 +542,20 @@ def testrun(args):
     testpoint=np.array([0,0,0])
     testimage = GetImageSpace(args.inputFolder,image_nbins,5,image_nbins,testpoint)
 
-    log().info("Progressing System response and making MLEM plots...")
+    log().info("Progressing the fitting of paramaters...")
     PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=args.npixels,nbins=image_nbins) # get cali. image list
     SR=SystemResponse()# get system response by TMinuit fitting
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels) # do iterate and get final plots
+    MLEM_3DHist=ML.iterate(n_iteration=8)
 
-    #no need
+    #check plots
     log().info("Print outputs...")
     ML.printoutput(ML.mlemtree,outfilename,"re")
     ML.printoutput(ML.image_hx_hy_list_ori,outfilename,"up")
     ML.printoutput(ML.image_hx_hy_list_sr,outfilename,"up")
     ML.printoutput(ML.image_init,outfilename,"up")
-    ML.printoutput(ML.test_ratio,outfilename,"up")
+    ML.printoutput(ML.mlemhist_list,outfilename,"up")
+    ML.printoutput(MLEM_3DHist,outfilename,"up")
 
     # save fitting plots
 #    ML.printoutput(PP.hist_fitx,outfilename,"up")
@@ -553,7 +570,7 @@ if __name__=="__main__":
    parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root", help="Input File Name")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of images")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="Number of images")
-   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=10, help="Number of images")
+   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=20, help="Number of images")
    args = parser.parse_args()
 
    testrun(args)
