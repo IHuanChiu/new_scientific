@@ -295,14 +295,15 @@ class MLEM():
                    image_var = self.srf(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
                    _h2name="image_sr_"+str(_ip)
                    h2=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
+                   h2_array=np.zeros((self.nbins,self.nbins),dtype=float)
                    h_gaus = ROOT.TF2("h_gaus","bigaus",-16,16,-16,16)
                    h_gaus.SetParameters(image_var[0],image_var[1],image_var[2],image_var[3],image_var[4],image_var[5])
                    for ix in range(128):
                       for iy in range(128):
-                         _x=-16+(32.*ix/128)
-                         _y=-16+(32.*iy/128)
-                         if int(h_gaus.Eval(_x,_y)) > 1:
-                            h2.Fill(_x,_y,h_gaus.Eval(_x,_y)/pow(self.npoints,3))
+                         _x=h2.GetXaxis().GetBinCenter(ix+1)
+                         _y=h2.GetYaxis().GetBinCenter(iy+1)
+                         h2_array[ix][iy]=h_gaus.Eval(_x,_y)
+                   array2hist(h2_array,h2)
                    hx = h2.ProjectionX()
                    hy = h2.ProjectionY()
                    image_hx_hy_list_sr.append(h2)
@@ -361,12 +362,12 @@ class MLEM():
                    fgaus.SetParameters(imagespace_vars[0],imagespace_vars[1],imagespace_vars[2],imagespace_vars[3],imagespace_vars[4],imagespace_vars[5])
                    for ix in range(128):
                       for iy in range(128):
-                         _x=-16+(32.*ix/128)
-                         _y=-16+(32.*iy/128)
-                         if int(fgaus.Eval(_x,_y)) > 10:
-                            _image_init.Fill(_x,_y,fgaus.Eval(_x,_y))
+                         _x=_image_init.GetXaxis().GetBinCenter(ix+1)
+                         _y=_image_init.GetYaxis().GetBinCenter(iy+1)
+                         _image_init_array[ix][iy]=fgaus.Eval(_x,_y)
                    del fgaus
           if prog: prog.finalize()
+          array2hist(_image_init_array,_image_init)
           return _image_init
 
       def updateImage(self,_object):
@@ -396,6 +397,7 @@ class MLEM():
           self.test_ratio=hist_image_ratio
           # TODO next : find object ratio by system response
           # object_ratio=self.matrix*image_ratio
+          object_ratio=image_ratio
           return object_ratio
 
       def updateObject(self,object_pre,object_ratio):
