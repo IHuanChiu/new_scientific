@@ -454,7 +454,7 @@ class MLEM():
       def iterate(self,n_iteration):                   
           hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
           final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
-          ih=0
+          ih, n_savehist=0, 5
           for h_measurement_array in self.h_measurement_list:
              for i in range(n_iteration):
                 if i == 0: 
@@ -463,12 +463,14 @@ class MLEM():
                 _image_ratio=self.findratio(h_measurement_array, _image) 
                 _object=self.updateObject(_object, _image_ratio)
                 _image = self.updateImage(_object)
-                hist_image_ratio=ROOT.TH2D("image_ratio_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
-                hist_process_image=ROOT.TH2D("image_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
-                array2hist(_image_ratio,hist_image_ratio)
-                array2hist(_image,hist_process_image)
-                self.mlemhist_list.append(hist_image_ratio)
-                self.mlemhist_list.append(hist_process_image)
+
+                if ih < n_savehist:
+                   hist_image_ratio=ROOT.TH2D("image_ratio_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
+                   hist_process_image=ROOT.TH2D("image_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
+                   array2hist(_image_ratio,hist_image_ratio)
+                   array2hist(_image,hist_process_image)
+                   self.mlemhist_list.append(hist_image_ratio)
+                   self.mlemhist_list.append(hist_process_image)
              final_object+=_object# projeaction of all images
              ih+=1
           # TODO test
@@ -546,7 +548,7 @@ def testrun(args):
     PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=args.npixels,nbins=image_nbins) # get cali. image list
     SR=SystemResponse()# get system response by TMinuit fitting
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels) # do iterate and get final plots
-    MLEM_3DHist=ML.iterate(n_iteration=8)
+    MLEM_3DHist=ML.iterate(n_iteration=100)
 
     #check plots
     log().info("Print outputs...")
@@ -570,7 +572,7 @@ if __name__=="__main__":
    parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root", help="Input File Name")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of images")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="Number of images")
-   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=20, help="Number of images")
+   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=40, help="Number of images")
    args = parser.parse_args()
 
    testrun(args)
