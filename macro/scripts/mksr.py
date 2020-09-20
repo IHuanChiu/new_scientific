@@ -452,11 +452,14 @@ class MLEM():
           return object_update
 
       def iterate(self,n_iteration):                   
+          prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing init. image",init_t=time.time())
           hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
           final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
-          ih, n_savehist=0, 5
+          nevproc, ih, n_savehist=0, 0, 5
           for h_measurement_array in self.h_measurement_list:
              for i in range(n_iteration):
+                nevproc+=1
+                if prog: prog.update(nevproc)
                 if i == 0: 
                    _image=hist2array(self.image_init)
                    _object=self.object_init
@@ -473,7 +476,8 @@ class MLEM():
                    self.mlemhist_list.append(hist_process_image)
              final_object+=_object# projeaction of all images
              ih+=1
-          # TODO test
+          if prog: prog.finalize()
+          # TODO test make 3D plot
           w_0=np.where(final_object <  20)
           final_object[w_0]=0
           array2hist(final_object,hist_final_object)
@@ -548,7 +552,7 @@ def testrun(args):
     PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=args.npixels,nbins=image_nbins) # get cali. image list
     SR=SystemResponse()# get system response by TMinuit fitting
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels) # do iterate and get final plots
-    MLEM_3DHist=ML.iterate(n_iteration=100)
+    MLEM_3DHist=ML.iterate(n_iteration=60)
 
     #check plots
     log().info("Print outputs...")
