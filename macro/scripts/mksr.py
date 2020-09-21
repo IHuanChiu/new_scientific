@@ -437,7 +437,7 @@ class MLEM():
       def findratio(self,measurement_image_array,reproduction_image_array):
           # input/output type: numpy.array
           _where_0 = np.where(reproduction_image_array == 0)
-          reproduction_image_array[_where_0]=1
+          reproduction_image_array[_where_0]=0.00001
           image_ratio=measurement_image_array/reproduction_image_array
           return image_ratio
 
@@ -447,12 +447,14 @@ class MLEM():
           for ix in range(self.npixels):
              for iy in range(self.npixels):
                 for iz in range(self.npixels):
-                   object_ratio[ix][iy][iz]=np.sum(image_ratio*self.matrix[ix][iy][iz])
+#                   object_ratio[ix][iy][iz]=np.sum(image_ratio*self.matrix[ix][iy][iz])
+                   #TODO over matrix?
+                   object_ratio[ix][iy][iz]=np.sum(image_ratio*self.matrix[ix][iy][iz])/np.sum(self.matrix[ix][iy][iz])
           object_update=object_pre*object_ratio
           return object_update
 
       def iterate(self,n_iteration):                   
-          prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing init. image",init_t=time.time())
+          prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iterate",init_t=time.time())
           hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
           final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
           nevproc, ih, n_savehist=0, 0, 5
@@ -477,8 +479,8 @@ class MLEM():
              final_object+=_object# projeaction of all images
              ih+=1
           if prog: prog.finalize()
-          # TODO test make 3D plot
-          w_0=np.where(final_object <  20)
+          # TODO test cut & make 3D plot
+          w_0=np.where(final_object <  1)
           final_object[w_0]=0
           array2hist(final_object,hist_final_object)
           return hist_final_object
@@ -541,18 +543,19 @@ def mkWeightFunc(filename,_np):
 
 # ======================= run ===================
 def testrun(args):
-    outfilename = "/Users/chiu.i-huan/Desktop/mytesth3output.root"
+    outfilename = "/Users/chiu.i-huan/Desktop/mytesth3output_"+args.output
+    outfilename = outfilename+".root"
     log().info("Test run...")
     image_nbins=128
     _sr=mkWeightFunc(args.inputFolder, args.npoints)
     testpoint=np.array([0,0,0])
     testimage = GetImageSpace(args.inputFolder,image_nbins,5,image_nbins,testpoint)
 
-    log().info("Progressing the fitting of paramaters...")
+    log().info("Progressing the paramaters for fitting ...")
     PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=args.npixels,nbins=image_nbins) # get cali. image list
     SR=SystemResponse()# get system response by TMinuit fitting
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels) # do iterate and get final plots
-    MLEM_3DHist=ML.iterate(n_iteration=60)
+    MLEM_3DHist=ML.iterate(n_iteration=20)
 
     #check plots
     log().info("Print outputs...")
@@ -574,6 +577,7 @@ if __name__=="__main__":
 
    parser = argparse.ArgumentParser(description='Process some integers.')
    parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root", help="Input File Name")
+   parser.add_argument("-o", "--output", type=str, default="sr_outputname", help="Output File Name")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of images")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="Number of images")
    parser.add_argument("-p","--npixels",dest="npixels",type=int, default=40, help="Number of images")
