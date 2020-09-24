@@ -38,9 +38,9 @@ class Calibration():
           self.Etable=Etable
           self.source=source
           self.hist_list,self.name_list=self.gethist()
-          self.fit_element=self.getrange()
+          self.element_list=self.getrange()
           self.fit_result=self.fit()
-          self.spline_list=self.mkTSpline()
+          self.graph_list,self.spline_list=self.mkTSpline()
 
       def gethist(self):
           f = ROOT.TFile(self.filename) 
@@ -50,10 +50,10 @@ class Calibration():
              if i < 10: hist_name = "hist_cmn" + "00" + str(i) 
              elif i < 100:  hist_name = "hist_cmn" + "0" + str(i) 
              else : hist_name = "hist_cmn" + str(i)
-             _h = f.Get(hist_name)
-             print(type(_h),_h.GetEntries())
+             _h = f.Get(hist_name).Clone()
+             _h.SetDirectory(0) 
              hist_list.append(_h)
-             name_list.append(hist_name)
+             name_list.append(hist_name)             
           return hist_list, name_list
 
       def getrange(self):
@@ -64,6 +64,7 @@ class Calibration():
           _l=linecache.getlines(self.Etable) 
           for _il in range(len(_l)):
              _e=_l[_il].strip().split(' ')
+             if "#" in _e[0]: continue
              if _e[0] == self.source: element_list.append(_e)  
           return element_list
 
@@ -71,7 +72,7 @@ class Calibration():
           dic={}
           fit_result=[]
           for ih in self.hist_list:
-             for ifit in self.fit_element:
+             for ifit in self.element_list:
                 center_E, range_E=float(ifit[2]), float(ifit[3])
                 g1=ROOT.TF1("g1","gaus",center_E-range_E,center_E+range_E)
                 g1.SetLineColor(ROOT.kRed)
@@ -81,22 +82,26 @@ class Calibration():
           return fit_result
 
       def mkTSpline(self):
-          spline_list=[]
+          graph_list,spline_list=[],[]
           for i in range(len(self.hist_list)):     
              _g = ROOT.TGraph()
              _s = ROOT.TSpline3()
              _g.SetName("graph_"+self.name_list[i])
              _g.SetPoint(0, 0, 0)
-             for ifit in range(len(self.fit_element)):
-                 source_Epre, source_E=self.fit_element[ifit-1][0], self.fit_element[ifit][0]
-                 fit_adcpre, fit_adc=self.fit_result[i][source_Epre], self.fit_result[i][source_E]
-                 _g.SetPoint(ifit+1, fit_adc, source_E)
-                 slope = (source_E - source_Epre)/(fit_adc - fit_adcpre)
-                 f_x, f_y = fit_adc, source_E
-             _g.SetPoint(len(self.fit_element) + 1, 1500, (1500-f_x)*slope + f_y) 
+             for ifit in range(len(self.element_list)):
+                 source_E=self.element_list[ifit][1]
+                 fit_adc=self.fit_result[i][source_E]
+                 _g.SetPoint(ifit+1, fit_adc, float(source_E))
+                 if ifit == len(self.element_list)-1:
+                    source_Epre=self.element_list[ifit-1][1]
+                    fit_adcpre=self.fit_result[i][source_Epre]
+                    slope = (float(source_E) - float(source_Epre))/(fit_adc - fit_adcpre)
+                    f_x, f_y = fit_adc, float(source_E)
+             _g.SetPoint(len(self.element_list) + 1, 1500, (1500-f_x)*slope + f_y) 
              _s = ROOT.TSpline3("spline_"+str(i), _g)
              spline_list.append(_s)
-          return spline_list
+             graph_list.append(_g)
+          return graph_list,spline_list
 
       def plot(self):
           __location__ = os.path.realpath(
@@ -104,21 +109,22 @@ class Calibration():
           ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
           ROOT.SetAtlasStyle()
           for i in range(256):
-             new_name=self.name_list[i].replace("hist_cmn","ch : {}".format(i))
+             latex = getLatex(i,400,8000)
+             new_name=self.name_list[i].replace("hist_cmn"+str(i*2),"ch : {}".format(i))
              gROOT.ProcessLine("gErrorIgnoreLevel = kWarning;")
              c1 = ROOT.TCanvas(self.name_list[i],"",0,0,800,800)
              gPad.SetLogy(1)
-             hist.Draw()
+             self.hist_list[i].Draw()
              latex.DrawLatex(0.5,0.85,new_name)
-             c1.SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/"+self.name_list[i]+"_fit.pdf")
+             c1.SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/"+self.name_list[i].replace(str(i*2),str(i))+"_fit.pdf")
 
              c2 = ROOT.TCanvas("gr"+self.name_list[i],"",0,0,800,800)
+             graph=self.graph_list[i]
              graph.SetMarkerColor(4)
              graph.SetMarkerStyle(21)
              graph.Draw("ALP")
              latex.DrawLatex(0.5,0.85,new_name)         
-             c2.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/"+self.name_list[i]+"_gr.pdf")
-          os.system("pdfunite /Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_cmn*.pdf /Users/chiu.i-huan/Desktop/new_scientific/run/figs/hist_all_book.pdf")
+             c2.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/"+self.name_list[i].replace(str(i*2),str(i))+"_gr.pdf")
 
       def printout(self):
           fout = ROOT.TFile( args.output, 'recreate' )
@@ -235,11 +241,18 @@ def run(args):
     Cal=Calibration(filename=args.input, output=args.output,Etable=args.table,source=args.source)
     Cal.plot()
     Cal.printout()
+#    os.chdir('/Users/chiu.i-huan/Desktop/new_scientific/run/figs/') 
+#    os.system("pdfunite hist_cmn*fit.pdf hist_cali_2mmcdte_book.pdf")
     exit(0)
  
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
+
+#    /Users/chiu.i-huan/Desktop/new_scientific/data/minami_data/500n20/cali_2mmcdte_Am.root
+#    /Users/chiu.i-huan/Desktop/new_scientific/data/minami_data/500n20/cali_2mmcdte_Ba.root
+#    /Users/chiu.i-huan/Desktop/new_scientific/data/minami_data/500n20/cali_2mmcdte_Co.root
+
     parser.add_argument("input", type=str, default="./20151112_00009_001.root", help="Input File Name")
     parser.add_argument("--output", type=str, default="./spline_calibration_2mmtest.root", help="Output File Name")
     parser.add_argument("--table", type=str, default="./energy_table.txt", help="energy table")
