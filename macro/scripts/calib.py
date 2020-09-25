@@ -38,7 +38,7 @@ class Calibration():
           self.Etable=Etable
           self.source=source
           self.hist_list,self.name_list=self.gethist()
-          self.element_list=self.getrange()
+          self.element_list_pside, self.element_list_nside=self.getrange()
           self.fit_result=self.fit()
           self.graph_list,self.spline_list=self.mkTSpline()
 
@@ -60,25 +60,39 @@ class Calibration():
           # get element for fit =>
           # element_list[i] is for the ith line
           # element_list[i][1], [2], [3] is source energy, ADC fit center, ADC fit range 
-          element_list=[]
-          _l=linecache.getlines(self.Etable) 
-          for _il in range(len(_l)):
-             _e=_l[_il].strip().split(' ')
+          element_list_pside, element_list_nside=[], []
+          table_pside, table_nside=self.Etable.replace(".txt","_pside.txt"), self.Etable.replace(".txt","_nside.txt")
+          _lp=linecache.getlines(table_pside) 
+          _ln=linecache.getlines(table_nside) 
+          for _il in range(len(_lp)):
+             _e=_lp[_il].strip().split(' ')
              if "#" in _e[0]: continue
-             if _e[0] == self.source: element_list.append(_e)  
-          return element_list
+             if _e[0] == self.source: element_list_pside.append(_e)  
+          for _il in range(len(_ln)):
+             _e=_ln[_il].strip().split(' ')
+             if "#" in _e[0]: continue
+             if _e[0] == self.source: element_list_nside.append(_e)  
+          return element_list_pside, element_list_nside
 
       def fit(self):
           dic={}
           fit_result=[]
+          ich=0
           for ih in self.hist_list:
-             for ifit in self.element_list:
+             n_fit=0
+             if ich < 128: element_list = self.element_list_pside
+             else: element_list = self.element_list_nside
+             for ifit in element_list:
                 center_E, range_E=float(ifit[2]), float(ifit[3])
                 g1=ROOT.TF1("g1","gaus",center_E-range_E,center_E+range_E)
                 g1.SetLineColor(ROOT.kRed)
-                ih.Fit("g1","QR")
+                if n_fit == 0: ih.Fit("g1","QR")
+                else: ih.Fit("g1","QR+")
                 dic.update({ifit[1]:g1.GetParameter(1)})
+                n_fit+=1   
+             ich+=1
              fit_result.append(dic)
+            
           return fit_result
 
       def mkTSpline(self):
@@ -88,16 +102,18 @@ class Calibration():
              _s = ROOT.TSpline3()
              _g.SetName("graph_"+self.name_list[i])
              _g.SetPoint(0, 0, 0)
-             for ifit in range(len(self.element_list)):
-                 source_E=self.element_list[ifit][1]
+             if i < 128: element_list = self.element_list_pside
+             else: element_list = self.element_list_nside
+             for ifit in range(len(element_list)):
+                 source_E=element_list[ifit][1]
                  fit_adc=self.fit_result[i][source_E]
                  _g.SetPoint(ifit+1, fit_adc, float(source_E))
-                 if ifit == len(self.element_list)-1:
-                    source_Epre=self.element_list[ifit-1][1]
+                 if ifit == len(element_list)-1:
+                    source_Epre=element_list[ifit-1][1]
                     fit_adcpre=self.fit_result[i][source_Epre]
                     slope = (float(source_E) - float(source_Epre))/(fit_adc - fit_adcpre)
                     f_x, f_y = fit_adc, float(source_E)
-             _g.SetPoint(len(self.element_list) + 1, 1500, (1500-f_x)*slope + f_y) 
+             _g.SetPoint(len(element_list) + 1, 1500, (1500-f_x)*slope + f_y) 
              _s = ROOT.TSpline3("spline_"+str(i), _g)
              spline_list.append(_s)
              graph_list.append(_g)
@@ -114,6 +130,7 @@ class Calibration():
              gROOT.ProcessLine("gErrorIgnoreLevel = kWarning;")
              c1 = ROOT.TCanvas(self.name_list[i],"",0,0,800,800)
              gPad.SetLogy(1)
+             self.hist_list[i].SetLineColor(1)
              self.hist_list[i].Draw()
              latex.DrawLatex(0.5,0.85,new_name)
              c1.SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/"+self.name_list[i].replace(str(i*2),str(i))+"_fit.pdf")
