@@ -74,24 +74,24 @@ gROOT.ProcessLine(
 from ROOT import RootStruct
 struct = RootStruct()
 
-def getlineEnergy(energyFile, name, channel): 
-    if "spline_maxbin" in name : return energyFile.Get('Calline%s'%(channel))
-    # return energyFile.Get('spline_%s'%(channel)) #TODO calibration data is not good enough
-    else:       
+def getlineEnergy(energyFile,channel): 
+    if "spline_maxbin" in energyFile.GetName() : return energyFile.Get('Calline%s'%(channel))
+    elif "spline_calibration.root" in energyFile.GetName(): # For Si-detector calibration
        if channel == 240: return energyFile.Get('spline_%s'%(239))
        if channel >= 154 and channel <= 165:  return energyFile.Get('spline_%s'%(153))
        if channel >= 219 and channel <= 225:  return energyFile.Get('spline_%s'%(218))
        if channel == 127:  return energyFile.Get('spline_%s'%(126))
        return energyFile.Get('spline_%s'%(channel))
+    else : 
+       return energyFile.Get('spline_%s'%(channel))
        
-
-def getTSpline(self,fname, efname, dblist):
+def getTSpline(self,fname,efname,dblist):
     f = ROOT.TFile(fname) 
     line = list()
     if efname:
        ef = ROOT.TFile(efname, 'read')
        for ch in range(0, 256): 
-          line.append(getlineEnergy(ef, efname, ch))
+          line.append(getlineEnergy(ef,ch))
           if ch < 128:#x
              if ch < 10: hist_name = "hist_cmn" + "00" + str(ch) 
              elif ch < 100:  hist_name = "hist_cmn" + "0" + str(ch) 
@@ -321,6 +321,7 @@ class tran_process():
           self.drawables = self.hist_list + self.tree_list
 
       def tran_adc2e(self,ie):
+          # TODO: check processing time by "tti" var.
           tti=time.time()
           hitx_lv2, hity_lv2, cluster, hit_signal = {},{},{},{}
           self.tree.GetEntry(self.event_list.GetEntry(ie))
@@ -361,5 +362,5 @@ class tran_process():
           tti6=time.time()
           self.tout.Fill()
           ttif=tti6-tti
-          print("time ==> ", "GetEntry : ", (tti2-tti)/ttif, "lv1 : ",(tti3-tti2)/ttif, " lv2 : ",(tti4-tti3)/ttif, " match : ",(tti5-tti4)/ttif, " save : ",(tti6-tti5)/ttif )
+#          print("time ==> ", "GetEntry : ", (tti2-tti)/ttif, "lv1 : ",(tti3-tti2)/ttif, " lv2 : ",(tti4-tti3)/ttif, " match : ",(tti5-tti4)/ttif, " save : ",(tti6-tti5)/ttif )
 

@@ -28,11 +28,9 @@ from plot import Baseplot
 def main(args):
     
     ilist = GetInputList(args.inputFolder)
-    if "CdTe" in args.dtype: inittime = GetInitUnixTime("/Users/chiu.i-huan/Desktop/new_scientific/data/CdTedata/20200307a_00057_001.root")
-    else: inittime = GetInitUnixTime("/Users/chiu.i-huan/Desktop/new_scientific/data/20200305/root/test_f_00001_001.root")
 
     outname = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/"
-    p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype, ecut = args.cut, deltae=args.delta, initUT=inittime)
+    p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype, ecut = args.cut, deltae=args.delta, initUT=0)
     p.mainprocess()
 
     if p.fout is not None:

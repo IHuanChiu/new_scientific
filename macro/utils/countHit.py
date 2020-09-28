@@ -247,7 +247,7 @@ def Level1Hit(tree, adccut, coef_R, dblist, efname, eline, dtype):
        adc_name, cmn_name = "adc"+str(iasic), "cmn"+str(iasic)
        tree_adc, tree_cmn = getattr(tree,adc_name), getattr(tree,cmn_name)
        for ch in range(32):
-          taa=time.time()
+          taa=time.time() # TODO : check processing time by "taa" var.
           if "CdTe" in dtype: istrip = ch*2 # check read strip in detector
           else: 
              istrip = ch
