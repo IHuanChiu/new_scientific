@@ -10,15 +10,11 @@ __copyright__ = "Copyright 2019 I-Huan CHIU"
 __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 
 # modules
-import sys,os,random,math,ROOT
+import sys,os,random,math,ROOT,argparse,time
 from ROOT import TFile, TTree, gPad, TGraphAsymmErrors, TSpline3, gStyle, gErrorIgnoreLevel, gROOT
 ROOT.gROOT.SetBatch(1)
-import argparse
-from multiprocessing import Pool, cpu_count
-import time
 from array import array
 #from logger import log
-import logging
 from random import gauss
 import linecache
 
@@ -166,20 +162,34 @@ class Calibration():
              else : temp_name = "hist_cmn" + str(i*2)
              new_name=self.name_list[i].replace(temp_name,"ch : {}".format(i))
              gROOT.ProcessLine("gErrorIgnoreLevel = kWarning;")
-             c1 = ROOT.TCanvas(self.name_list[i],"",0,0,800,800)
+             #c1 = ROOT.TCanvas(self.name_list[i],"",0,0,800,800)
+             c0 = ROOT.TCanvas(self.name_list[i],"",0,0,2400,800)
+             c0.Divide(3,1)
+             c0.cd(1)
              gPad.SetLogy(1)
              self.hist_list[i].SetLineColor(1)
              self.hist_list[i].Draw()
              latex.DrawLatex(0.5,0.85,new_name)
-             c1.SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+temp_name.replace(temp_name,"hist_"+self.source+"_fit"+"_"+str(i))+".pdf")
+             #c1.SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+temp_name.replace(temp_name,"hist_"+self.source+"_fit"+"_"+str(i))+".pdf")
 
-             c2 = ROOT.TCanvas("gr"+self.name_list[i],"",0,0,800,800)
+             c0.cd(2)
+             #c2 = ROOT.TCanvas("gr"+self.name_list[i],"",0,0,800,800)
              graph=self.graph_list[i]
              graph.SetMarkerColor(4)
              graph.SetMarkerStyle(21)
              graph.Draw("ALP")
              latex.DrawLatex(0.5,0.85,new_name)         
-             c2.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+temp_name.replace(temp_name,"hist_"+self.source+"_gr"+"_"+str(i))+".pdf")
+             #c2.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+temp_name.replace(temp_name,"hist_"+self.source+"_gr"+"_"+str(i))+".pdf")
+
+             c0.cd(3)
+             #c3 = ROOT.TCanvas("line"+self.name_list[i],"",0,0,800,800)
+             graph=self.spline_list[i]
+             graph.SetLineColor(1)
+             graph.Draw("L")
+             latex.DrawLatex(0.5,0.85,new_name)         
+             #c3.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+temp_name.replace(temp_name,"hist_"+self.source+"_line"+"_"+str(i))+".pdf")
+
+             c0.SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+temp_name.replace(temp_name,"hist_"+self.source+"_all"+"_"+str(i))+".pdf")
 
       def Printout(self):
           args.output=args.output.replace(".root","_"+self.source+".root")

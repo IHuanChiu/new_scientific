@@ -260,11 +260,6 @@ class tran_process():
           for i in range(len(h2_Label)): 
              self.h2_cutflow_x.GetXaxis().SetBinLabel(i+1,h2_Label[i])
              self.h2_cutflow_y.GetXaxis().SetBinLabel(i+1,h2_Label[i])
-#          self.h1_event_cutflow = ROOT.TH1D("hist_event_cutflow","events after the selections",5,0,5)
-#          self.h1_event_cutflow.SetDirectory(0)
-#          h1_Label = ["Raw","trigger","Level 1","Level 2", "photon"]
-#          for i in range(len(h1_Label)):
-#             self.h1_event_cutflow.GetXaxis().SetBinLabel(i+1,h1_Label[i])   
 
           self.tout = TTree('tree','tree') 
           self.tout.SetDirectory(0)
@@ -288,14 +283,14 @@ class tran_process():
           self.tout.Branch( 'Nstrips_p_lv2', AddressOf( struct, 'Nstrips_p_lv2' ),    'Nstrips_p_lv2[nsignalx_lv2]/D' )
           self.tout.Branch( 'Nstrips_n_lv2', AddressOf( struct, 'Nstrips_n_lv2' ),    'Nstrips_n_lv2[nsignaly_lv2]/D' )
 
-          self.tout.Branch( 'Poi_x',     AddressOf( struct, 'Poi_x' ),    'Poi_x[ncluster]/D' )
-          self.tout.Branch( 'Poi_y',     AddressOf( struct, 'Poi_y' ),    'Poi_y[ncluster]/D' )
-#          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),'Poi_x_lv1[nsignalx_lv1]/D' )
-#          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
-#          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
-#          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
+#          self.tout.Branch( 'Poi_x',     AddressOf( struct, 'Poi_x' ),    'Poi_x[ncluster]/D' )
+#          self.tout.Branch( 'Poi_y',     AddressOf( struct, 'Poi_y' ),    'Poi_y[ncluster]/D' )
+          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),'Poi_x_lv1[nsignalx_lv1]/D' )
+          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
+          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
+          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
 
-          self.tout.Branch( 'DeltaE',  AddressOf( struct, 'DeltaE' ),     'DeltaE[ncluster]/D' )
+#          self.tout.Branch( 'DeltaE',  AddressOf( struct, 'DeltaE' ),     'DeltaE[ncluster]/D' )
           self.tout.Branch( 'Nstrips_x', AddressOf( struct, 'Nstrips_x' ),'Nstrips_x[ncluster]/D' )
           self.tout.Branch( 'Nstrips_y', AddressOf( struct, 'Nstrips_y' ),'Nstrips_y[ncluster]/D' )
 
@@ -313,8 +308,8 @@ class tran_process():
           self.hist_list.append(self.hy)
 #          self.hist_list.append(self.h2_cutflow_x)
 #          self.hist_list.append(self.h2_cutflow_y)
-          self.hist_list.append(self.h1_lv2_x_nstrips)
-          self.hist_list.append(self.h1_lv2_y_nstrips)
+#          self.hist_list.append(self.h1_lv2_x_nstrips)
+#          self.hist_list.append(self.h1_lv2_y_nstrips)
 #          self.hist_list.append(self.h1_event_cutflow)
           self.tree_list.append(self.tout)
 
@@ -330,11 +325,11 @@ class tran_process():
 #          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 #          hitx_lv1, hity_lv1 = Level1HitArray(rawdata_list, self.line, self.dblist)
           hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.cut, self.coef_R, self.dblist, self.efile, self.line, self.dtype)#Slow
-#          self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
+          self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
 
           tti3=time.time()
           hitx_lv2, hity_lv2 = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
-#          self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
+          self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
 #          for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
 #          for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
 

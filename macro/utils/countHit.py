@@ -248,23 +248,29 @@ def Level1Hit(tree, adccut, coef_R, dblist, efname, eline, dtype):
        tree_adc, tree_cmn = getattr(tree,adc_name), getattr(tree,cmn_name)
        for ch in range(32):
           taa=time.time() # TODO : check processing time by "taa" var.
+          # === quick selection ===
           if "CdTe" in dtype: istrip = ch*2 # check read strip in detector
           else: 
              istrip = ch
              if iasic == 6 and (ch==13 or ch==16 or ch==20): continue #TODO : Si bad channels
+          if tree_adc[istrip] <= 20 or tree_adc[istrip] < tree_cmn+0 or tree_adc[istrip] == 1024: continue
           taa2=time.time()
+
+          # === pha to energy ===
           pha = tree_adc[istrip]-tree_cmn+(coef_R*random.uniform(-0.5,0.5))
           taa3=time.time()
           if efname: energy = eline[ch+iasic*32].Eval(pha) # use tspline
           else: energy = dblist[ch+iasic*32].calfunc.Eval(pha) #use database
           taa4=time.time()
 
+          # === store Lv1 hit ===
           if(energy > EnergyCut and tree_adc[istrip] < ADCUpperBound and iasic < 4):
              n_hit_x += 1 #hit !
              taa5=time.time()
-             poi = dblist[ch+iasic*32].posx
+             poi=dblist[ch+iasic*32].posx
+             stripid=dblist[ch+iasic*32].stripid
              taa6=time.time()
-             signal_hitx = SetHitInfo(n_hit_x, pha, energy, poi, dblist[ch+iasic*32].stripid, iasic)
+             signal_hitx = SetHitInfo(n_hit_x, pha, energy, poi, stripid, iasic)
              taa7=time.time()
              signalx.update({n_hit_x:signal_hitx})
              taa8=time.time()
@@ -273,7 +279,8 @@ def Level1Hit(tree, adccut, coef_R, dblist, efname, eline, dtype):
           if(energy > EnergyCut and tree_adc[istrip] < ADCUpperBound and iasic >= 4):
              n_hit_y += 1
              poi = dblist[ch+iasic*32].posy
-             signal_hity = SetHitInfo(n_hit_y, pha, energy, poi, dblist[ch+iasic*32].stripid, iasic)
+             stripid=dblist[ch+iasic*32].stripid
+             signal_hity = SetHitInfo(n_hit_y, pha, energy, poi, stripid, iasic)
              signaly.update({n_hit_y:signal_hity})               
     return signalx, signaly
         
