@@ -253,7 +253,7 @@ def Level1Hit(tree, adccut, coef_R, dblist, efname, eline, dtype):
           else: 
              istrip = ch
              if iasic == 6 and (ch==13 or ch==16 or ch==20): continue #TODO : Si bad channels
-          if tree_adc[istrip] <= 20 or tree_adc[istrip] < tree_cmn+0 or tree_adc[istrip] == 1024: continue
+#          if tree_adc[istrip] <= 20 or tree_adc[istrip] < tree_cmn+0 or tree_adc[istrip] == 1024: continue
           taa2=time.time()
 
           # === pha to energy ===
@@ -262,12 +262,14 @@ def Level1Hit(tree, adccut, coef_R, dblist, efname, eline, dtype):
           if efname: energy = eline[ch+iasic*32].Eval(pha) # use tspline
           else: energy = dblist[ch+iasic*32].calfunc.Eval(pha) #use database
           taa4=time.time()
-
+         
+          print("iasic : ", iasic,  " ch : ", ch , " pha : ", pha,  " energy : ", energy)
           # === store Lv1 hit ===
           if(energy > EnergyCut and tree_adc[istrip] < ADCUpperBound and iasic < 4):
              n_hit_x += 1 #hit !
              taa5=time.time()
              poi=dblist[ch+iasic*32].posx
+             print("ch:", ch, " poi : ", poi)
              stripid=dblist[ch+iasic*32].stripid
              taa6=time.time()
              signal_hitx = SetHitInfo(n_hit_x, pha, energy, poi, stripid, iasic)

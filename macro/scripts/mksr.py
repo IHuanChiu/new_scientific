@@ -99,7 +99,7 @@ class PrepareParameters():
                             constant, mean_x, sigma_x, mean_y, sigma_y, rho = gb.GetParameter(0), gb.GetParameter(1), gb.GetParameter(2), gb.GetParameter(3), gb.GetParameter(4), gb.GetParameter(5)
                       paramater_list.append([constant, mean_x, sigma_x, mean_y, sigma_y, rho])                  
                    hist_fitlist.append(h2)
-                   # TODO : cheching bad fitting channels
+                   # Cheching bad fitting channels
                    if paramater_list[index][0] > 1000: 
                       log().warn("bad fitting point : {0}, {1}".format(index, paramater_list[index]))
 
@@ -199,7 +199,7 @@ class SystemResponse():
 
 # ======================= Maximum Likelihood Expectation Maximization ===================
 class MLEM():
-      def __init__(self,PPclass=None,SRclass=None,npoints=None,nbins=None,npixels=None):
+      def __init__(self,PPclass=None,SRclass=None,npoints=None,nbins=None,npixels=None,matrix=None):
           # class members
           self.PP=PPclass
           self.SR=SRclass
@@ -213,8 +213,10 @@ class MLEM():
           self.para_dic=self.SR.par_con_x_xsig_y_ysig_rho
           self.ori_image_list=self.PP.imagearray
           self.ob2im_dic=self.mksrfdic()
-          self.matrix=self.mkmatrix()
-         
+          if matrix == None: self.matrix=self.mkmatrix()
+          else: 
+             with open(matrix, 'rb') as f:
+                self.matrix=np.load(f)
           # plots
           self.image_hx_hy_list_ori, self.image_hx_hy_list_sr=self.mkimage()
           self.mlemtree=self.mktree()
@@ -227,7 +229,8 @@ class MLEM():
           # return array type
           _mlist=[]
           fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage.CdTe_LP_0909.root","read")
-          for i in range(16):
+          n_angles=1
+          for i in range(n_angles):
              _name = "h"+str(i)
              _mlist.append(hist2array(fint.Get(_name)))          
           return _mlist
@@ -284,6 +287,8 @@ class MLEM():
                          matrix[ix][iy][iz][imageix][imageiy]=(h_gaus.Eval(_imagex,_imagey)/source_intensity)
                    index+=1
           if prog: prog.finalize()
+          with open('matrix.npy', 'wb') as f:
+             np.save(f, matrix)
           return matrix
 
       def mktree(self):
@@ -469,7 +474,7 @@ class MLEM():
                 _object=self.updateObject(_object, _image_ratio)
                 _image = self.updateImage(_object)
 
-                if ih < n_savehist:
+                if ih < n_savehist:# only check n_savehist plots
                    hist_image_ratio=ROOT.TH2D("image_ratio_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
                    hist_process_image=ROOT.TH2D("image_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
                    array2hist(_image_ratio,hist_image_ratio)
@@ -554,8 +559,8 @@ def testrun(args):
     log().info("Progressing the paramaters for fitting ...")
     PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=args.npixels,nbins=image_nbins) # get cali. image list
     SR=SystemResponse()# get system response by TMinuit fitting
-    ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels) # do iterate and get final plots
-    MLEM_3DHist=ML.iterate(n_iteration=20)
+    ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels,matrix=args.matrix) # do iterate and get final plots
+    MLEM_3DHist=ML.iterate(n_iteration=5)
 
     #check plots
     log().info("Print outputs...")
@@ -578,6 +583,7 @@ if __name__=="__main__":
    parser = argparse.ArgumentParser(description='Process some integers.')
    parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root", help="Input File Name")
    parser.add_argument("-o", "--output", type=str, default="sr_outputname", help="Output File Name")
+   parser.add_argument("-m", "--matrix", type=str, default=None, help="Output File Name")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of images")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="Number of images")
    parser.add_argument("-p","--npixels",dest="npixels",type=int, default=40, help="Number of images")

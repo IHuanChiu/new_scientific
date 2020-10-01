@@ -12,4 +12,5 @@ macro/utils/__pycache__/
 macro/__pycache__/*
 macro/utils/__pycache__/*
 macro/scripts/filt-back-proj
+macro/scripts/matrix*
 .DS_Store

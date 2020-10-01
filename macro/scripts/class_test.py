@@ -30,4 +30,26 @@ a.change()
 #s.change()
 #s.name
 
+class Bank_acount:
+      def __init__(self):
+          self.a = 100
+      def num(self):
+          return self.a
 
+class Bank_acount2:
+      def __init__(self):
+          self.a = 100
+      @property
+      def num(self):
+          return self.a
+B=Bank_acount()
+B2=Bank_acount2()
+
+print(type(B.num),B.num) #function
+print(type(B.num()),B.num()) # return value
+
+B.num = 200
+print(type(B.num), B.num) # change B.num to int
+print(type(B2.num), B2.num) # property value
+#B2.num=200 # <= cann't be attribute
+#print(B2.num()) # fail
