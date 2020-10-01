@@ -213,10 +213,8 @@ class MLEM():
           self.para_dic=self.SR.par_con_x_xsig_y_ysig_rho
           self.ori_image_list=self.PP.imagearray
           self.ob2im_dic=self.mksrfdic()
-          if matrix == None: self.matrix=self.mkmatrix()
-          else: 
-             with open(matrix, 'rb') as f:
-                self.matrix=np.load(f)
+          if not isinstance(matrix, np.ndarray): self.matrix=self.mkmatrix()
+          else: self.matrix=matrix
           # plots
           self.image_hx_hy_list_ori, self.image_hx_hy_list_sr=self.mkimage()
           self.mlemtree=self.mktree()
@@ -228,11 +226,13 @@ class MLEM():
       def getmeasurement(self):
           # return array type
           _mlist=[]
-          fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage.CdTe_LP_0909.root","read")
-          n_angles=1
-          for i in range(n_angles):
-             _name = "h"+str(i)
-             _mlist.append(hist2array(fint.Get(_name)))          
+          #fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage.CdTe_LP_0909.root","read")
+          #n_angles=1
+          #for i in range(n_angles):
+          #   _name = "h"+str(i)
+          #   _mlist.append(hist2array(fint.Get(_name)))          
+          fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
+          _mlist.append(hist2array(fint.Get("image_pos43")))
           return _mlist
 
       def srf(self,_x,_y,_z,_type=None):
@@ -287,7 +287,7 @@ class MLEM():
                          matrix[ix][iy][iz][imageix][imageiy]=(h_gaus.Eval(_imagex,_imagey)/source_intensity)
                    index+=1
           if prog: prog.finalize()
-          with open('matrix.npy', 'wb') as f:
+          with open('matrix_temp.npy', 'wb') as f:
              np.save(f, matrix)
           return matrix
 
@@ -456,11 +456,14 @@ class MLEM():
                    #TODO over matrix?
                    object_ratio[ix][iy][iz]=np.sum(image_ratio*self.matrix[ix][iy][iz])/np.sum(self.matrix[ix][iy][iz])
           object_update=object_pre*object_ratio
-          return object_update
+          return object_ratio, object_update
 
       def iterate(self,n_iteration):                   
           prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iterate",init_t=time.time())
           hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+          hist_final_object.GetXaxis().SetTitle("Z")
+          hist_final_object.GetYaxis().SetTitle("Y")
+          hist_final_object.GetZaxis().SetTitle("X")
           final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
           nevproc, ih, n_savehist=0, 0, 5
           for h_measurement_array in self.h_measurement_list:
@@ -471,15 +474,18 @@ class MLEM():
                    _image=hist2array(self.image_init)
                    _object=self.object_init
                 _image_ratio=self.findratio(h_measurement_array, _image) 
-                _object=self.updateObject(_object, _image_ratio)
+                _object_ratio,_object=self.updateObject(_object, _image_ratio)
                 _image = self.updateImage(_object)
 
                 if ih < n_savehist:# only check n_savehist plots
+                   hist_object_ratio=ROOT.TH3D("object_ratio_h{0}_iteration{1}".format(ih,i),"object_ratio_h{0}_iteration{1}".format(ih,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
                    hist_image_ratio=ROOT.TH2D("image_ratio_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
                    hist_process_image=ROOT.TH2D("image_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
+                   array2hist(_object_ratio,hist_object_ratio)
                    array2hist(_image_ratio,hist_image_ratio)
                    array2hist(_image,hist_process_image)
                    self.mlemhist_list.append(hist_image_ratio)
+                   self.mlemhist_list.append(hist_object_ratio)
                    self.mlemhist_list.append(hist_process_image)
              final_object+=_object# projeaction of all images
              ih+=1
@@ -548,18 +554,25 @@ def mkWeightFunc(filename,_np):
 
 # ======================= run ===================
 def testrun(args):
+    log().info("Loading Matrix...")
+
     outfilename = "/Users/chiu.i-huan/Desktop/mytesth3output_"+args.output
     outfilename = outfilename+".root"
-    log().info("Test run...")
-    image_nbins=128
+    image_nbins=128 # number of strips of CdTe detector
+    _matrix=None
+    if args.matrix: 
+       with open(args.matrix, 'rb') as f:
+          _matrix=np.load(f)
+       args.npixels = _matrix.shape[0]
     _sr=mkWeightFunc(args.inputFolder, args.npoints)
-    testpoint=np.array([0,0,0])
-    testimage = GetImageSpace(args.inputFolder,image_nbins,5,image_nbins,testpoint)
+    testimage = GetImageSpace(args.inputFolder,image_nbins,5,image_nbins,np.array([0,0,0]))
 
     log().info("Progressing the paramaters for fitting ...")
     PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=args.npixels,nbins=image_nbins) # get cali. image list
     SR=SystemResponse()# get system response by TMinuit fitting
-    ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels,matrix=args.matrix) # do iterate and get final plots
+    ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels,matrix=_matrix) # do iterate and get final plots
+
+    # MLEM iteration
     MLEM_3DHist=ML.iterate(n_iteration=5)
 
     #check plots
@@ -570,10 +583,6 @@ def testrun(args):
     ML.printoutput(ML.image_init,outfilename,"up")
     ML.printoutput(ML.mlemhist_list,outfilename,"up")
     ML.printoutput(MLEM_3DHist,outfilename,"up")
-
-    # save fitting plots
-#    ML.printoutput(PP.hist_fitx,outfilename,"up")
-#    ML.printoutput(PP.hist_fity,outfilename,"up")
 
     log().info("Output : %s"%(outfilename))
     exit(0)
@@ -586,7 +595,7 @@ if __name__=="__main__":
    parser.add_argument("-m", "--matrix", type=str, default=None, help="Output File Name")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of images")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="Number of images")
-   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=40, help="Number of images")
+   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=10, help="Number of images")
    args = parser.parse_args()
 
    testrun(args)
