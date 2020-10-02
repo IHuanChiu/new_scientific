@@ -43,7 +43,7 @@ class PrepareParameters():
           self.npixels=npixels
           self.nbins=nbins
           self.imagearray = self.getimages()
-          self.par_list, self.hist_fit = self.fitting_para()
+          self.hist_fit = self.fitting_para()
 
       def getimages(self):
           global point_axis
@@ -99,13 +99,15 @@ class PrepareParameters():
                             constant, mean_x, sigma_x, mean_y, sigma_y, rho = gb.GetParameter(0), gb.GetParameter(1), gb.GetParameter(2), gb.GetParameter(3), gb.GetParameter(4), gb.GetParameter(5)
                       paramater_list.append([constant, mean_x, sigma_x, mean_y, sigma_y, rho])                  
                    hist_fitlist.append(h2)
+                   if ix == 0 and iy == 0:
+                      print(iz, index , mean_x, mean_y)
                    # Cheching bad fitting channels
                    if paramater_list[index][0] > 1000: 
                       log().warn("bad fitting point : {0}, {1}".format(index, paramater_list[index]))
 
                    index+=1
                    del gb,h2
-          return paramater_list, hist_fitlist
+          return hist_fitlist
 
 # ======================= fit with TMinuit for the varaibles of function ===================
 def deffunc(_x,_y,_z,par):         
@@ -240,7 +242,7 @@ class MLEM():
           system response function: 
           input : object(pixel_of_x,pixel_of_y,pixel_of_z)
           output : image(x,y,xsig,ysig,intensity)
-          """          
+          """
           if _type == "bintype": 
              _x= -1*self.object_range+(self.object_range/self.npixels)+_x*((2.*self.object_range)/self.npixels)
              _y= -1*self.object_range+(self.object_range/self.npixels)+_y*((2.*self.object_range)/self.npixels)
@@ -340,6 +342,9 @@ class MLEM():
                    h2_array=np.zeros((self.nbins,self.nbins),dtype=float)
                    h_gaus = ROOT.TF2("h_gaus","bigaus",-16,16,-16,16)
                    h_gaus.SetParameters(image_var[0],image_var[1],image_var[2],image_var[3],image_var[4],image_var[5])
+                   if _ix==0 and _iy==0: 
+                      print("index : ", _ip, image_var[1], image_var[3])
+                      print("(x,y,z)", point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
                    for ix in range(128):
                       for iy in range(128):
                          _x=h2.GetXaxis().GetBinCenter(ix+1)
@@ -461,9 +466,9 @@ class MLEM():
       def iterate(self,n_iteration):                   
           prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iterate",init_t=time.time())
           hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
-          hist_final_object.GetXaxis().SetTitle("Z")
-          hist_final_object.GetYaxis().SetTitle("Y")
-          hist_final_object.GetZaxis().SetTitle("X")
+#          hist_final_object.GetXaxis().SetTitle("Z")
+#          hist_final_object.GetYaxis().SetTitle("Y")
+#          hist_final_object.GetZaxis().SetTitle("X")
           final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
           nevproc, ih, n_savehist=0, 0, 5
           for h_measurement_array in self.h_measurement_list:
@@ -595,7 +600,7 @@ if __name__=="__main__":
    parser.add_argument("-m", "--matrix", type=str, default=None, help="Output File Name")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of images")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="Number of images")
-   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=10, help="Number of images")
+   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=5, help="Number of images")
    args = parser.parse_args()
 
    testrun(args)
