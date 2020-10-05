@@ -236,41 +236,42 @@ def Level1Hit(tree, adccut, coef_R, dblist, efname, eline, dtype):
     n_hit_x, n_hit_y, istrip = 0, 0, 0
     signalx, signaly = {}, {}
     EnergyCut = enums.EnergyCut
-    tree_adc, tree_cmn = 0,0
+    tree_adc, tree_cmn, tree_index, tree_hitnum = 0,0,0,0
     _hit = hitchannel()
     if "CdTe" in dtype: 
        ADCUpperBound = enums.ADCUpperBound*1000
     else: 
        ADCUpperBound = enums.ADCUpperBound
     # ========= find signal region (p-side and n-side) ============
-    for iasic in range(8): 
-       adc_name, cmn_name = "adc"+str(iasic), "cmn"+str(iasic)
-       tree_adc, tree_cmn = getattr(tree,adc_name), getattr(tree,cmn_name)
-       for ch in range(32):
+    for iasic in range(8): #number of ASIC
+       adc_name, cmn_name, index_name, hitnum_name = "adc"+str(iasic), "cmn"+str(iasic), "index"+str(iasic), "hitnum"+str(iasic)
+       tree_adc, tree_cmn, tree_index, tree_hitnum = getattr(tree,adc_name), getattr(tree,cmn_name), getattr(tree,index_name), getattr(tree,hitnum_name)
+       for ich in range(tree_hitnum): #number of hit channels in a ASIC
           taa=time.time() # TODO : check processing time by "taa" var.
           # === quick selection ===
-          if "CdTe" in dtype: istrip = ch*2 # check read strip in detector
+          if tree_adc[ich] < tree_cmn+20 or tree_adc[ich] == 1024: continue
+          istrip = tree_index[ich] # read strip in ASIC, 0~63 for each CdTe ASIC
+          if "CdTe" in dtype: 
+             if istrip%2 != 0 : continue #TODO: for FEC-1 with "readoutall" setting (only loop even channel)
+             ChannelID=int(istrip/2+iasic*32) #scale to 0~255
           else: 
-             istrip = ch
-             if iasic == 6 and (ch==13 or ch==16 or ch==20): continue #TODO : Si bad channels
-#          if tree_adc[istrip] <= 20 or tree_adc[istrip] < tree_cmn+0 or tree_adc[istrip] == 1024: continue
-          taa2=time.time()
+             if iasic == 6 and (istrip==13 or istrip==16 or istrip==20): continue #TODO : Si bad channels
+             ChannelID=int(istrip+iasic*32) #0~255
 
+          taa2=time.time()
           # === pha to energy ===
-          pha = tree_adc[istrip]-tree_cmn+(coef_R*random.uniform(-0.5,0.5))
+          pha = tree_adc[ich]-tree_cmn+(coef_R*random.uniform(-0.5,0.5))
           taa3=time.time()
-          if efname: energy = eline[ch+iasic*32].Eval(pha) # use tspline
-          else: energy = dblist[ch+iasic*32].calfunc.Eval(pha) #use database
-          taa4=time.time()
-         
-          print("iasic : ", iasic,  " ch : ", ch , " pha : ", pha,  " energy : ", energy)
+          if efname: energy = eline[ChannelID].Eval(pha) # use tspline
+          else: energy = dblist[ChannelID].calfunc.Eval(pha) #use database
+
+          taa4=time.time()         
           # === store Lv1 hit ===
-          if(energy > EnergyCut and tree_adc[istrip] < ADCUpperBound and iasic < 4):
+          if(energy > EnergyCut and tree_adc[ich] < ADCUpperBound and iasic < 4):
              n_hit_x += 1 #hit !
              taa5=time.time()
-             poi=dblist[ch+iasic*32].posx
-             print("ch:", ch, " poi : ", poi)
-             stripid=dblist[ch+iasic*32].stripid
+             poi=dblist[ChannelID].posx
+             stripid=dblist[ChannelID].stripid
              taa6=time.time()
              signal_hitx = SetHitInfo(n_hit_x, pha, energy, poi, stripid, iasic)
              taa7=time.time()
@@ -278,10 +279,10 @@ def Level1Hit(tree, adccut, coef_R, dblist, efname, eline, dtype):
              taa8=time.time()
              taaf=taa8-taa
 #             print("1 : ", (taa2-taa)/taaf, "2 : ",(taa3-taa2)/taaf, "3: ", (taa4-taa3)/taaf, "4: ", (taa5-taa4)/taaf, " 5: ", (taa6-taa5)/taaf, "6 : ", (taa7-taa6)/taaf, " 7 : ", (taa8-taa7)/taaf)
-          if(energy > EnergyCut and tree_adc[istrip] < ADCUpperBound and iasic >= 4):
+          if(energy > EnergyCut and tree_adc[ich] < ADCUpperBound and iasic >= 4):
              n_hit_y += 1
-             poi = dblist[ch+iasic*32].posy
-             stripid=dblist[ch+iasic*32].stripid
+             poi = dblist[ChannelID].posy
+             stripid=dblist[ChannelID].stripid
              signal_hity = SetHitInfo(n_hit_y, pha, energy, poi, stripid, iasic)
              signaly.update({n_hit_y:signal_hity})               
     return signalx, signaly
