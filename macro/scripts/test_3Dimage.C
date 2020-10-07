@@ -6,7 +6,7 @@ TCanvas *c1 = new TCanvas(name.Data(), name.Data(), 1000, 500);
 c1->Print(name + "[", "pdf");    // ここで"canv.pdf"を開く感じ
 int Nhists = 10;
 TH1D* hist[10];
- 
+
 for (Int_t ihist = 0; ihist < Nhists; ihist++) {
     hist[ihist] = new TH1D("AA","AA",10,0,10);
     hist[ihist]->Draw();

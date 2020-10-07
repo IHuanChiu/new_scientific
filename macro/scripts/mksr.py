@@ -335,7 +335,9 @@ class MLEM():
                    image_hx_hy_list_ori.append(_h2.ProjectionX())
                    image_hx_hy_list_ori.append(_h2.ProjectionY())
 
-                   # system response plots
+                   # system response plots                   
+                   if _ip == 43:
+                      log().info("Position of Test Image: (x,y,z)=({0},{0},{0})".format(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2]))
                    image_var = self.srf(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
                    _h2name="image_sr_"+str(_ip)
                    h2=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)

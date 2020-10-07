@@ -2,9 +2,10 @@
 IsRandom = True
 
 #keV
-EnergyCut      = 10
-ADCUpperBound  = 1000
-DeltaEnergy    = 5
+EnergyCut      = 5
+DeltaEnergy    = 2
+
+ADCUpperBound  = 1020
 ClusterMatch   = 10
 UTOfRotation   = 1583670785
 DEG = u"\xb0"

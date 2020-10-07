@@ -68,6 +68,8 @@ gROOT.ProcessLine(
    Double_t    DeltaE[512];\
    Double_t Nstrips_x[512];\
    Double_t Nstrips_y[512];\
+   Double_t Stripid_x_lv1[128];\
+   Double_t Stripid_y_lv1[128];\
 };"
 ); 
 
@@ -142,9 +144,11 @@ def makentuple(signal, cluster, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
     for n in range(1,len(hitx_lv1)+1):          
        struct.E_p_lv1[n-1]        = hitx_lv1[n].energy
        struct.Poi_x_lv1[n-1]      = hitx_lv1[n].position
+       struct.Stripid_x_lv1[n-1]  = hitx_lv1[n].stripid
     for n in range(1,len(hity_lv1)+1):          
        struct.E_n_lv1[n-1]        = hity_lv1[n].energy
        struct.Poi_y_lv1[n-1]      = hity_lv1[n].position
+       struct.Stripid_y_lv1[n-1]  = hity_lv1[n].stripid
     for n in range(1,len(hitx_lv2)+1):          
        struct.E_p_lv2[n-1]        = hitx_lv2[n].energy
        struct.Nstrips_p_lv2[n-1]  = hitx_lv2[n].nstrips
@@ -285,6 +289,8 @@ class tran_process():
 #          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
 #          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
 #          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
+          self.tout.Branch( 'Stripid_x_lv1', AddressOf( struct, 'Stripid_x_lv1' ),'Stripid_x_lv1[nsignalx_lv1]/D' )
+          self.tout.Branch( 'Stripid_y_lv1', AddressOf( struct, 'Stripid_y_lv1' ),'Stripid_y_lv1[nsignaly_lv1]/D' )
 
            # === Cluster ===
 #          self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[ncluster]/D' )

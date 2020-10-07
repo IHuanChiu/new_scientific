@@ -19,9 +19,10 @@ fb=ROOT.TFile("spline_calibration_2mmtest_Ba.root","read")
 fc=ROOT.TFile("spline_calibration_2mmtest_Co.root","read")
 
 def compare(spline):   
+    c0name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/comparison_all.pdf" 
+    c0 = ROOT.TCanvas(c0name,"",0,0,3200,3200)
+    c0.Divide(2,2)
     for k in range(64):
-       c0 = ROOT.TCanvas("temp_"+str(k),"temp_"+str(k),800,800)
-       c0.Divide(2,2)
        for j in range(4):
           c0.cd(j+1)
           i=k*4+j 
@@ -48,11 +49,13 @@ def compare(spline):
           leg.AddEntry(lc,  "Co", "l")
           leg.Draw("same")
           del la,lb,lc           
-       c0.SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/comparison_ch{0}_ch{1}.pdf".format(k*4,(k+1)*4-1))
+       c0.Print(c0name, "pdf")
+    c0.Print(c0name + "]", "pdf")
 
 def merge():
     spline_list=[]
-    fout=ROOT.TFile("spline_calibration_2mmtest_merge.root","recreate")
+    useCoHight = False
+    fout=ROOT.TFile("spline_calibration_2mmtest_merge_noCohight.root","recreate")
     fout.cd()
     for i in range(256):
        _g = ROOT.TGraph()
@@ -70,15 +73,20 @@ def merge():
        _g.SetPoint(5, _gb.GetPointX(1), _gb.GetPointY(1))#Ba 31
        _g.SetPoint(6, _ga.GetPointX(4), _ga.GetPointY(4))#Am 59.5
        _g.SetPoint(7, _gb.GetPointX(3), _gb.GetPointY(3))#Ba 81
-       _g.SetPoint(8, _gc.GetPointX(2), _gc.GetPointY(2))#Co 122
-       slope = (_gc.GetPointY(2) - _gb.GetPointY(3))/(_gc.GetPointX(2) - _gb.GetPointX(3))
-       f_x, f_y = _gc.GetPointX(2), _gc.GetPointY(2)
-       _g.SetPoint(9, 1500, (1500-f_x)*slope + f_y)
-       if i >= 128:#n-side
-          _g.SetPoint(9, _gc.GetPointX(3), _gc.GetPointY(3))#Co 136.5
-          slope = (_gc.GetPointY(3) - _gc.GetPointY(2))/(_gc.GetPointX(3) - _gc.GetPointX(2))
-          f_x, f_y = _gc.GetPointX(3), _gc.GetPointY(3)
-          _g.SetPoint(10, 1500, (1500-f_x)*slope + f_y)       
+       if useCoHight:
+          _g.SetPoint(8, _gc.GetPointX(2), _gc.GetPointY(2))#Co 122
+          slope = (_gc.GetPointY(2) - _gb.GetPointY(3))/(_gc.GetPointX(2) - _gb.GetPointX(3))
+          f_x, f_y = _gc.GetPointX(2), _gc.GetPointY(2)
+          _g.SetPoint(9, 1200, (1200-f_x)*slope + f_y)
+          if i >= 128:#n-side
+             _g.SetPoint(9, _gc.GetPointX(3), _gc.GetPointY(3))#Co 136.5
+             slope = (_gc.GetPointY(3) - _gc.GetPointY(2))/(_gc.GetPointX(3) - _gc.GetPointX(2))
+             f_x, f_y = _gc.GetPointX(3), _gc.GetPointY(3)
+             _g.SetPoint(10, 1200, (1200-f_x)*slope + f_y)       
+       else:
+          slope = (_gb.GetPointY(3) - _ga.GetPointY(4))/(_gb.GetPointX(3) - _ga.GetPointX(4))
+          f_x, f_y = _gb.GetPointX(3), _gb.GetPointY(3)
+          _g.SetPoint(8, 1200, (1200-f_x)*slope + f_y)
 #       _s = ROOT.TSpline3("spline_"+str(i), _g)
 #       _s.SetName("spline_"+str(i))
 #       _g.SetName(graph_name)

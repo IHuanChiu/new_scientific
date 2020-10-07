@@ -249,7 +249,7 @@ def Level1Hit(tree, adccut, coef_R, dblist, efname, eline, dtype):
        for ich in range(tree_hitnum): #number of hit channels in a ASIC
           taa=time.time() # TODO : check processing time by "taa" var.
           # === quick selection ===
-          if tree_adc[ich] < tree_cmn+20 or tree_adc[ich] == 1024: continue
+          if tree_adc[ich] < tree_cmn+10 or tree_adc[ich] >= 1023: continue
           istrip = tree_index[ich] # read strip in ASIC, 0~63 for each CdTe ASIC
           if "CdTe" in dtype: 
              if istrip%2 != 0 : continue #TODO: for FEC-1 with "readoutall" setting (only loop even channel)

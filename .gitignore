@@ -5,7 +5,9 @@ TRIM_simulation
 other
 run/*
 *.root
+*.pdf
 *.pyc
+*.npy
 macro/__pycache__/
 macro/latest
 macro/utils/__pycache__/

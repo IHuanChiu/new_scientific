@@ -34,7 +34,7 @@ class Calibration():
           self.Etable=Etable
           self.source=source
           self.hist_list,self.name_list=self.gethist()
-          self.element_list_pside, self.element_list_nside,self.element_list_1,self.element_list_2,self.element_list_3,self.element_list_4,self.element_list_5=self.getrange()
+          self.element_list_pside, self.element_list_nside,self.element_list_1,self.element_list_2,self.element_list_3,self.element_list_4,self.element_list_5,self.element_list_6,self.element_list_7,self.element_list_8=self.getrange()
           self.fit_result=self.fit()
           self.graph_list,self.spline_list=self.mkTSpline()
 
@@ -56,9 +56,10 @@ class Calibration():
           # get element for fit =>
           # element_list[i] is for the ith line
           # element_list[i][1], [2], [3] is source energy, ADC fit center, ADC fit range 
-          element_list_pside, element_list_nside, element_list_1, element_list_2, element_list_3, element_list_4,element_list_5=[],[],[],[],[],[],[]
+          element_list_pside, element_list_nside = [],[]
+          element_list_1, element_list_2, element_list_3, element_list_4,element_list_5,element_list_6,element_list_7,element_list_8=[],[],[],[],[],[],[],[]
           table_pside, table_nside=self.Etable.replace(".txt","_pside.txt"), self.Etable.replace(".txt","_nside.txt")
-          table_1,table_2,table_3,table_4,table_5=self.Etable.replace(".txt","_0_95.txt"),self.Etable.replace(".txt","_96_127.txt"),self.Etable.replace(".txt","_128_159.txt"),self.Etable.replace(".txt","_160_223.txt"),self.Etable.replace(".txt","_224_255.txt")
+          table_1,table_2,table_3,table_4,table_5,table_6,table_7,table_8=self.Etable.replace(".txt","_asic1.txt"),self.Etable.replace(".txt","_asic2.txt"),self.Etable.replace(".txt","_asic3.txt"),self.Etable.replace(".txt","_asic4.txt"),self.Etable.replace(".txt","_asic5.txt"),self.Etable.replace(".txt","_asic6.txt"),self.Etable.replace(".txt","_asic7.txt"),self.Etable.replace(".txt","_asic8.txt")
           _lp=linecache.getlines(table_pside) 
           _ln=linecache.getlines(table_nside) 
           _l1=linecache.getlines(table_1) 
@@ -66,6 +67,9 @@ class Calibration():
           _l3=linecache.getlines(table_3) 
           _l4=linecache.getlines(table_4) 
           _l5=linecache.getlines(table_5) 
+          _l6=linecache.getlines(table_6) 
+          _l7=linecache.getlines(table_7) 
+          _l8=linecache.getlines(table_8) 
           for _il in range(len(_lp)):
              _e=_lp[_il].strip().split(' ')
              if "#" in _e[0]: continue
@@ -94,7 +98,19 @@ class Calibration():
              _e=_l5[_il].strip().split(' ')
              if "#" in _e[0]: continue
              if _e[0] == self.source: element_list_5.append(_e)  
-          return element_list_pside, element_list_nside, element_list_1, element_list_2, element_list_3, element_list_4, element_list_5
+          for _il in range(len(_l6)):
+             _e=_l6[_il].strip().split(' ')
+             if "#" in _e[0]: continue
+             if _e[0] == self.source: element_list_6.append(_e)  
+          for _il in range(len(_l7)):
+             _e=_l7[_il].strip().split(' ')
+             if "#" in _e[0]: continue
+             if _e[0] == self.source: element_list_7.append(_e)  
+          for _il in range(len(_l8)):
+             _e=_l8[_il].strip().split(' ')
+             if "#" in _e[0]: continue
+             if _e[0] == self.source: element_list_8.append(_e)  
+          return element_list_pside, element_list_nside, element_list_1, element_list_2, element_list_3, element_list_4, element_list_5, element_list_6, element_list_7, element_list_8
 
       def fit(self):
           fit_result=[]
@@ -102,11 +118,14 @@ class Calibration():
           for ih in self.hist_list:
 #             if ich < 128: element_list = self.element_list_pside
 #             else: element_list = self.element_list_nside
-             if ich < 96: element_list=self.element_list_1
-             elif ich < 128: element_list=self.element_list_2
-             elif ich < 160: element_list=self.element_list_3
-             elif ich < 224: element_list=self.element_list_4
-             else: element_list=self.element_list_5
+             if ich < 32: element_list=self.element_list_1
+             elif ich < 64: element_list=self.element_list_2
+             elif ich < 96: element_list=self.element_list_3
+             elif ich < 128: element_list=self.element_list_4
+             elif ich < 160: element_list=self.element_list_5
+             elif ich < 192: element_list=self.element_list_6
+             elif ich < 224: element_list=self.element_list_7
+             else: element_list=self.element_list_8
              dic, n_fit={}, 0
              for ifit in element_list:
                 E_down, E_up=float(ifit[2]), float(ifit[3])
@@ -127,13 +146,14 @@ class Calibration():
              _s = ROOT.TSpline3()
              _g.SetName("graph_"+self.name_list[i])
              _g.SetPoint(0, 0, 0)
-#             if i < 128: element_list = self.element_list_pside
-#             else: element_list = self.element_list_nside
-             if i < 96: element_list=self.element_list_1
-             elif i < 128: element_list=self.element_list_2
-             elif i < 160: element_list=self.element_list_3
-             elif i < 224: element_list=self.element_list_4
-             else: element_list=self.element_list_5
+             if i < 32: element_list=self.element_list_1
+             elif i < 64: element_list=self.element_list_2
+             elif i < 96: element_list=self.element_list_3
+             elif i < 128: element_list=self.element_list_4
+             elif i < 160: element_list=self.element_list_5
+             elif i < 192: element_list=self.element_list_6
+             elif i < 224: element_list=self.element_list_7
+             else: element_list=self.element_list_8
              for ifit in range(len(element_list)):
                  source_E=element_list[ifit][1]
                  fit_adc=self.fit_result[i][source_E]
@@ -155,6 +175,16 @@ class Calibration():
                   os.path.join(os.getcwd(), os.path.dirname(__file__)))
           ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
           ROOT.SetAtlasStyle()
+          c0name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/hist_"+self.source+"_all.pdf"
+          c1name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/hist_"+self.source+"_fit.pdf"
+          c2name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/hist_"+self.source+"_gr.pdf"
+          c0 = ROOT.TCanvas(c0name,"",0,0,2400,800)
+          c1 = ROOT.TCanvas(c1name,"",0,0,800,800)
+          c2 = ROOT.TCanvas(c2name,"",0,0,800,800)
+          c0.Divide(3,1)
+          c0.Print(c0name + "[", "pdf")
+          c1.Print(c1name + "[", "pdf")
+          c2.Print(c2name + "[", "pdf")
           for i in range(256):
              latex = getLatex(i,400,8000)
              if i*2 < 10: temp_name = "hist_cmn" + "00" + str(i*2) 
@@ -162,34 +192,37 @@ class Calibration():
              else : temp_name = "hist_cmn" + str(i*2)
              new_name=self.name_list[i].replace(temp_name,"ch : {}".format(i))
              gROOT.ProcessLine("gErrorIgnoreLevel = kWarning;")
-             #c1 = ROOT.TCanvas(self.name_list[i],"",0,0,800,800)
-             c0 = ROOT.TCanvas(self.name_list[i],"",0,0,2400,800)
-             c0.Divide(3,1)
              c0.cd(1)
              gPad.SetLogy(1)
              self.hist_list[i].SetLineColor(1)
              self.hist_list[i].Draw()
              latex.DrawLatex(0.5,0.85,new_name)
-             #c1.SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+temp_name.replace(temp_name,"hist_"+self.source+"_fit"+"_"+str(i))+".pdf")
+             c1.cd()
+             gPad.SetLogy(1)
+             self.hist_list[i].Draw()
+             latex.DrawLatex(0.5,0.85,new_name)
 
              c0.cd(2)
-             #c2 = ROOT.TCanvas("gr"+self.name_list[i],"",0,0,800,800)
              graph=self.graph_list[i]
              graph.SetMarkerColor(4)
              graph.SetMarkerStyle(21)
              graph.Draw("ALP")
              latex.DrawLatex(0.5,0.85,new_name)         
-             #c2.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+temp_name.replace(temp_name,"hist_"+self.source+"_gr"+"_"+str(i))+".pdf")
+             c2.cd()
+             graph.Draw("ALP")
+             latex.DrawLatex(0.5,0.85,new_name)         
 
              c0.cd(3)
-             #c3 = ROOT.TCanvas("line"+self.name_list[i],"",0,0,800,800)
              graph=self.spline_list[i]
              graph.SetLineColor(1)
              graph.Draw("L")
              latex.DrawLatex(0.5,0.85,new_name)         
-             #c3.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+temp_name.replace(temp_name,"hist_"+self.source+"_line"+"_"+str(i))+".pdf")
-
-             c0.SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+temp_name.replace(temp_name,"hist_"+self.source+"_all"+"_"+str(i))+".pdf")
+             c0.Print(c0name, "pdf")
+             c1.Print(c1name, "pdf")
+             c2.Print(c2name, "pdf")
+          c0.Print(c0name + "]", "pdf")
+          c1.Print(c1name + "]", "pdf")
+          c2.Print(c2name + "]", "pdf")
 
       def Printout(self):
           args.output=args.output.replace(".root","_"+self.source+".root")
