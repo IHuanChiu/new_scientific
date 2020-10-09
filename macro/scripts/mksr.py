@@ -33,6 +33,7 @@ gROOT.ProcessLine(
 from ROOT import MLEMStruct
 mlstruct = MLEMStruct()
 paramater_list,point_axis=[],[]
+hole_axis=[0,0,-113]
 
 # ======================= find the paramaters by fitting ===================
 class PrepareParameters():
@@ -113,6 +114,17 @@ class PrepareParameters():
 def deffunc(_x,_y,_z,par):         
     func=par[0]+par[1]*_x+par[2]*_y+par[3]*_z
     return func
+def muxfunc(_x,_y,_z,par):         
+    denominator=(((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3]-par[4])*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6]-par[8])-((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3]-par[5])*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6]-par[7]))
+    numerator=((par[1]-_y-((hole_axis[1]-_y)*(par[0]-_x)/(hole_axis[0]-_x)))*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6]-par[8])-(par[2]-_z-(hole_axis[2]-_z)*(par[0]-_x)/(hole_axis[0]-_x))*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6]-par[7]))
+    mux=numerator/denominator
+    return mux
+def muyfunc(_x,_y,_z,par):         
+    denominator=(((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3]-par[5])*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6]-par[7])-((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3]-par[4])*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6]-par[8]))
+    numerator=((par[1]-_y-((hole_axis[1]-_y)*(par[0]-_x)/(hole_axis[0]-_x)))*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3]-par[5])-(par[2]-_z-(hole_axis[2]-_z)*(par[0]-_x)/(hole_axis[0]-_x))*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3]-par[4]))
+    muy=numerator/denominator
+    return muy
+
 def fcn_constant(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
@@ -122,6 +134,7 @@ def fcn_x(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][1] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
+#       chisq += pow((paramater_list[_index][1] - muxfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
 def fcn_xsig(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
@@ -132,6 +145,7 @@ def fcn_y(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][3] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
+#       chisq += pow((paramater_list[_index][3] - muyfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
 def fcn_ysig(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
@@ -149,45 +163,97 @@ class SystemResponse():
           self.par_con_x_xsig_y_ysig_rho = self.GetSRpar()
 
       def dofit(self, parname):
+          para_list=[]
           if parname == "constant": fcn = fcn_constant
           if parname == "x": fcn = fcn_x
           if parname == "xsig": fcn = fcn_xsig
           if parname == "y": fcn = fcn_y
           if parname == "ysig": fcn = fcn_ysig
           if parname == "rho": fcn = fcn_rho
-          gMinuit = TMinuit(4)
-          gMinuit.SetPrintLevel(-1) # -1  quiet, 0  normal, 1  verbose
-          gMinuit.SetFCN( fcn )
-          arglist = array( 'd', 10*[0.] )
-          ierflg = ctypes.c_int(1982)
-      
-          arglist[0] = 1
-          gMinuit.mnexcm( "SET ERR", arglist, 1, ierflg )
-      
-          # Set starting values and step sizes for parameters
-          vstart = array( 'd', ( 3,  1,  0.1,  0.01  ) )
-          step   = array( 'd', ( 0.1, 0.1, 0.01, 0.001 ) )
-          gMinuit.mnparm( 0, "par0", vstart[0], step[0], 0, 0, ierflg )
-          gMinuit.mnparm( 1, "parx", vstart[1], step[1], 0, 0, ierflg )
-          gMinuit.mnparm( 2, "pary", vstart[2], step[2], 0, 0, ierflg )
-          gMinuit.mnparm( 3, "parz", vstart[3], step[3], 0, 0, ierflg )
-      
-          # Now ready for minimization step
-          arglist[0] = 500
-          arglist[1] = 1.
-          gMinuit.mnexcm( "MIGRAD", arglist, 2, ierflg )
-      
-          # Print results
-          par0,par1,par2,par3 = map(ctypes.c_double, (0,0,0,0))
-          par0_err,par1_err,par2_err,par3_err = map(ctypes.c_double, (0,0,0,0))
-          amin, edm, errdef = map(ctypes.c_double, (0.18, 0.19, 0.20))
-          nvpar, nparx, icstat = map(ctypes.c_int, (1983, 1984, 1985))
-          gMinuit.mnstat( amin, edm, errdef, nvpar, nparx, icstat )
-          gMinuit.GetParameter(0,par0,par0_err)
-          gMinuit.GetParameter(1,par1,par0_err)
-          gMinuit.GetParameter(2,par2,par0_err)
-          gMinuit.GetParameter(3,par3,par0_err)
-          return [par0,par1,par2,par3]
+
+          if parname != "x" and parname != "y": # plane method
+             gMinuit = TMinuit(4)
+             gMinuit.SetPrintLevel(-1) # -1  quiet, 0  normal, 1  verbose
+             gMinuit.SetFCN( fcn )
+             arglist = array( 'd', 10*[0.] )
+             ierflg = ctypes.c_int(1982)
+         
+             arglist[0] = 1
+             gMinuit.mnexcm( "SET ERR", arglist, 1, ierflg )
+         
+             # Set starting values and step sizes for parameters
+             vstart = array( 'd', ( 3,  1,  0.1,  0.01  ) )
+             step   = array( 'd', ( 0.1, 0.1, 0.01, 0.001 ) )
+             gMinuit.mnparm( 0, "par0", vstart[0], step[0], 0, 0, ierflg )
+             gMinuit.mnparm( 1, "parx", vstart[1], step[1], 0, 0, ierflg )
+             gMinuit.mnparm( 2, "pary", vstart[2], step[2], 0, 0, ierflg )
+             gMinuit.mnparm( 3, "parz", vstart[3], step[3], 0, 0, ierflg )
+         
+             # Now ready for minimization step
+             arglist[0] = 1500 # number of function calls
+             arglist[1] = 0.01 # tolerance
+             gMinuit.mnexcm( "MIGRAD", arglist, 2, ierflg )
+         
+             # Print results
+             par0,par1,par2,par3 = map(ctypes.c_double, (0,0,0,0))
+             par0_err,par1_err,par2_err,par3_err = map(ctypes.c_double, (0,0,0,0))
+             amin, edm, errdef = map(ctypes.c_double, (0.18, 0.19, 0.20))
+             nvpar, nparx, icstat = map(ctypes.c_int, (1983, 1984, 1985))
+             gMinuit.mnstat( amin, edm, errdef, nvpar, nparx, icstat )
+             gMinuit.GetParameter(0,par0,par0_err)
+             gMinuit.GetParameter(1,par1,par1_err)
+             gMinuit.GetParameter(2,par2,par2_err)
+             gMinuit.GetParameter(3,par3,par3_err)
+             para_list.append(par0)
+             para_list.append(par1)
+             para_list.append(par2)
+             para_list.append(par3)
+          else: # vector method
+             gMinuit = TMinuit(9)
+             gMinuit.SetPrintLevel(-1) # -1  quiet, 0  normal, 1  verbose
+             gMinuit.SetFCN( fcn )
+             arglist = array( 'd', 10*[0.] )
+             ierflg = ctypes.c_int(1982)
+             arglist[0] = 1
+             gMinuit.mnexcm( "SET ERR", arglist, 1, ierflg )
+             vstart = array( 'd', ( 0, 0, -191, 1, 1, 1, 1, 1, 1 ) )
+             step   = array( 'd', ( 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01 ) )
+             gMinuit.mnparm( 0, "d0", vstart[0], step[0], 0, 0, ierflg )
+             gMinuit.mnparm( 1, "d1", vstart[1], step[1], 0, 0, ierflg )
+             gMinuit.mnparm( 2, "d2", vstart[2], step[2], 0, 0, ierflg )
+             gMinuit.mnparm( 3, "l0", vstart[3], step[3], 0, 0, ierflg )
+             gMinuit.mnparm( 4, "l1", vstart[4], step[4], 0, 0, ierflg )
+             gMinuit.mnparm( 5, "l2", vstart[5], step[5], 0, 0, ierflg )
+             gMinuit.mnparm( 6, "k0", vstart[6], step[6], 0, 0, ierflg )
+             gMinuit.mnparm( 7, "k1", vstart[7], step[7], 0, 0, ierflg )
+             gMinuit.mnparm( 8, "k2", vstart[8], step[8], 0, 0, ierflg )
+             arglist[0] = 1500
+             arglist[1] = 0.01
+             gMinuit.mnexcm( "MIGRAD", arglist, 2, ierflg )
+             par0,par1,par2,par3,par4,par5,par6,par7,par8 = map(ctypes.c_double, (0,0,0,0,0,0,0,0,0))
+             par0_err,par1_err,par2_err,par3_err,par4_err,par5_err,par6_err,par7_err,par8_err = map(ctypes.c_double, (0,0,0,0,0,0,0,0,0))
+             amin, edm, errdef = map(ctypes.c_double, (0.18, 0.19, 0.20))
+             nvpar, nparx, icstat = map(ctypes.c_int, (1983, 1984, 1985))
+             gMinuit.mnstat( amin, edm, errdef, nvpar, nparx, icstat )
+             gMinuit.GetParameter(0,par0,par0_err)
+             gMinuit.GetParameter(1,par1,par1_err)
+             gMinuit.GetParameter(2,par2,par2_err)
+             gMinuit.GetParameter(3,par3,par3_err)
+             gMinuit.GetParameter(4,par4,par4_err)
+             gMinuit.GetParameter(5,par5,par5_err)
+             gMinuit.GetParameter(6,par6,par6_err)
+             gMinuit.GetParameter(7,par7,par7_err)
+             gMinuit.GetParameter(8,par8,par8_err)
+             para_list.append(par0)
+             para_list.append(par1)
+             para_list.append(par2)
+             para_list.append(par3)
+             para_list.append(par4)
+             para_list.append(par5)
+             para_list.append(par6)
+             para_list.append(par7)
+             para_list.append(par8)
+          return para_list
 
       def GetSRpar(self):
           _par_con_x_xsig_y_ysig_rho={}
@@ -237,6 +303,16 @@ class MLEM():
           _mlist.append(hist2array(fint.Get("image_pos43")))
           return _mlist
 
+      def getmu(self,_x,_y,_z,par,name):         
+          for i in range(9): print(par[i].value)
+          if name == "x":
+             denominator=(((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3].value-par[4].value)*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6].value-par[8].value)-((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3].value-par[5].value)*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6].value-par[7].value))
+             numerator=((par[1].value-_y-((hole_axis[1]-_y)*(par[0].value-_x)/(hole_axis[0]-_x)))*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6].value-par[8].value)-(par[2].value-_z-(hole_axis[2]-_z)*(par[0].value-_x)/(hole_axis[0]-_x))*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6].value-par[7].value))
+          if name == "y":
+             denominator=(((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3].value-par[5].value)*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6].value-par[7].value)-((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3].value-par[4].value)*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6].value-par[8].value))
+             numerator=((par[1].value-_y-((hole_axis[1]-_y)*(par[0].value-_x)/(hole_axis[0]-_x)))*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3].value-par[5].value)-(par[2].value-_z-(hole_axis[2]-_z)*(par[0].value-_x)/(hole_axis[0]-_x))*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3].value-par[4].value))
+          return numerator/denominator
+
       def srf(self,_x,_y,_z,_type=None):
           """
           system response function: 
@@ -248,10 +324,12 @@ class MLEM():
              _y= -1*self.object_range+(self.object_range/self.npixels)+_y*((2.*self.object_range)/self.npixels)
              _z= -1*self.object_range+(self.object_range/self.npixels)+_z*((2.*self.object_range)/self.npixels)
           par_x, par_y, par_xsig, par_ysig, par_constant, par_rho = self.para_dic["x"], self.para_dic["y"], self.para_dic["xsig"], self.para_dic["ysig"], self.para_dic["constant"], self.para_dic["rho"]
-          image_constant = par_constant[0].value+par_constant[1].value*_x+par_constant[2].value*_y+par_constant[3].value*_z
-          image_x = par_x[0].value+par_x[1].value*_x+par_x[2].value*_y+par_x[3].value*_z
+          image_constant = par_constant[0].value+par_constant[1].value*_x+par_constant[2].value*_y+par_constant[3].value*_z          
+          if len(par_x) == 4 : image_x = par_x[0].value+par_x[1].value*_x+par_x[2].value*_y+par_x[3].value*_z
+          else: image_x=self.getmu(_x,_y,_z,par_x,"x")
           image_xsig = par_xsig[0].value+par_xsig[1].value*_x+par_xsig[2].value*_y+par_xsig[3].value*_z
-          image_y = par_y[0].value+par_y[1].value*_x+par_y[2].value*_y+par_y[3].value*_z
+          if len(par_y) == 4 : image_y = par_y[0].value+par_y[1].value*_x+par_y[2].value*_y+par_y[3].value*_z
+          else: image_y=self.getmu(_x,_y,_z,par_y,"y")
           image_ysig = par_ysig[0].value+par_ysig[1].value*_x+par_ysig[2].value*_y+par_ysig[3].value*_z
           image_rho = par_rho[0].value+par_rho[1].value*_x+par_rho[2].value*_y+par_rho[3].value*_z
           return [image_constant,image_x,image_xsig,image_y,image_ysig,image_rho]
@@ -563,7 +641,7 @@ def mkWeightFunc(filename,_np):
 def testrun(args):
     log().info("Loading Matrix...")
 
-    outfilename = "/Users/chiu.i-huan/Desktop/mytesth3output_"+args.output
+    outfilename = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/myMLEMoutput_"+args.output
     outfilename = outfilename+".root"
     image_nbins=128 # number of strips of CdTe detector
     _matrix=None
