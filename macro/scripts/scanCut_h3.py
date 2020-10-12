@@ -6,7 +6,7 @@ import numpy as np
 cutrange=900
 
 f=ROOT.TFile("/Users/chiu.i-huan/Desktop/mytesth3output_sr_outputname.root","read")
-fout=ROOT.TFile("/Users/chiu.i-huan/Desktop/mytesth3output_sr_outputname_cutvalue.root","recreate")
+fout=ROOT.TFile("/Users/chiu.i-huan/Desktop/mytesth3output_sr_outputname_scancut.root","recreate")
 h3=f.Get("MLEM_3Dimage")
 h3_array=hist2array(h3)
 

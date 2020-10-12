@@ -4,15 +4,22 @@ TString filename;
 TString name2;
 
 TString place="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots";
-TString sourcename="Co";
+TString sourcename="Co";//show Am, Ba, Co lines
 TString caliname="merge1008";//merge1008,Am,Ba,Co
 
+// === calibration data ===
+//filename.Form("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdtedsd_2020b_0720a_%ssource_cali%s.root",sourcename.Data(),caliname.Data());
+//TFile* ff = new TFile(filename.Data(),"read");
+//name.Form("%s/canv_%ssource_cali%s_lv1.pdf",place.Data(),sourcename.Data(),caliname.Data());
+//name2.Form("%s/canv_%ssource_cali%s_gamma.pdf",place.Data(),sourcename.Data(),caliname.Data());
 
-filename.Form("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdtedsd_2020b_0720a_%ssource_cali%s.root",sourcename.Data(),caliname.Data());
-TFile* ff = new TFile(filename.Data(),"read");
-name.Form("%s/canv_%ssource_cali%s_lv1.pdf",place.Data(),sourcename.Data(),caliname.Data());
-name2.Form("%s/canv_%ssource_cali%s_gamma.pdf",place.Data(),sourcename.Data(),caliname.Data());
+// === other data ===
+TFile* ff = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdtedsd_2020b_0917a_battery_Ba.root","read");
+name.Form("%s/canv_energyspectrum_lv1_temp.pdf",place.Data());
+name2.Form("%s/canv_energyspectrum_gamma_temp.pdf",place.Data());
+
 TTree* t = (TTree*)ff->Get("tree");
+
 
 // ===== Lv1 hit energy ===
 //TCanvas *c1 = new TCanvas(name.Data(), name.Data(), 500, 500);

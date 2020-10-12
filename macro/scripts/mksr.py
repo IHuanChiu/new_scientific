@@ -33,7 +33,7 @@ gROOT.ProcessLine(
 from ROOT import MLEMStruct
 mlstruct = MLEMStruct()
 paramater_list,point_axis=[],[]
-hole_axis=[0,0,-113]
+hole_axis=[0.001,0.001,-113]
 
 # ======================= find the paramaters by fitting ===================
 class PrepareParameters():
@@ -101,7 +101,7 @@ class PrepareParameters():
                       paramater_list.append([constant, mean_x, sigma_x, mean_y, sigma_y, rho])                  
                    hist_fitlist.append(h2)
                    if ix == 0 and iy == 0:
-                      print(iz, index , mean_x, mean_y)
+                      print("index: {0}, fitting (mux, muy) = ({1},{2})".format(index , mean_x, mean_y))
                    # Cheching bad fitting channels
                    if paramater_list[index][0] > 1000: 
                       log().warn("bad fitting point : {0}, {1}".format(index, paramater_list[index]))
@@ -116,11 +116,13 @@ def deffunc(_x,_y,_z,par):
     return func
 def muxfunc(_x,_y,_z,par):         
     denominator=(((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3]-par[4])*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6]-par[8])-((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3]-par[5])*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6]-par[7]))
+    if denominator == 0 : denominator = 0.00001
     numerator=((par[1]-_y-((hole_axis[1]-_y)*(par[0]-_x)/(hole_axis[0]-_x)))*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6]-par[8])-(par[2]-_z-(hole_axis[2]-_z)*(par[0]-_x)/(hole_axis[0]-_x))*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6]-par[7]))
     mux=numerator/denominator
     return mux
 def muyfunc(_x,_y,_z,par):         
     denominator=(((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3]-par[5])*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6]-par[7])-((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3]-par[4])*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6]-par[8]))
+    if denominator == 0 : denominator = 0.00001
     numerator=((par[1]-_y-((hole_axis[1]-_y)*(par[0]-_x)/(hole_axis[0]-_x)))*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3]-par[5])-(par[2]-_z-(hole_axis[2]-_z)*(par[0]-_x)/(hole_axis[0]-_x))*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3]-par[4]))
     muy=numerator/denominator
     return muy
@@ -133,8 +135,12 @@ def fcn_constant(npar, gin, f, par, iflag):
 def fcn_x(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
+       chisq += pow((paramater_list[_index][1] - muxfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
+    f[0] = chisq
+def fcn_x2(npar, gin, f, par, iflag):
+    chisq, npoints = 0., 5
+    for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][1] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
-#       chisq += pow((paramater_list[_index][1] - muxfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
 def fcn_xsig(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
@@ -144,8 +150,12 @@ def fcn_xsig(npar, gin, f, par, iflag):
 def fcn_y(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
+       chisq += pow((paramater_list[_index][3] - muyfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
+    f[0] = chisq
+def fcn_y2(npar, gin, f, par, iflag):
+    chisq, npoints = 0., 5
+    for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][3] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
-#       chisq += pow((paramater_list[_index][3] - muyfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
 def fcn_ysig(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
@@ -159,100 +169,111 @@ def fcn_rho(npar, gin, f, par, iflag):
     f[0] = chisq
 
 class SystemResponse():
-      def __init__(self):
+      def __init__(self,fittype=None):
+          if "plane" in fittype or "Plane" in fittype:
+             self.fittype = "plane"
+          elif "vector" in fittype or "Vector" in fittype:
+             self.fittype = "vector"
+          else: self.fittype = "vector"
+
           self.par_con_x_xsig_y_ysig_rho = self.GetSRpar()
+
+      def Minuit_plane(self, fcn):
+          gMinuit = TMinuit(4)
+          gMinuit.SetPrintLevel(-1) # -1  quiet, 0  normal, 1  verbose
+          gMinuit.SetFCN( fcn )
+          arglist = array( 'd', 10*[0.] )
+          ierflg = ctypes.c_int(1982)
+         
+          arglist[0] = 1
+          gMinuit.mnexcm( "SET ERR", arglist, 1, ierflg )
+         
+          # Set starting values and step sizes for parameters
+          vstart = array( 'd', ( 3,  1,  0.1,  0.01  ) )
+          step   = array( 'd', ( 0.1, 0.1, 0.01, 0.001 ) )
+          gMinuit.mnparm( 0, "par0", vstart[0], step[0], 0, 0, ierflg )
+          gMinuit.mnparm( 1, "parx", vstart[1], step[1], 0, 0, ierflg )
+          gMinuit.mnparm( 2, "pary", vstart[2], step[2], 0, 0, ierflg )
+          gMinuit.mnparm( 3, "parz", vstart[3], step[3], 0, 0, ierflg )
+         
+          # Now ready for minimization step
+          arglist[0] = 1500 # number of function calls
+          arglist[1] = 0.01 # tolerance
+          gMinuit.mnexcm( "MIGRAD", arglist, 2, ierflg )
+         
+          # Print results
+          par0,par1,par2,par3 = map(ctypes.c_double, (0,0,0,0))
+          par0_err,par1_err,par2_err,par3_err = map(ctypes.c_double, (0,0,0,0))
+          amin, edm, errdef = map(ctypes.c_double, (0.18, 0.19, 0.20))
+          nvpar, nparx, icstat = map(ctypes.c_int, (1983, 1984, 1985))
+          gMinuit.mnstat( amin, edm, errdef, nvpar, nparx, icstat )
+          gMinuit.GetParameter(0,par0,par0_err)
+          gMinuit.GetParameter(1,par1,par1_err)
+          gMinuit.GetParameter(2,par2,par2_err)
+          gMinuit.GetParameter(3,par3,par3_err)
+          return [par0,par1,par2,par3]
+ 
+      def Minuit_vector(self, fcn):
+          gMinuit = TMinuit(9)
+          gMinuit.SetPrintLevel(-1) # -1  quiet, 0  normal, 1  verbose
+          gMinuit.SetFCN( fcn )
+          arglist = array( 'd', 10*[0.] )
+          ierflg = ctypes.c_int(1982)
+          arglist[0] = 1
+          gMinuit.mnexcm( "SET ERR", arglist, 1, ierflg )
+          vstart = array( 'd', ( -5, -5, -191, 0.1, 0.1, 0.001, 0.1, 0.1, 0.001 ) )
+          step   = array( 'd', ( 0.01, 0.01, 0.01, 0.1, 0.1, 0.001, 0.1, 0.1, 0.001 ) )
+          gMinuit.mnparm( 0, "d0", vstart[0], step[0], 0, 0, ierflg )
+          gMinuit.mnparm( 1, "d1", vstart[1], step[1], 0, 0, ierflg )
+          gMinuit.mnparm( 2, "d2", vstart[2], step[2], 0, 0, ierflg )
+          gMinuit.mnparm( 3, "l0", vstart[3], step[3], 0, 0, ierflg )
+          gMinuit.mnparm( 4, "l1", vstart[4], step[4], 0, 0, ierflg )
+          gMinuit.mnparm( 5, "l2", vstart[5], step[5], 0, 0, ierflg )
+          gMinuit.mnparm( 6, "k0", vstart[6], step[6], 0, 0, ierflg )
+          gMinuit.mnparm( 7, "k1", vstart[7], step[7], 0, 0, ierflg )
+          gMinuit.mnparm( 8, "k2", vstart[8], step[8], 0, 0, ierflg )
+          arglist[0] = 15000000
+          arglist[1] = 0.01
+          gMinuit.mnexcm( "MIGRAD", arglist, 2, ierflg )
+          par0,par1,par2,par3,par4,par5,par6,par7,par8 = map(ctypes.c_double, (0,0,0,0,0,0,0,0,0))
+          par0_err,par1_err,par2_err,par3_err,par4_err,par5_err,par6_err,par7_err,par8_err = map(ctypes.c_double, (0,0,0,0,0,0,0,0,0))
+          amin, edm, errdef = map(ctypes.c_double, (0.18, 0.19, 0.20))
+          nvpar, nparx, icstat = map(ctypes.c_int, (1983, 1984, 1985))
+          gMinuit.mnstat( amin, edm, errdef, nvpar, nparx, icstat )
+          gMinuit.GetParameter(0,par0,par0_err)
+          gMinuit.GetParameter(1,par1,par1_err)
+          gMinuit.GetParameter(2,par2,par2_err)
+          gMinuit.GetParameter(3,par3,par3_err)
+          gMinuit.GetParameter(4,par4,par4_err)
+          gMinuit.GetParameter(5,par5,par5_err)
+          gMinuit.GetParameter(6,par6,par6_err)
+          gMinuit.GetParameter(7,par7,par7_err)
+          gMinuit.GetParameter(8,par8,par8_err)
+          return [par0,par1,par2,par3,par4,par5,par6,par7,par8]
 
       def dofit(self, parname):
           para_list=[]
+          # === define fcn ===
           if parname == "constant": fcn = fcn_constant
-          if parname == "x": fcn = fcn_x
+          if parname == "x": 
+             if self.fittype == "vector": fcn = fcn_x
+             if self.fittype == "plane": fcn = fcn_x2
           if parname == "xsig": fcn = fcn_xsig
-          if parname == "y": fcn = fcn_y
+          if parname == "y":
+             if self.fittype == "vector": fcn = fcn_y
+             if self.fittype == "plane": fcn = fcn_y2
           if parname == "ysig": fcn = fcn_ysig
           if parname == "rho": fcn = fcn_rho
 
-          if parname != "x" and parname != "y": # plane method
-             gMinuit = TMinuit(4)
-             gMinuit.SetPrintLevel(-1) # -1  quiet, 0  normal, 1  verbose
-             gMinuit.SetFCN( fcn )
-             arglist = array( 'd', 10*[0.] )
-             ierflg = ctypes.c_int(1982)
-         
-             arglist[0] = 1
-             gMinuit.mnexcm( "SET ERR", arglist, 1, ierflg )
-         
-             # Set starting values and step sizes for parameters
-             vstart = array( 'd', ( 3,  1,  0.1,  0.01  ) )
-             step   = array( 'd', ( 0.1, 0.1, 0.01, 0.001 ) )
-             gMinuit.mnparm( 0, "par0", vstart[0], step[0], 0, 0, ierflg )
-             gMinuit.mnparm( 1, "parx", vstart[1], step[1], 0, 0, ierflg )
-             gMinuit.mnparm( 2, "pary", vstart[2], step[2], 0, 0, ierflg )
-             gMinuit.mnparm( 3, "parz", vstart[3], step[3], 0, 0, ierflg )
-         
-             # Now ready for minimization step
-             arglist[0] = 1500 # number of function calls
-             arglist[1] = 0.01 # tolerance
-             gMinuit.mnexcm( "MIGRAD", arglist, 2, ierflg )
-         
-             # Print results
-             par0,par1,par2,par3 = map(ctypes.c_double, (0,0,0,0))
-             par0_err,par1_err,par2_err,par3_err = map(ctypes.c_double, (0,0,0,0))
-             amin, edm, errdef = map(ctypes.c_double, (0.18, 0.19, 0.20))
-             nvpar, nparx, icstat = map(ctypes.c_int, (1983, 1984, 1985))
-             gMinuit.mnstat( amin, edm, errdef, nvpar, nparx, icstat )
-             gMinuit.GetParameter(0,par0,par0_err)
-             gMinuit.GetParameter(1,par1,par1_err)
-             gMinuit.GetParameter(2,par2,par2_err)
-             gMinuit.GetParameter(3,par3,par3_err)
-             para_list.append(par0)
-             para_list.append(par1)
-             para_list.append(par2)
-             para_list.append(par3)
-          else: # vector method
-             gMinuit = TMinuit(9)
-             gMinuit.SetPrintLevel(-1) # -1  quiet, 0  normal, 1  verbose
-             gMinuit.SetFCN( fcn )
-             arglist = array( 'd', 10*[0.] )
-             ierflg = ctypes.c_int(1982)
-             arglist[0] = 1
-             gMinuit.mnexcm( "SET ERR", arglist, 1, ierflg )
-             vstart = array( 'd', ( 0, 0, -191, 1, 1, 1, 1, 1, 1 ) )
-             step   = array( 'd', ( 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01 ) )
-             gMinuit.mnparm( 0, "d0", vstart[0], step[0], 0, 0, ierflg )
-             gMinuit.mnparm( 1, "d1", vstart[1], step[1], 0, 0, ierflg )
-             gMinuit.mnparm( 2, "d2", vstart[2], step[2], 0, 0, ierflg )
-             gMinuit.mnparm( 3, "l0", vstart[3], step[3], 0, 0, ierflg )
-             gMinuit.mnparm( 4, "l1", vstart[4], step[4], 0, 0, ierflg )
-             gMinuit.mnparm( 5, "l2", vstart[5], step[5], 0, 0, ierflg )
-             gMinuit.mnparm( 6, "k0", vstart[6], step[6], 0, 0, ierflg )
-             gMinuit.mnparm( 7, "k1", vstart[7], step[7], 0, 0, ierflg )
-             gMinuit.mnparm( 8, "k2", vstart[8], step[8], 0, 0, ierflg )
-             arglist[0] = 1500
-             arglist[1] = 0.01
-             gMinuit.mnexcm( "MIGRAD", arglist, 2, ierflg )
-             par0,par1,par2,par3,par4,par5,par6,par7,par8 = map(ctypes.c_double, (0,0,0,0,0,0,0,0,0))
-             par0_err,par1_err,par2_err,par3_err,par4_err,par5_err,par6_err,par7_err,par8_err = map(ctypes.c_double, (0,0,0,0,0,0,0,0,0))
-             amin, edm, errdef = map(ctypes.c_double, (0.18, 0.19, 0.20))
-             nvpar, nparx, icstat = map(ctypes.c_int, (1983, 1984, 1985))
-             gMinuit.mnstat( amin, edm, errdef, nvpar, nparx, icstat )
-             gMinuit.GetParameter(0,par0,par0_err)
-             gMinuit.GetParameter(1,par1,par1_err)
-             gMinuit.GetParameter(2,par2,par2_err)
-             gMinuit.GetParameter(3,par3,par3_err)
-             gMinuit.GetParameter(4,par4,par4_err)
-             gMinuit.GetParameter(5,par5,par5_err)
-             gMinuit.GetParameter(6,par6,par6_err)
-             gMinuit.GetParameter(7,par7,par7_err)
-             gMinuit.GetParameter(8,par8,par8_err)
-             para_list.append(par0)
-             para_list.append(par1)
-             para_list.append(par2)
-             para_list.append(par3)
-             para_list.append(par4)
-             para_list.append(par5)
-             para_list.append(par6)
-             para_list.append(par7)
-             para_list.append(par8)
+          #=== fitting wiht Minuit ===
+          if self.fittype == "plane":
+             para_list=self.Minuit_plane(fcn) # plane method
+          elif self.fittype == "vector":
+             if parname != "x" and parname != "y":
+                para_list=self.Minuit_plane(fcn) # plane method
+             else: 
+                para_list=self.Minuit_vector(fcn) # vector method
+
           return para_list
 
       def GetSRpar(self):
@@ -284,7 +305,7 @@ class MLEM():
           if not isinstance(matrix, np.ndarray): self.matrix=self.mkmatrix()
           else: self.matrix=matrix
           # plots
-          self.image_hx_hy_list_ori, self.image_hx_hy_list_sr=self.mkimage()
+          self.image_hx_hy_list_ori, self.image_hx_hy_list_sr, self.hist_delta_mu=self.mkimage()
           self.mlemtree=self.mktree()
 #          self.image_init_loop=self.mkInitImageLoop()
           self.object_init,self.image_init=self.mkInitImage()
@@ -301,10 +322,11 @@ class MLEM():
           #   _mlist.append(hist2array(fint.Get(_name)))          
           fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
           _mlist.append(hist2array(fint.Get("image_pos43")))
+          log().info("Position of Test Image: (x,y,z)=({0},{1},{2})".format(10, 10, -10))
           return _mlist
 
       def getmu(self,_x,_y,_z,par,name):         
-          for i in range(9): print(par[i].value)
+#          for i in range(9): print(par[i].value)
           if name == "x":
              denominator=(((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3].value-par[4].value)*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6].value-par[8].value)-((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3].value-par[5].value)*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6].value-par[7].value))
              numerator=((par[1].value-_y-((hole_axis[1]-_y)*(par[0].value-_x)/(hole_axis[0]-_x)))*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6].value-par[8].value)-(par[2].value-_z-(hole_axis[2]-_z)*(par[0].value-_x)/(hole_axis[0]-_x))*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6].value-par[7].value))
@@ -394,6 +416,8 @@ class MLEM():
           # make original vs. system response comparison plots
           image_hx_hy_list_sr, image_hx_hy_list_ori=[],[]
           _ip=0
+          h_delta_mux=ROOT.TH1D("delta_mux","delta_mux",125,-16,16)
+          h_delta_muy=ROOT.TH1D("delta_muy","delta_muy",125,-16,16)
           for _iz in range(self.npoints):
              _cvx  = createRatioCanvas("cvx_{}".format(_iz), 2500, 2500)
              _cvy  = createRatioCanvas("cvy_{}".format(_iz), 2500, 2500)
@@ -414,8 +438,6 @@ class MLEM():
                    image_hx_hy_list_ori.append(_h2.ProjectionY())
 
                    # system response plots                   
-                   if _ip == 43:
-                      log().info("Position of Test Image: (x,y,z)=({0},{0},{0})".format(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2]))
                    image_var = self.srf(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
                    _h2name="image_sr_"+str(_ip)
                    h2=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
@@ -423,8 +445,7 @@ class MLEM():
                    h_gaus = ROOT.TF2("h_gaus","bigaus",-16,16,-16,16)
                    h_gaus.SetParameters(image_var[0],image_var[1],image_var[2],image_var[3],image_var[4],image_var[5])
                    if _ix==0 and _iy==0: 
-                      print("index : ", _ip, image_var[1], image_var[3])
-                      print("(x,y,z)", point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
+                      print("index : {0}, (x,y,z)=({1},{2},{3}), (mux, muy)=({4},{5})".format(_ip,point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2], image_var[1], image_var[3]))                      
                    for ix in range(128):
                       for iy in range(128):
                          _x=h2.GetXaxis().GetBinCenter(ix+1)
@@ -436,6 +457,10 @@ class MLEM():
                    image_hx_hy_list_sr.append(h2)
                    image_hx_hy_list_sr.append(h2.ProjectionX())
                    image_hx_hy_list_sr.append(h2.ProjectionY())            
+
+                   # check difference between bigaus fitting and MLEM
+                   h_delta_mux.Fill(image_var[1]-paramater_list[_ip][1]) 
+                   h_delta_muy.Fill(image_var[3]-paramater_list[_ip][3]) 
 
                    # comparison canvas fitting result
                    _cvfit.cd((_ix+1)+_iy*self.npoints)
@@ -470,7 +495,8 @@ class MLEM():
                    hy_ori.Draw()
                    hy.Draw("hist same")
                    del _h2, h2, hx, hy, h_gaus
-                   _ip+=1 
+                   _ip+=1
+   
 
              _pdfname = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/MLEM_comparison_x_z{}.pdf".format(_iz)
              _cvx.SaveAs(_pdfname)
@@ -480,7 +506,7 @@ class MLEM():
              _cvori.SaveAs(_pdfname)
              _pdfname = _pdfname.replace("_ori_","_fit_")
              _cvfit.SaveAs(_pdfname)
-          return image_hx_hy_list_ori, image_hx_hy_list_sr
+          return image_hx_hy_list_ori, image_hx_hy_list_sr, [h_delta_mux,h_delta_muy]
 
       def mkInitImageLoop(self):
           # return initial image from object
@@ -641,7 +667,8 @@ def mkWeightFunc(filename,_np):
 def testrun(args):
     log().info("Loading Matrix...")
 
-    outfilename = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/myMLEMoutput_"+args.output
+    _n_iteration=15
+    outfilename = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/myMLEMoutput_"+args.output+"_iteration"+str(_n_iteration)
     outfilename = outfilename+".root"
     image_nbins=128 # number of strips of CdTe detector
     _matrix=None
@@ -654,17 +681,18 @@ def testrun(args):
 
     log().info("Progressing the paramaters for fitting ...")
     PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=args.npixels,nbins=image_nbins) # get cali. image list
-    SR=SystemResponse()# get system response by TMinuit fitting
+    SR=SystemResponse(fittype=args.matrix)# get system response by TMinuit fitting
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels,matrix=_matrix) # do iterate and get final plots
 
     # MLEM iteration
-    MLEM_3DHist=ML.iterate(n_iteration=5)
+    MLEM_3DHist=ML.iterate(n_iteration=_n_iteration)
 
     #check plots
     log().info("Print outputs...")
     ML.printoutput(ML.mlemtree,outfilename,"re")
     ML.printoutput(ML.image_hx_hy_list_ori,outfilename,"up")
     ML.printoutput(ML.image_hx_hy_list_sr,outfilename,"up")
+    ML.printoutput(ML.hist_delta_mu,outfilename,"up")
     ML.printoutput(ML.image_init,outfilename,"up")
     ML.printoutput(ML.mlemhist_list,outfilename,"up")
     ML.printoutput(MLEM_3DHist,outfilename,"up")
