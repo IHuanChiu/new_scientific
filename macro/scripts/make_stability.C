@@ -18,15 +18,15 @@ void make_stability(){
 
   for (int i = 1; i<10;i++){
   TCanvas *c1 = new TCanvas(Form("c%d",i),Form("c%d",i), 0, 0, 5000, 2500);
-  if(i == 1) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdte2mmdata_300n20_Am_3h_0915.root","READ");
-  if(i == 2) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdte2mmdata_300n20_Ba_3h_0915.root","READ");
-  if(i == 3) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdte2mmdata_300n20_Co_3h_0915.root","READ");
-  if(i == 4) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdte2mmdata_400n20_Am_3h_0915.root","READ");
-  if(i == 5) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdte2mmdata_400n20_Ba_3h_0915.root","READ");
-  if(i == 6) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdte2mmdata_400n20_Co_3h_0915.root","READ");
-  if(i == 7) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdte2mmdata_500n20_Am_3h_0915.root","READ");
-  if(i == 8) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdte2mmdata_500n20_Ba_3h_0915.root","READ");
-  if(i == 9) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdte2mmdata_500n20_Co_3h_0915.root","READ");
+  if(i == 1) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdte2mmdata_300n20_Am_3h_0915.root","READ");
+  if(i == 2) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdte2mmdata_300n20_Ba_3h_0915.root","READ");
+  if(i == 3) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdte2mmdata_300n20_Co_3h_0915.root","READ");
+  if(i == 4) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdte2mmdata_400n20_Am_3h_0915.root","READ");
+  if(i == 5) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdte2mmdata_400n20_Ba_3h_0915.root","READ");
+  if(i == 6) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdte2mmdata_400n20_Co_3h_0915.root","READ");
+  if(i == 7) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdte2mmdata_500n20_Am_3h_0915.root","READ");
+  if(i == 8) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdte2mmdata_500n20_Ba_3h_0915.root","READ");
+  if(i == 9) file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdte2mmdata_500n20_Co_3h_0915.root","READ");
    
   hp[1] = (TH1D*)file->Get("hpside_0");
   hp[2] = (TH1D*)file->Get("hpside_1");

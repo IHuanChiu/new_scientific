@@ -10,7 +10,7 @@ __copyright__ = "Copyright 2019 I-Huan CHIU"
 __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 
 # modules
-import sys,os,random,math,ROOT,argparse,time
+import sys,os,random,math,ROOT,argparse,time,glob
 from ROOT import TFile, TTree, gPad, TGraphAsymmErrors, TSpline3, gStyle, gErrorIgnoreLevel, gROOT
 ROOT.gROOT.SetBatch(1)
 from array import array
@@ -27,6 +27,7 @@ def getLatex(ch, x = 0.85, y = 0.85):
     _t.SetTextAlign( 12 )
     return _t
 
+
 class Calibration():
       def __init__(self,filename=None,output=None,Etable=None,source=None):
           self.filename=filename
@@ -39,17 +40,29 @@ class Calibration():
           self.graph_list,self.spline_list=self.mkTSpline()
 
       def gethist(self):
-          f = ROOT.TFile(self.filename) 
+          inputDict = list()
           hist_list,name_list=[],[]
-          for i in range(256):
-             i=i*2
-             if i < 10: hist_name = "hist_cmn" + "00" + str(i) 
-             elif i < 100:  hist_name = "hist_cmn" + "0" + str(i) 
-             else : hist_name = "hist_cmn" + str(i)
-             _h = f.Get(hist_name).Clone()
-             _h.SetDirectory(0) 
-             hist_list.append(_h)
-             name_list.append(hist_name)             
+          if ".root" in self.filename:     
+             inputDict.append(self.filename)
+          else:
+             subFolders = glob.glob(self.filename+"/*.root")
+             for subFolder in subFolders:
+                inputDict.append(subFolder)
+
+          for _ifname in range(len(inputDict)):
+             f = ROOT.TFile(inputDict[_ifname]) 
+             for i in range(256):
+                ih=i*2 #for 2mm CdTe
+                if ih < 10: hist_name = "hist_cmn" + "00" + str(ih) 
+                elif ih < 100:  hist_name = "hist_cmn" + "0" + str(ih) 
+                else : hist_name = "hist_cmn" + str(ih)
+                _h = f.Get(hist_name).Clone()
+                _h.SetDirectory(0) 
+                if _ifname == 0:
+                   hist_list.append(_h)
+                   name_list.append(hist_name)            
+                else:
+                   hist_list[i].Add(_h)
           return hist_list, name_list
 
       def getrange(self):
@@ -225,7 +238,7 @@ class Calibration():
           c2.Print(c2name + "]", "pdf")
 
       def Printout(self):
-          args.output=args.output.replace(".root","_"+self.source+".root")
+          self.output=self.output.replace(".root","_"+self.source+".root")
           fout = ROOT.TFile( args.output, 'recreate' )
           fout.cd()
           for i in range(256):
@@ -344,24 +357,18 @@ class Calibration():
         
 def run(args):
     if ".root" not in args.input:
-       args.input=args.input+"_"+args.source+".root"
+       args.input=args.input+"/"+args.source+"/"
     Cal=Calibration(filename=args.input, output=args.output,Etable=args.table,source=args.source)
     Cal.plot()
     Cal.Printout()
-#    os.chdir('/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/') 
-#    os.system("pdfunite hist_cmn*fit.pdf hist_cali_2mmcdte_book.pdf")
     exit(0)
  
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
 
-#    /Users/chiu.i-huan/Desktop/new_scientific/data/minami_data/500n20/cali_2mmcdte_Am.root
-#    /Users/chiu.i-huan/Desktop/new_scientific/data/minami_data/500n20/cali_2mmcdte_Ba.root
-#    /Users/chiu.i-huan/Desktop/new_scientific/data/minami_data/500n20/cali_2mmcdte_Co.root
-
-    parser.add_argument("-i","--input", dest="input", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/data/minami_data/500n20/cali_2mmcdte", help="Input File Name")
-    parser.add_argument("--output", type=str, default="./spline_calibration_2mmtest.root", help="Output File Name")
+    parser.add_argument("-i","--input", dest="input", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/data/minami_data/500n20", help="Input File Name")
+    parser.add_argument("-o","--output", dest="output", type=str, default="./spline_calibration_2mmtest.root", help="Output File Name")
     parser.add_argument("--table", type=str, default="./energy_table/energy_table.txt", help="energy table")
     parser.add_argument("-s","--source", dest="source", type=str, default="Am", help="Am or Co or Ba")
     parser.add_argument("--channel", default=False, action="store_true", help="number of CPU")

@@ -50,7 +50,7 @@ void make_pnES_base(){
   TString name;
   TH1D *ha_p,*ha_n, *ha;
 
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdtedsd_2020b_0917a_battery_Ba.root","READ");
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdtedsd_2020b_0917a_battery_Ba.root","READ");
   name.Form("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/EnergySpectrum_combine_battery_all.pdf");
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
