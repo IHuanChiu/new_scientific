@@ -132,11 +132,13 @@ def fcn_constant(npar, gin, f, par, iflag):
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][0] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
+    print("constant = ", chisq)
 def fcn_x(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][1] - muxfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
+    print("chix = ", chisq)
 def fcn_x2(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
@@ -147,11 +149,13 @@ def fcn_xsig(npar, gin, f, par, iflag):
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][2] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
+    print("xsig = ", chisq)
 def fcn_y(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][3] - muyfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
+    print("y = ", chisq)
 def fcn_y2(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
@@ -162,11 +166,14 @@ def fcn_ysig(npar, gin, f, par, iflag):
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][4] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
+    print("ysig = ", chisq)
 def fcn_rho(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][5] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
+    print("rho = ", chisq)
+
 
 class SystemResponse():
       def __init__(self,fittype=None):
@@ -189,7 +196,7 @@ class SystemResponse():
           gMinuit.mnexcm( "SET ERR", arglist, 1, ierflg )
          
           # Set starting values and step sizes for parameters
-          vstart = array( 'd', ( 3,  1,  0.1,  0.01  ) )
+          vstart = array( 'd', ( paramater_list[0][0],  1,  0.1,  0.01  ) )
           step   = array( 'd', ( 0.1, 0.1, 0.01, 0.001 ) )
           gMinuit.mnparm( 0, "par0", vstart[0], step[0], 0, 0, ierflg )
           gMinuit.mnparm( 1, "parx", vstart[1], step[1], 0, 0, ierflg )
@@ -418,6 +425,10 @@ class MLEM():
           _ip=0
           h_delta_mux=ROOT.TH1D("delta_mux","delta_mux",125,-16,16)
           h_delta_muy=ROOT.TH1D("delta_muy","delta_muy",125,-16,16)
+          h_delta_sigmax=ROOT.TH1D("delta_sigmax","delta_sigmax",200,-1,1)
+          h_delta_sigmay=ROOT.TH1D("delta_sigmay","delta_sigmay",200,-1,1)
+          h_delta_constant=ROOT.TH1D("delta_constant","delta_constant",200,-100,100)
+          h_delta_rho=ROOT.TH1D("delta_rho","delta_rho",200,-1,1)
           for _iz in range(self.npoints):
              _cvx  = createRatioCanvas("cvx_{}".format(_iz), 2500, 2500)
              _cvy  = createRatioCanvas("cvy_{}".format(_iz), 2500, 2500)
@@ -459,8 +470,12 @@ class MLEM():
                    image_hx_hy_list_sr.append(h2.ProjectionY())            
 
                    # check difference between bigaus fitting and MLEM
+                   h_delta_constant.Fill(image_var[0]-paramater_list[_ip][0]) 
                    h_delta_mux.Fill(image_var[1]-paramater_list[_ip][1]) 
+                   h_delta_sigmax.Fill(image_var[2]-paramater_list[_ip][2]) 
                    h_delta_muy.Fill(image_var[3]-paramater_list[_ip][3]) 
+                   h_delta_sigmay.Fill(image_var[4]-paramater_list[_ip][4]) 
+                   h_delta_rho.Fill(image_var[5]-paramater_list[_ip][5]) 
 
                    # comparison canvas fitting result
                    _cvfit.cd((_ix+1)+_iy*self.npoints)
@@ -506,7 +521,7 @@ class MLEM():
              _cvori.SaveAs(_pdfname)
              _pdfname = _pdfname.replace("_ori_","_fit_")
              _cvfit.SaveAs(_pdfname)
-          return image_hx_hy_list_ori, image_hx_hy_list_sr, [h_delta_mux,h_delta_muy]
+          return image_hx_hy_list_ori, image_hx_hy_list_sr, [h_delta_constant,h_delta_mux,h_delta_sigmax,h_delta_muy,h_delta_sigmay,h_delta_rho]
 
       def mkInitImageLoop(self):
           # return initial image from object
@@ -667,7 +682,7 @@ def mkWeightFunc(filename,_np):
 def testrun(args):
     log().info("Loading Matrix...")
 
-    _n_iteration=15
+    _n_iteration=3
     outfilename = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/myMLEMoutput_"+args.output+"_iteration"+str(_n_iteration)
     outfilename = outfilename+".root"
     image_nbins=128 # number of strips of CdTe detector

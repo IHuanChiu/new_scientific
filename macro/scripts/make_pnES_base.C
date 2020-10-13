@@ -64,6 +64,9 @@ void make_pnES_base(){
   ha->SetMaximum((ha->GetMaximum())*1.1);
   ha_p->SetMaximum((ha->GetMaximum())*1.1);
 
+  ha->GetXaxis()->SetTitle("Energy [keV]");
+  ha->GetYaxis()->SetTitle("Counts");
+
   ha->SetLineColor(kAzure);
   ha_p->SetLineColor(kPink);
   ha_n->SetLineColor(kSpring-6);
