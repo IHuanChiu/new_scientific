@@ -29,10 +29,11 @@ def getLatex(ch, x = 0.85, y = 0.85):
 
 
 class Calibration():
-      def __init__(self,filename=None,output=None,Etable=None,source=None):
+      def __init__(self,filename=None,output=None,Etable=None,voltage=None,source=None):
           self.filename=filename
           self.output=output
           self.Etable=Etable
+          self.voltage=voltage
           self.source=source
           self.hist_list,self.name_list=self.gethist()
           self.element_list_pside, self.element_list_nside,self.element_list_1,self.element_list_2,self.element_list_3,self.element_list_4,self.element_list_5,self.element_list_6,self.element_list_7,self.element_list_8=self.getrange()
@@ -188,9 +189,9 @@ class Calibration():
                   os.path.join(os.getcwd(), os.path.dirname(__file__)))
           ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
           ROOT.SetAtlasStyle()
-          c0name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/hist_"+self.source+"_all.pdf"
-          c1name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/hist_"+self.source+"_fit.pdf"
-          c2name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/hist_"+self.source+"_gr.pdf"
+          c0name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+self.voltage+"/hist_"+self.source+"_all.pdf"
+          c1name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+self.voltage+"/hist_"+self.source+"_fit.pdf"
+          c2name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+self.voltage+"/hist_"+self.source+"_gr.pdf"
           c0 = ROOT.TCanvas(c0name,"",0,0,2400,800)
           c1 = ROOT.TCanvas(c1name,"",0,0,800,800)
           c2 = ROOT.TCanvas(c2name,"",0,0,800,800)
@@ -238,8 +239,8 @@ class Calibration():
           c2.Print(c2name + "]", "pdf")
 
       def Printout(self):
-          self.output=self.output.replace(".root","_"+self.source+".root")
-          fout = ROOT.TFile( args.output, 'recreate' )
+          self.output=self.output.replace(".root","_"+self.voltage+"_"+self.source+".root")
+          fout = ROOT.TFile( self.output, 'recreate' )
           fout.cd()
           for i in range(256):
              graph=self.graph_list[i]
@@ -357,8 +358,8 @@ class Calibration():
         
 def run(args):
     if ".root" not in args.input:
-       args.input=args.input+"/"+args.source+"/"
-    Cal=Calibration(filename=args.input, output=args.output,Etable=args.table,source=args.source)
+       args.input=args.input+"/"+args.voltage+"/"+args.source+"/"
+    Cal=Calibration(filename=args.input, output=args.output,Etable=args.table,voltage=args.voltage,source=args.source)
     Cal.plot()
     Cal.Printout()
     exit(0)
@@ -367,12 +368,13 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
 
-    parser.add_argument("-i","--input", dest="input", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/data/minami_data/500n20", help="Input File Name")
-    parser.add_argument("-o","--output", dest="output", type=str, default="./spline_calibration_2mmtest.root", help="Output File Name")
-    parser.add_argument("--table", type=str, default="./energy_table/energy_table.txt", help="energy table")
+    parser.add_argument("-i","--input", dest="input", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/data/minami_data", help="Input File Name")
+    parser.add_argument("-o","--output", dest="output", type=str, default="./files_cali/spline_calibration_2mmtest.root", help="Output File Name")
+    parser.add_argument("--table", type=str, default="./energy_table/energy_table.txt", help="energy table used for 2mm cdte")
+
+    parser.add_argument("-v","--voltage", dest="voltage", type=str, default="500n20", help="500n20, 400n20, 300n20")
     parser.add_argument("-s","--source", dest="source", type=str, default="Am", help="Am or Co or Ba")
-    parser.add_argument("--channel", default=False, action="store_true", help="number of CPU")
-    parser.add_argument("--nevent", default=500000, action="store_true", help="number of event")
+
     args = parser.parse_args()
 
 #    main( args , True)# for Si-detector

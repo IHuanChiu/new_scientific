@@ -45,17 +45,16 @@ void make_pnES(){
     gROOT->LoadMacro("AtlasUtils.C");
   #endif
   SetAtlasStyle();
-
-  char name[100] = "";
+  TString voltagename="300n20";
 
   TCanvas *c1 = new TCanvas("c1","Energy Spectum",10,10,800,800);
   TCanvas *c2 = new TCanvas("c2","",10,10,800,800);
 
   TH1D *ha_p,*ha_n,*hb_p,*hb_n,*hc_p,*hc_n,*ha,*hb,*hc;
 
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdtedsd_2020b_0720a_Amsource_calimerge1008.root","READ");
-  TFile* fb = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdtedsd_2020b_0720a_Basource_calimerge1008.root","READ");
-  TFile* fc = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/cdtedsd_2020b_0720a_Cosource_calimerge1008.root","READ");
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdtedsd_2020b_combined_"+voltagename+"_Amsource_cali_merge_1008.root","READ");
+  TFile* fb = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdtedsd_2020b_combined_"+voltagename+"_Basource_cali_merge_1008.root","READ");
+  TFile* fc = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdtedsd_2020b_combined_"+voltagename+"_Cosource_cali_merge_1008.root","READ");
   TTree* tree_a = (TTree*)fa->Get("tree");
   TTree* tree_b = (TTree*)fb->Get("tree");
   TTree* tree_c = (TTree*)fc->Get("tree");
@@ -152,8 +151,8 @@ void make_pnES(){
   line3->Draw("same");
   line4->Draw("same");
 
-  c1->SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/EnergySpectrum_combine_all.pdf");
-  c2->SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/EnergySpectrum_combine_pn.pdf");
+  c1->SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+voltagename+"/EnergySpectrum_combine_all.pdf");
+  c2->SaveAs("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+voltagename+"/EnergySpectrum_combine_pn.pdf");
 
  }
 

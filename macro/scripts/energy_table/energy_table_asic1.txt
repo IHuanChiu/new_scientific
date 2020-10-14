@@ -1,3 +1,7 @@
+#Am-241: Z=95, N=146
+#Ba-133: Z=56, N=77
+#Co-57:  Z=27, N=30
+#Search in here: http://nucleardata.nuclear.lu.se/toi/radSearch.asp
 #0-31
 #Am 11.9 ?? ?? 2.2
 Am 13.94 60 75 37.5

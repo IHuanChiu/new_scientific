@@ -13,10 +13,11 @@ __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 import sys,os,random,math,ROOT
 from ROOT import TFile, TTree, gPad, TGraphAsymmErrors, TSpline3, gStyle, gErrorIgnoreLevel, gROOT
 ROOT.gROOT.SetBatch(1)
+voltage="300n20"
 
-fa=ROOT.TFile("spline_calibration_2mmtest_Am.root","read")
-fb=ROOT.TFile("spline_calibration_2mmtest_Ba.root","read")
-fc=ROOT.TFile("spline_calibration_2mmtest_Co.root","read")
+fa=ROOT.TFile("files_cali/spline_calibration_2mmtest_"+voltage+"_Am.root","read")
+fb=ROOT.TFile("files_cali/spline_calibration_2mmtest_"+voltage+"_Ba.root","read")
+fc=ROOT.TFile("files_cali/spline_calibration_2mmtest_"+voltage+"_Co.root","read")
 
 def getLatex(ch, x = 0.85, y = 0.85):
     _t = ROOT.TLatex()
@@ -32,7 +33,7 @@ def compare(spline):
             os.path.join(os.getcwd(), os.path.dirname(__file__)))
     ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
     ROOT.SetAtlasStyle()
-    c0name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/comparison_all.pdf" 
+    c0name="/Users/chiu.i-huan/Desktop/new_scientific/run/figs/cali_plots/"+voltage+"/comparison_all.pdf" 
     c0 = ROOT.TCanvas(c0name,"",0,0,1600,800)
     c0.Divide(2,1)
     c0.Print(c0name + "[", "pdf")
@@ -73,7 +74,7 @@ def compare(spline):
 def merge():
     spline_list=[]
     useCoHight = True
-    fout=ROOT.TFile("spline_calibration_2mmtest_merge_1008.root","recreate")
+    fout=ROOT.TFile("./files_cali/spline_calibration_2mmtest_"+voltage+"_merge_1008.root","recreate")
     fout.cd()
     for i in range(256):
        _g = ROOT.TGraph()
