@@ -50,28 +50,29 @@ void make_pnES_base(){
   TString name;
   TH1D *ha_p,*ha_n, *ha;
 
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdtedsd_2020b_0917a_battery_Ba.root","READ");
-  name.Form("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/EnergySpectrum_combine_battery_all.pdf");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdtedsd_2020b_0917a_battery_Ba.root","READ");
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/2mmCdTe_root/cdtedsd_2020b_0917a_battery_Co.root","READ");
+
+  name.Form("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/EnergySpectrum_combine_battery_all_co.pdf");
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
-  tree_a->Draw("energy >> ha(600,0,150)","","");
-  tree_a->Draw("energy_p >> ha_p(600,0,150)","","");
-  tree_a->Draw("energy_n >> ha_n(600,0,150)","","");
+  tree_a->Draw("energy >> ha(300,0,150)","","");
+  tree_a->Draw("energy_p >> ha_p(300,0,150)","","");
+  tree_a->Draw("energy_n >> ha_n(300,0,150)","","");
   ha = (TH1D*)gDirectory->Get("ha");
   ha_p = (TH1D*)gDirectory->Get("ha_p");
   ha_n = (TH1D*)gDirectory->Get("ha_n");
 
-  ha->SetMaximum((ha->GetMaximum())*1.1);
-  ha_p->SetMaximum((ha->GetMaximum())*1.1);
+  ha_n->SetMaximum((ha_n->GetMaximum())*1.1);
 
-  ha->GetXaxis()->SetTitle("Energy [keV]");
-  ha->GetYaxis()->SetTitle("Counts");
+  ha_n->GetXaxis()->SetTitle("Energy [keV]");
+  ha_n->GetYaxis()->SetTitle("Counts");
 
   ha->SetLineColor(kAzure);
   ha_p->SetLineColor(kPink);
   ha_n->SetLineColor(kSpring-6);
 
-  TLegend* leg = new TLegend(.65,.75,.85,.90);
+  TLegend* leg = new TLegend(.35,.75,.55,.90);
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize(0);
@@ -79,11 +80,11 @@ void make_pnES_base(){
   leg->AddEntry(ha_p,  "p-side", "l");
   leg->AddEntry(ha_n,   "n-side",   "l");
 
-  TLine *line0 = new TLine(14.41,0,14.41,ha->GetMaximum());//Co
-  TLine *line1 = new TLine(31,0,31,ha->GetMaximum());//Ba
-  TLine *line2 = new TLine(59.5,0,59.5,ha->GetMaximum());//Am
-  TLine *line3 = new TLine(81,0,81,ha->GetMaximum());//Ba
-  TLine *line4 = new TLine(122.06,0,122.06,ha->GetMaximum());//Co
+  TLine *line0 = new TLine(14.41,0,14.41,ha_n->GetMaximum());//Co
+  TLine *line1 = new TLine(31,0,31,ha_n->GetMaximum());//Ba
+  TLine *line2 = new TLine(59.5,0,59.5,ha_n->GetMaximum());//Am
+  TLine *line3 = new TLine(81,0,81,ha_n->GetMaximum());//Ba
+  TLine *line4 = new TLine(122.06,0,122.06,ha_n->GetMaximum());//Co
   line0->SetLineColorAlpha(1, 0.9);
   line1->SetLineColorAlpha(1, 0.9);
   line2->SetLineColorAlpha(1, 0.9);
@@ -91,9 +92,9 @@ void make_pnES_base(){
   line4->SetLineColorAlpha(1, 0.9);
 
   c1->cd();
-  ha->Draw();
+  ha_n->Draw();
   ha_p->Draw("same");
-  ha_n->Draw("same");
+  ha->Draw("same");
 
   leg->Draw("same");
   line0->Draw("same");
