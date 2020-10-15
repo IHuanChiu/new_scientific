@@ -101,7 +101,7 @@ class PrepareParameters():
                       paramater_list.append([constant, mean_x, sigma_x, mean_y, sigma_y, rho])                  
                    hist_fitlist.append(h2)
                    if ix == 0 and iy == 0:
-                      print("index: {0}, fitting (mux, muy) = ({1},{2})".format(index , mean_x, mean_y))
+                      print("index: {0}, fitting (constant, mux, muy, sigmax, sigmay) = ({1},{2},{3},{4},{5})".format(index , constant, mean_x, mean_y, sigma_x, sigma_y))
                    # Cheching bad fitting channels
                    if paramater_list[index][0] > 1000: 
                       log().warn("bad fitting point : {0}, {1}".format(index, paramater_list[index]))
@@ -113,6 +113,15 @@ class PrepareParameters():
 # ======================= fit with TMinuit for the varaibles of function ===================
 def deffunc(_x,_y,_z,par):         
     func=par[0]+par[1]*_x+par[2]*_y+par[3]*_z
+    return func
+def constantfunc(_x,_y,_z,par):         
+    func=par[0]*math.exp((-1)*(par[1]/((191+_z)**2+_x**2+_y**2))+par[2])+par[3]
+    if _z == -10: 
+       if abs(_x) == 20: func=func*0.9
+       if abs(_y) == 20: func=func*0.9
+    if _z == -20: 
+       if abs(_x) == 20: func=func*0.5
+       if abs(_y) == 20: func=func*0.5
     return func
 def muxfunc(_x,_y,_z,par):         
     denominator=(((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3]-par[4])*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6]-par[8])-((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3]-par[5])*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6]-par[7]))
@@ -130,15 +139,15 @@ def muyfunc(_x,_y,_z,par):
 def fcn_constant(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
-       chisq += pow((paramater_list[_index][0] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
+       #chisq += pow((paramater_list[_index][0] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
+       chisq += pow((paramater_list[_index][0] - constantfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
-    print("constant = ", chisq)
+#    print("constant = ", chisq)
 def fcn_x(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][1] - muxfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
-    print("chix = ", chisq)
 def fcn_x2(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
@@ -149,13 +158,11 @@ def fcn_xsig(npar, gin, f, par, iflag):
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][2] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
-    print("xsig = ", chisq)
 def fcn_y(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][3] - muyfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
-    print("y = ", chisq)
 def fcn_y2(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
@@ -166,21 +173,21 @@ def fcn_ysig(npar, gin, f, par, iflag):
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][4] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
-    print("ysig = ", chisq)
 def fcn_rho(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][5] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
-    print("rho = ", chisq)
 
 
 class SystemResponse():
       def __init__(self,fittype=None):
-          if "plane" in fittype or "Plane" in fittype:
-             self.fittype = "plane"
-          elif "vector" in fittype or "Vector" in fittype:
-             self.fittype = "vector"
+          if fittype:
+             if "plane" in fittype or "Plane" in fittype:
+                self.fittype = "plane"
+             elif "vector" in fittype or "Vector" in fittype:
+                self.fittype = "vector"
+             else: self.fittype = "vector"
           else: self.fittype = "vector"
 
           self.par_con_x_xsig_y_ysig_rho = self.GetSRpar()
@@ -219,7 +226,7 @@ class SystemResponse():
           gMinuit.GetParameter(2,par2,par2_err)
           gMinuit.GetParameter(3,par3,par3_err)
           return [par0,par1,par2,par3]
- 
+
       def Minuit_vector(self, fcn):
           gMinuit = TMinuit(9)
           gMinuit.SetPrintLevel(-1) # -1  quiet, 0  normal, 1  verbose
@@ -332,8 +339,17 @@ class MLEM():
           log().info("Position of Test Image: (x,y,z)=({0},{1},{2})".format(10, 10, -10))
           return _mlist
 
+      def getconstant(self,_x,_y,_z,par):         
+          _c=par[0].value*math.exp((-1)*(par[1].value/((191+_z)**2+_x**2+_y**2))+par[2].value)+par[3].value
+          if _z == -10:
+             if abs(_x) == 20: _c=_c*0.9
+             if abs(_y) == 20: _c=_c*0.9
+          if _z == -20:
+             if abs(_x) == 20: _c=_c*0.5
+             if abs(_y) == 20: _c=_c*0.5 
+          return _c
+
       def getmu(self,_x,_y,_z,par,name):         
-#          for i in range(9): print(par[i].value)
           if name == "x":
              denominator=(((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[3].value-par[4].value)*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6].value-par[8].value)-((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[3].value-par[5].value)*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6].value-par[7].value))
              numerator=((par[1].value-_y-((hole_axis[1]-_y)*(par[0].value-_x)/(hole_axis[0]-_x)))*((hole_axis[2]-_z)/(hole_axis[0]-_x)*par[6].value-par[8].value)-(par[2].value-_z-(hole_axis[2]-_z)*(par[0].value-_x)/(hole_axis[0]-_x))*((hole_axis[1]-_y)/(hole_axis[0]-_x)*par[6].value-par[7].value))
@@ -353,7 +369,8 @@ class MLEM():
              _y= -1*self.object_range+(self.object_range/self.npixels)+_y*((2.*self.object_range)/self.npixels)
              _z= -1*self.object_range+(self.object_range/self.npixels)+_z*((2.*self.object_range)/self.npixels)
           par_x, par_y, par_xsig, par_ysig, par_constant, par_rho = self.para_dic["x"], self.para_dic["y"], self.para_dic["xsig"], self.para_dic["ysig"], self.para_dic["constant"], self.para_dic["rho"]
-          image_constant = par_constant[0].value+par_constant[1].value*_x+par_constant[2].value*_y+par_constant[3].value*_z          
+          #image_constant = par_constant[0].value+par_constant[1].value*_x+par_constant[2].value*_y+par_constant[3].value*_z         
+          image_constant=self.getconstant(_x,_y,_z,par_constant) 
           if len(par_x) == 4 : image_x = par_x[0].value+par_x[1].value*_x+par_x[2].value*_y+par_x[3].value*_z
           else: image_x=self.getmu(_x,_y,_z,par_x,"x")
           image_xsig = par_xsig[0].value+par_xsig[1].value*_x+par_xsig[2].value*_y+par_xsig[3].value*_z
@@ -452,19 +469,29 @@ class MLEM():
                    image_var = self.srf(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
                    _h2name="image_sr_"+str(_ip)
                    h2=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
-                   h2_array=np.zeros((self.nbins,self.nbins),dtype=float)
+                   h2_bigaus=ROOT.TH2D(_h2name+"_bigaus",_h2name+"_bigaus",self.nbins,-16,16,self.nbins,-16,16)
+                   h2_array=np.zeros((self.nbins,self.nbins),dtype=float)# MLEM
+                   h2_array_bigaus=np.zeros((self.nbins,self.nbins),dtype=float)# bigaus fitting
                    h_gaus = ROOT.TF2("h_gaus","bigaus",-16,16,-16,16)
                    h_gaus.SetParameters(image_var[0],image_var[1],image_var[2],image_var[3],image_var[4],image_var[5])
+                   h_gaus_fit = ROOT.TF2("h_gaus","bigaus",-16,16,-16,16)
+                   h_gaus_fit.SetParameters(paramater_list[_ip][0],paramater_list[_ip][1],paramater_list[_ip][2],paramater_list[_ip][3],paramater_list[_ip][4],paramater_list[_ip][5])
                    if _ix==0 and _iy==0: 
-                      print("index : {0}, (x,y,z)=({1},{2},{3}), (mux, muy)=({4},{5})".format(_ip,point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2], image_var[1], image_var[3]))                      
+                      print("index : {0}, (x,y,z)=({1},{2},{3}), (constant, mux, muy,sigmax,sigmay)=({4},{5},{6},{7},{8})".format(_ip,point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2], image_var[0], image_var[1], image_var[3],image_var[2],image_var[4]))                      
                    for ix in range(128):
                       for iy in range(128):
                          _x=h2.GetXaxis().GetBinCenter(ix+1)
                          _y=h2.GetYaxis().GetBinCenter(iy+1)
                          if h_gaus.Eval(_x,_y) > 1: h2_array[ix][iy]=h_gaus.Eval(_x,_y)
+                         if h_gaus_fit.Eval(_x,_y) > 1: h2_array_bigaus[ix][iy]=h_gaus_fit.Eval(_x,_y)
                    array2hist(h2_array,h2)
-                   hx = h2.ProjectionX()
+                   array2hist(h2_array_bigaus,h2_bigaus)
+                   hx = h2.ProjectionX()# MLEM
                    hy = h2.ProjectionY()
+                   hx_fit=h2_bigaus.ProjectionX()# fitting bigaus
+                   hy_fit=h2_bigaus.ProjectionY()
+                   hx_ori=_h2.ProjectionX()# ori
+                   hy_ori=_h2.ProjectionY()
                    image_hx_hy_list_sr.append(h2)
                    image_hx_hy_list_sr.append(h2.ProjectionX())
                    image_hx_hy_list_sr.append(h2.ProjectionY())            
@@ -478,41 +505,42 @@ class MLEM():
                    h_delta_rho.Fill(image_var[5]-paramater_list[_ip][5]) 
 
                    # comparison canvas fitting result
+                   hx.SetStats(0)#MLEM->red
+                   hy.SetStats(0)
+                   hx_fit.SetStats(0)#bigaus->blue
+                   hy_fit.SetStats(0)
+                   hx_ori.SetStats(0)#ori->black
+                   hy_ori.SetStats(0)
+                   hx.SetLineColor(2)
+                   hy.SetLineColor(2)
+                   hx_fit.SetLineColor(4)
+                   hy_fit.SetLineColor(4)
+                   hx_ori.SetLineColor(1)
+                   hy_ori.SetLineColor(1)
+                   hx.SetMaximum(300)
+                   hy.SetMaximum(300)
+                   hx_ori.SetMaximum(300)
+                   hy_ori.SetMaximum(300)
+                   hx_fit.SetMaximum(300)
+                   hy_fit.SetMaximum(300)
+
                    _cvfit.cd((_ix+1)+_iy*self.npoints)
                    h2.SetStats(0)
                    h2.Draw("colz")
                    _cvori.cd((_ix+1)+_iy*self.npoints)
                    _h2.SetStats(0)
                    _h2.Draw("colz")
-                   # original fitting plots
-                   #self.hist_fit[_ip].SetMaximum(350)
-                   #self.hist_fit[_ip].SetStats(0)
-                   #self.hist_fit[_ip].Draw()
-                   # comparison canvas MLEM result
-                   hx_ori=_h2.ProjectionX()
-                   hy_ori=_h2.ProjectionY()
-                   hx_ori.SetStats(0)
-                   hy_ori.SetStats(0)
-                   hx_ori.SetLineColor(1)
-                   hy_ori.SetLineColor(1)
-                   hx.SetStats(0)
-                   hy.SetStats(0)
-                   hx.SetLineColor(2)
-                   hy.SetLineColor(2)
-                   hx_ori.SetMaximum(350)
-                   hy_ori.SetMaximum(350)
-                   hx.SetMaximum(350)
-                   hy.SetMaximum(350)
                    _cvx.cd((_ix+1)+_iy*self.npoints) 
                    hx_ori.Draw()
                    hx.Draw("hist same")
+                   hx_fit.Draw("hist same")
                    _cvy.cd((_iy+1)+_ix*self.npoints) 
                    hy_ori.Draw()
                    hy.Draw("hist same")
+                   hy_fit.Draw("hist same")
                    del _h2, h2, hx, hy, h_gaus
                    _ip+=1
    
-
              _pdfname = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/MLEM_comparison_x_z{}.pdf".format(_iz)
              _cvx.SaveAs(_pdfname)
              _pdfname = _pdfname.replace("_x_","_y_")
@@ -723,7 +751,7 @@ if __name__=="__main__":
    parser.add_argument("-m", "--matrix", type=str, default=None, help="Output File Name")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of images")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="Number of images")
-   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=5, help="Number of images")
+   parser.add_argument("-p","--npixels",dest="npixels",type=int, default=40, help="Number of images")
    args = parser.parse_args()
 
    testrun(args)
