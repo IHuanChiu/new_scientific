@@ -84,13 +84,14 @@ class PrepareParameters():
                    ydown=ycenter[iy]-fit_range
                    gb=self.getfunc("gb"+str(index),xdown,xup,ydown,yup)
                    gb.SetParameters(10,xcenter[ix],0,ycenter[iy],0,0.1)
-                   # TODO bad fitting channels
-                   if index == 1: paramater_list.append([1.74254e+02,8.10055e+00,1.72548e+00,1.50197e+01,1.49098e+00,-9.93072e-02]) 
-                   elif index == 26: paramater_list.append([1.95446e+02,7.34044e+00,1.82564e+00,1.40217e+01,1.73770e+00,2.42294e-02])
-                   elif index == 81: paramater_list.append([1.49021e+02,6.13308e+00,1.74712e+00,5.69160e+00,1.85554e+00,-1.01725e-01])
-                   elif index == 100: paramater_list.append([1.18486e+02,1.12588e+01,1.95410e+00,1.05471e+01,1.80264e+00,-8.80853e-02])
-                   elif index == 110: paramater_list.append([1.41792e+02,1.09893e+01,1.89663e+00,-2.30509e-01,1.95740e+00,9.20033e-02])
-                   elif index == 122: paramater_list.append([1.25659e+02,1.06397e-01,1.69141e+00,-1.10063e+01,1.94154e+00,5.99720e-02])
+                   # bad fitting channels
+                   if index == 1: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.74254e+02,8.10055e+00,1.72548e+00,1.50197e+01,1.49098e+00,-9.93072e-02
+                   elif index == 10: constant,mean_x,sigma_x,mean_y,sigma_y,rho=2.75625e+02,1.61334e+01,2.03669e+00,-1.09053e-01,1.87555e+00,1.30457e-01
+                   elif index == 26: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.95446e+02,7.34044e+00,1.82564e+00,1.40217e+01,1.73770e+00,2.42294e-02
+                   elif index == 81: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.49021e+02,6.13308e+00,1.74712e+00,5.69160e+00,1.85554e+00,-1.01725e-01
+                   elif index == 100: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.18486e+02,1.12588e+01,1.95410e+00,1.05471e+01,1.80264e+00,-8.80853e-02
+                   elif index == 110: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.41792e+02,1.09893e+01,1.89663e+00,-2.30509e-01,1.95740e+00,9.20033e-02
+                   elif index == 122: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.25659e+02,1.06397e-01,1.69141e+00,-1.10063e+01,1.94154e+00,5.99720e-02
                    else:
                       Chi2=999999999
                       for fittime in range(5):
@@ -98,10 +99,10 @@ class PrepareParameters():
                          if Chi2 > gb.GetChisquare():
                             Chi2=gb.GetChisquare()
                             constant, mean_x, sigma_x, mean_y, sigma_y, rho = gb.GetParameter(0), gb.GetParameter(1), gb.GetParameter(2), gb.GetParameter(3), gb.GetParameter(4), gb.GetParameter(5)
-                      paramater_list.append([constant, mean_x, sigma_x, mean_y, sigma_y, rho])                  
+                   paramater_list.append([constant, mean_x, sigma_x, mean_y, sigma_y, rho])                  
                    hist_fitlist.append(h2)
-                   if ix == 0 and iy == 0:
-                      print("index: {0}, fitting (constant, mux, muy, sigmax, sigmay) = ({1},{2},{3},{4},{5})".format(index , constant, mean_x, mean_y, sigma_x, sigma_y))
+                   if ix != -1 and iy != -1:
+                      print("index: {0}, fitting (constant, mux, muy, sigmax, sigmay, \u03C1) = ({1:.3f},{2:.3f},{3:.3f},{4:.3f},{5:.3f},{6:.3f})".format(index,constant,mean_x,mean_y,sigma_x,sigma_y,rho))
                    # Cheching bad fitting channels
                    if paramater_list[index][0] > 1000: 
                       log().warn("bad fitting point : {0}, {1}".format(index, paramater_list[index]))
@@ -318,8 +319,9 @@ class MLEM():
           self.ob2im_dic=self.mksrfdic()
           if not isinstance(matrix, np.ndarray): self.matrix=self.mkmatrix()
           else: self.matrix=matrix
+          self.source_intensity = 363.1*1000 #Bq, Am-241
           # plots
-          self.image_hx_hy_list_ori, self.image_hx_hy_list_sr, self.hist_delta_mu=self.mkimage()
+          self.image_hx_hy_list_ori, self.image_hx_hy_list_sr, self.image_hx_hy_list_matrix, self.hist_delta_mu=self.mkimage()
           self.mlemtree=self.mktree()
 #          self.image_init_loop=self.mkInitImageLoop()
           self.object_init,self.image_init=self.mkInitImage()
@@ -335,7 +337,9 @@ class MLEM():
           #   _name = "h"+str(i)
           #   _mlist.append(hist2array(fint.Get(_name)))          
           fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
-          _mlist.append(hist2array(fint.Get("image_pos43")))
+          #_mlist.append(hist2array(fint.Get("image_pos43")))
+          #_mlist.append(hist2array(fint.Get("image_pos112")))
+          _mlist.append(hist2array(fint.Get("image_pos114")))
           log().info("Position of Test Image: (x,y,z)=({0},{1},{2})".format(10, 10, -10))
           return _mlist
 
@@ -392,8 +396,7 @@ class MLEM():
 
       def mkmatrix(self):
           prog = ProgressBar(ntotal=pow(self.npixels,3),text="Processing Matrix",init_t=time.time())
-          source_intensity = 363.1*1000 #Bq
-          matrix=np.ones((self.npixels,self.npixels,self.npixels,self.nbins,self.nbins),dtype=float)          
+          matrix=np.zeros((self.npixels,self.npixels,self.npixels,self.nbins,self.nbins),dtype=float)          
           index=0
           nevproc=0
           for iz in range(self.npixels):
@@ -410,7 +413,7 @@ class MLEM():
                       for imageiy in range(self.nbins):
                          _imagex=-16+0.125+imageix*(32./self.nbins)
                          _imagey=-16+0.125+imageiy*(32./self.nbins)
-                         matrix[ix][iy][iz][imageix][imageiy]=(h_gaus.Eval(_imagex,_imagey)/source_intensity)
+                         matrix[ix][iy][iz][imageix][imageiy]=(h_gaus.Eval(_imagex,_imagey)/self.source_intensity)
                    index+=1
           if prog: prog.finalize()
           with open('matrix_temp.npy', 'wb') as f:
@@ -438,7 +441,7 @@ class MLEM():
 
       def mkimage(self):
           # make original vs. system response comparison plots
-          image_hx_hy_list_sr, image_hx_hy_list_ori=[],[]
+          image_hx_hy_list_sr, image_hx_hy_list_ori, image_hx_hy_list_matrix=[],[],[]
           _ip=0
           h_delta_mux=ROOT.TH1D("delta_mux","delta_mux",125,-16,16)
           h_delta_muy=ROOT.TH1D("delta_muy","delta_muy",125,-16,16)
@@ -457,7 +460,7 @@ class MLEM():
              _cvori.Divide(self.npoints,self.npoints)
              for _iy in range(self.npoints):
                 for _ix in range(self.npoints):              
-                   # original plots
+                   # === original plots ===
                    _h2name="image_ori_"+str(_ip)             
                    _h2=ROOT.TH2F(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16) 
                    array2hist(self.ori_image_list[_ip],_h2)
@@ -465,7 +468,7 @@ class MLEM():
                    image_hx_hy_list_ori.append(_h2.ProjectionX())
                    image_hx_hy_list_ori.append(_h2.ProjectionY())
 
-                   # system response plots                   
+                   # === system response plots (fitting after bigaus and TMinuit) ===
                    image_var = self.srf(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
                    _h2name="image_sr_"+str(_ip)
                    h2=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
@@ -495,8 +498,11 @@ class MLEM():
                    image_hx_hy_list_sr.append(h2)
                    image_hx_hy_list_sr.append(h2.ProjectionX())
                    image_hx_hy_list_sr.append(h2.ProjectionY())            
+                   image_hx_hy_list_sr.append(h2_bigaus)
+                   image_hx_hy_list_sr.append(hx_fit)
+                   image_hx_hy_list_sr.append(hy_fit)            
 
-                   # check difference between bigaus fitting and MLEM
+                   # check difference between the fitting values after bigaus and TMinuit
                    h_delta_constant.Fill(image_var[0]-paramater_list[_ip][0]) 
                    h_delta_mux.Fill(image_var[1]-paramater_list[_ip][1]) 
                    h_delta_sigmax.Fill(image_var[2]-paramater_list[_ip][2]) 
@@ -539,6 +545,18 @@ class MLEM():
                    hy.Draw("hist same")
                    hy_fit.Draw("hist same")
                    del _h2, h2, hx, hy, h_gaus
+
+                   # === MLEM plots with matrix ===
+                   _image_point=np.zeros((self.nbins,self.nbins),dtype=float)
+                   _h2name="image_matrix_"+str(_ip)
+                   h2_matrix=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
+                   object_point=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+                   object_point[_ix,_iy,_iz]=1.*self.source_intensity
+                   for imx in range(self.nbins):
+                      for imy in range(self.nbins):
+                         _image_point[imx][imy]=np.sum(object_point*self.matrix[:,:,:,imx,imy])
+                   array2hist(_image_point, h2_matrix)
+                   image_hx_hy_list_matrix.append(h2_matrix)
                    _ip+=1
    
              _pdfname = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/MLEM_comparison_x_z{}.pdf".format(_iz)
@@ -549,7 +567,7 @@ class MLEM():
              _cvori.SaveAs(_pdfname)
              _pdfname = _pdfname.replace("_ori_","_fit_")
              _cvfit.SaveAs(_pdfname)
-          return image_hx_hy_list_ori, image_hx_hy_list_sr, [h_delta_constant,h_delta_mux,h_delta_sigmax,h_delta_muy,h_delta_sigmay,h_delta_rho]
+          return image_hx_hy_list_ori, image_hx_hy_list_sr, image_hx_hy_list_matrix, [h_delta_constant,h_delta_mux,h_delta_sigmax,h_delta_muy,h_delta_sigmay,h_delta_rho]
 
       def mkInitImageLoop(self):
           # return initial image from object
@@ -574,9 +592,8 @@ class MLEM():
           return _image_init
 
       def mkInitImage(self):
-          source_intensity = 363.1*1000 #Bq
           _object_init=np.ones((self.npixels,self.npixels,self.npixels),dtype=float)
-          _object_init=_object_init*source_intensity
+          _object_init=_object_init*self.source_intensity
 
           _image_init=ROOT.TH2D("image_init","image_init",self.nbins,-16,16,self.nbins,-16,16)
           _image_array=np.zeros((self.nbins,self.nbins),dtype=float)
@@ -594,14 +611,14 @@ class MLEM():
           return _image_update
 
       def findratio(self,measurement_image_array,reproduction_image_array):
-          # input/output type: numpy.array
+          # === input/output type: numpy.array ===
           _where_0 = np.where(reproduction_image_array == 0)
           reproduction_image_array[_where_0]=0.00001
           image_ratio=measurement_image_array/reproduction_image_array
           return image_ratio
 
       def updateObject(self,object_pre,image_ratio):
-          # update object based on object ratio
+          # === update object based on object ratio ===
           object_ratio=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
           for ix in range(self.npixels):
              for iy in range(self.npixels):
@@ -710,7 +727,7 @@ def mkWeightFunc(filename,_np):
 def testrun(args):
     log().info("Loading Matrix...")
 
-    _n_iteration=3
+    _n_iteration=args.loop
     outfilename = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/myMLEMoutput_"+args.output+"_iteration"+str(_n_iteration)
     outfilename = outfilename+".root"
     image_nbins=128 # number of strips of CdTe detector
@@ -735,6 +752,7 @@ def testrun(args):
     ML.printoutput(ML.mlemtree,outfilename,"re")
     ML.printoutput(ML.image_hx_hy_list_ori,outfilename,"up")
     ML.printoutput(ML.image_hx_hy_list_sr,outfilename,"up")
+    ML.printoutput(ML.image_hx_hy_list_matrix,outfilename,"up")
     ML.printoutput(ML.hist_delta_mu,outfilename,"up")
     ML.printoutput(ML.image_init,outfilename,"up")
     ML.printoutput(ML.mlemhist_list,outfilename,"up")
@@ -752,6 +770,7 @@ if __name__=="__main__":
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of images")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="Number of images")
    parser.add_argument("-p","--npixels",dest="npixels",type=int, default=40, help="Number of images")
+   parser.add_argument("-l","--loop",dest="loop",type=int, default=3, help="Number of images")
    args = parser.parse_args()
 
    testrun(args)
