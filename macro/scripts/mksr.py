@@ -395,6 +395,7 @@ class MLEM():
           return srfdic
 
       def mkmatrix(self):
+          # === structure of matrix : [z,y,x,mux,muy] ===
           prog = ProgressBar(ntotal=pow(self.npixels,3),text="Processing Matrix",init_t=time.time())
           matrix=np.zeros((self.npixels,self.npixels,self.npixels,self.nbins,self.nbins),dtype=float)          
           index=0
@@ -547,16 +548,27 @@ class MLEM():
                    del _h2, h2, hx, hy, h_gaus
 
                    # === MLEM plots with matrix ===
-                   _image_point=np.zeros((self.nbins,self.nbins),dtype=float)
-                   _h2name="image_matrix_"+str(_ip)
-                   h2_matrix=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
-                   object_point=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
-                   object_point[_ix,_iy,_iz]=1.*self.source_intensity
-                   for imx in range(self.nbins):
-                      for imy in range(self.nbins):
-                         _image_point[imx][imy]=np.sum(object_point*self.matrix[:,:,:,imx,imy])
-                   array2hist(_image_point, h2_matrix)
-                   image_hx_hy_list_matrix.append(h2_matrix)
+                   if _ix==0 and _iy==0: 
+                      _image_point=np.zeros((self.nbins,self.nbins),dtype=float)
+                      _h2name="image_matrix_"+str(_ip)
+                      h2_matrix=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
+                      object_point=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+                      _izp, _iyp, _ixp = 0,0,0
+                      if _iz!= 0 : _izp = _iz*10-1
+                      if _iy!= 0 : _iyp = _iy*10-1
+                      if _ix!= 0 : _ixp = _ix*10-1
+                      object_point[_izp,_iyp,_ixp]=1.*self.source_intensity
+                      for imx in range(self.nbins):
+                         for imy in range(self.nbins):
+                            _image_point[imx][imy]=np.sum(object_point*self.matrix[:,:,:,imx,imy])
+                      _where_0 = np.where(_image_point < 1)
+                      _image_point[_where_0]=0
+                      array2hist(_image_point, h2_matrix)
+                      h2_matrix.SetStats(0)
+                      image_hx_hy_list_matrix.append(h2_matrix)
+                      image_hx_hy_list_matrix.append(h2_matrix.ProjectionX())
+                      image_hx_hy_list_matrix.append(h2_matrix.ProjectionY())
+                   # === Next point ===
                    _ip+=1
    
              _pdfname = "/Users/chiu.i-huan/Desktop/new_scientific/run/figs/MLEM_comparison_x_z{}.pdf".format(_iz)
