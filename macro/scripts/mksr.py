@@ -337,9 +337,9 @@ class MLEM():
           #   _name = "h"+str(i)
           #   _mlist.append(hist2array(fint.Get(_name)))          
           fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
-          #_mlist.append(hist2array(fint.Get("image_pos43")))
-          #_mlist.append(hist2array(fint.Get("image_pos112")))
-          _mlist.append(hist2array(fint.Get("image_pos114")))
+          #_mlist.append(hist2array(fint.Get("image_pos43"))) # 10, 10, -10
+          #_mlist.append(hist2array(fint.Get("image_pos112"))) # 0 0 20
+          _mlist.append(hist2array(fint.Get("image_pos114"))) # 20 0 20
           log().info("Position of Test Image: (x,y,z)=({0},{1},{2})".format(10, 10, -10))
           return _mlist
 
@@ -442,8 +442,9 @@ class MLEM():
 
       def mkimage(self):
           # make original vs. system response comparison plots
+          prog = ProgressBar(ntotal=pow(self.npoints,3),text="Making images ...",init_t=time.time())
           image_hx_hy_list_sr, image_hx_hy_list_ori, image_hx_hy_list_matrix=[],[],[]
-          _ip=0
+          nevproc,_ip=0,0
           h_delta_mux=ROOT.TH1D("delta_mux","delta_mux",125,-16,16)
           h_delta_muy=ROOT.TH1D("delta_muy","delta_muy",125,-16,16)
           h_delta_sigmax=ROOT.TH1D("delta_sigmax","delta_sigmax",200,-1,1)
@@ -461,6 +462,8 @@ class MLEM():
              _cvori.Divide(self.npoints,self.npoints)
              for _iy in range(self.npoints):
                 for _ix in range(self.npoints):              
+                   nevproc+=1
+                   if prog: prog.update(nevproc)
                    # === original plots ===
                    _h2name="image_ori_"+str(_ip)             
                    _h2=ROOT.TH2F(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16) 
@@ -471,6 +474,8 @@ class MLEM():
 
                    # === system response plots (fitting after bigaus and TMinuit) ===
                    image_var = self.srf(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
+                   if _ip == 112: print(_ip, point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
+                   if _ip == 114: print(_ip, point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
                    _h2name="image_sr_"+str(_ip)
                    h2=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
                    h2_bigaus=ROOT.TH2D(_h2name+"_bigaus",_h2name+"_bigaus",self.nbins,-16,16,self.nbins,-16,16)
@@ -480,8 +485,8 @@ class MLEM():
                    h_gaus.SetParameters(image_var[0],image_var[1],image_var[2],image_var[3],image_var[4],image_var[5])
                    h_gaus_fit = ROOT.TF2("h_gaus","bigaus",-16,16,-16,16)
                    h_gaus_fit.SetParameters(paramater_list[_ip][0],paramater_list[_ip][1],paramater_list[_ip][2],paramater_list[_ip][3],paramater_list[_ip][4],paramater_list[_ip][5])
-                   if _ix==0 and _iy==0: 
-                      print("index : {0}, (x,y,z)=({1},{2},{3}), (constant, mux, muy,sigmax,sigmay)=({4},{5},{6},{7},{8})".format(_ip,point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2], image_var[0], image_var[1], image_var[3],image_var[2],image_var[4]))                      
+                   #if _ix==0 and _iy==0: 
+                   #   print("index : {0}, (x,y,z)=({1},{2},{3}), (constant, mux, muy,sigmax,sigmay)=({4},{5},{6},{7},{8})".format(_ip,point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2], image_var[0], image_var[1], image_var[3],image_var[2],image_var[4]))                      
                    for ix in range(128):
                       for iy in range(128):
                          _x=h2.GetXaxis().GetBinCenter(ix+1)
@@ -548,26 +553,26 @@ class MLEM():
                    del _h2, h2, hx, hy, h_gaus
 
                    # === MLEM plots with matrix ===
-                   if _ix==0 and _iy==0: 
-                      _image_point=np.zeros((self.nbins,self.nbins),dtype=float)
-                      _h2name="image_matrix_"+str(_ip)
-                      h2_matrix=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
-                      object_point=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
-                      _izp, _iyp, _ixp = 0,0,0
-                      if _iz!= 0 : _izp = _iz*10-1
-                      if _iy!= 0 : _iyp = _iy*10-1
-                      if _ix!= 0 : _ixp = _ix*10-1
-                      object_point[_izp,_iyp,_ixp]=1.*self.source_intensity
-                      for imx in range(self.nbins):
-                         for imy in range(self.nbins):
-                            _image_point[imx][imy]=np.sum(object_point*self.matrix[:,:,:,imx,imy])
-                      _where_0 = np.where(_image_point < 1)
-                      _image_point[_where_0]=0
-                      array2hist(_image_point, h2_matrix)
-                      h2_matrix.SetStats(0)
-                      image_hx_hy_list_matrix.append(h2_matrix)
-                      image_hx_hy_list_matrix.append(h2_matrix.ProjectionX())
-                      image_hx_hy_list_matrix.append(h2_matrix.ProjectionY())
+                   #if _ix==0 and _iy==0: 
+                   #   _image_point=np.zeros((self.nbins,self.nbins),dtype=float)
+                   #   _h2name="image_matrix_"+str(_ip)
+                   #   h2_matrix=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
+                   #   object_point=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+                   #   _izp, _iyp, _ixp = 0,0,0
+                   #   if _iz!= 0 : _izp = _iz*10-1
+                   #   if _iy!= 0 : _iyp = _iy*10-1
+                   #   if _ix!= 0 : _ixp = _ix*10-1
+                   #   object_point[_izp,_iyp,_ixp]=1.*self.source_intensity
+                   #   for imx in range(self.nbins):
+                   #      for imy in range(self.nbins):
+                   #         _image_point[imx][imy]=np.sum(object_point*self.matrix[:,:,:,imx,imy])
+                   #   _where_0 = np.where(_image_point < 1)
+                   #   _image_point[_where_0]=0
+                   #   array2hist(_image_point, h2_matrix)
+                   #   h2_matrix.SetStats(0)
+                   #   image_hx_hy_list_matrix.append(h2_matrix)
+                   #   image_hx_hy_list_matrix.append(h2_matrix.ProjectionX())
+                   #   image_hx_hy_list_matrix.append(h2_matrix.ProjectionY())
                    # === Next point ===
                    _ip+=1
    
@@ -579,6 +584,7 @@ class MLEM():
              _cvori.SaveAs(_pdfname)
              _pdfname = _pdfname.replace("_ori_","_fit_")
              _cvfit.SaveAs(_pdfname)
+          if prog: prog.finalize()
           return image_hx_hy_list_ori, image_hx_hy_list_sr, image_hx_hy_list_matrix, [h_delta_constant,h_delta_mux,h_delta_sigmax,h_delta_muy,h_delta_sigmay,h_delta_rho]
 
       def mkInitImageLoop(self):
@@ -627,6 +633,8 @@ class MLEM():
           _where_0 = np.where(reproduction_image_array == 0)
           reproduction_image_array[_where_0]=0.00001
           image_ratio=measurement_image_array/reproduction_image_array
+          _where_1 = np.where(image_ratio > 10)
+          image_ratio[_where_1]=0#TODO test
           return image_ratio
 
       def updateObject(self,object_pre,image_ratio):
@@ -648,7 +656,7 @@ class MLEM():
 #          hist_final_object.GetYaxis().SetTitle("Y")
 #          hist_final_object.GetZaxis().SetTitle("X")
           final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
-          nevproc, ih, n_savehist=0, 0, 5
+          nevproc, ih, n_savehist=0, 0, 3
           for h_measurement_array in self.h_measurement_list:
              for i in range(n_iteration):
                 nevproc+=1
@@ -663,17 +671,26 @@ class MLEM():
                 if ih < n_savehist:# only check n_savehist plots
                    hist_object_ratio=ROOT.TH3D("object_ratio_h{0}_iteration{1}".format(ih,i),"object_ratio_h{0}_iteration{1}".format(ih,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
                    hist_image_ratio=ROOT.TH2D("image_ratio_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
+                   hist_process_object=ROOT.TH3D("MLEM_3Dimage_h{0}_iteration{1}".format(ih,i),"MLEM_3Dimage_h{0}_iteration{1}".format(ih,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
                    hist_process_image=ROOT.TH2D("image_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
+                   array2hist(_object,hist_process_object)
                    array2hist(_object_ratio,hist_object_ratio)
                    array2hist(_image_ratio,hist_image_ratio)
                    array2hist(_image,hist_process_image)
                    self.mlemhist_list.append(hist_image_ratio)
                    self.mlemhist_list.append(hist_object_ratio)
+                   self.mlemhist_list.append(hist_process_object)
+                   self.mlemhist_list.append(hist_process_object.ProjectionX())
+                   self.mlemhist_list.append(hist_process_object.ProjectionY())
+                   self.mlemhist_list.append(hist_process_object.ProjectionZ())
                    self.mlemhist_list.append(hist_process_image)
+                   self.mlemhist_list.append(hist_process_image.ProjectionX())
+                   self.mlemhist_list.append(hist_process_image.ProjectionY())
              final_object+=_object# projeaction of all images
              ih+=1
           if prog: prog.finalize()
           # TODO test cut & make 3D plot
+          log().info("Processing array to histogram...")
           w_0=np.where(final_object <  1)
           final_object[w_0]=0
           array2hist(final_object,hist_final_object)
