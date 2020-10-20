@@ -330,6 +330,7 @@ class MLEM():
 
       def getmeasurement(self):
           # return array type
+          log().info("Getting measurment...")
           _mlist=[]
           #fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage.CdTe_LP_0909.root","read")
           #n_angles=1
@@ -338,8 +339,10 @@ class MLEM():
           #   _mlist.append(hist2array(fint.Get(_name)))          
           fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
           #_mlist.append(hist2array(fint.Get("image_pos43"))) # 10, 10, -10
-          #_mlist.append(hist2array(fint.Get("image_pos112"))) # 0 0 20
-          _mlist.append(hist2array(fint.Get("image_pos114"))) # 20 0 20
+          #_mlist.append(hist2array(fint.Get("image_pos12"))) # 0 0 -20
+          _mlist.append(hist2array(fint.Get("image_pos112"))) # 0 0 20
+          #_mlist.append(hist2array(fint.Get("image_pos14"))) # 20 0 -20
+          #_mlist.append(hist2array(fint.Get("image_pos114"))) # 20 0 20
           log().info("Position of Test Image: (x,y,z)=({0},{1},{2})".format(10, 10, -10))
           return _mlist
 
@@ -422,6 +425,7 @@ class MLEM():
           return matrix
 
       def mktree(self):
+          log().info("Making tree...")
           mypoint=[7,7,7]
           image_var = self.srf(mypoint[0],mypoint[1],mypoint[2])
           _tree=TTree('tree','tree')          
@@ -474,8 +478,6 @@ class MLEM():
 
                    # === system response plots (fitting after bigaus and TMinuit) ===
                    image_var = self.srf(point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
-                   if _ip == 112: print(_ip, point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
-                   if _ip == 114: print(_ip, point_axis[_ip][0], point_axis[_ip][1], point_axis[_ip][2])
                    _h2name="image_sr_"+str(_ip)
                    h2=ROOT.TH2D(_h2name,_h2name,self.nbins,-16,16,self.nbins,-16,16)
                    h2_bigaus=ROOT.TH2D(_h2name+"_bigaus",_h2name+"_bigaus",self.nbins,-16,16,self.nbins,-16,16)
@@ -610,6 +612,7 @@ class MLEM():
           return _image_init
 
       def mkInitImage(self):
+          log().info("Initial guess image...")
           _object_init=np.ones((self.npixels,self.npixels,self.npixels),dtype=float)
           _object_init=_object_init*self.source_intensity
 
@@ -651,22 +654,26 @@ class MLEM():
 
       def iterate(self,n_iteration):                   
           prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iterate",init_t=time.time())
-          hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
-#          hist_final_object.GetXaxis().SetTitle("Z")
-#          hist_final_object.GetYaxis().SetTitle("Y")
-#          hist_final_object.GetZaxis().SetTitle("X")
-          final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
           nevproc, ih, n_savehist=0, 0, 3
+          hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+          hist_final_object.GetXaxis().SetTitle("Z")
+          hist_final_object.GetYaxis().SetTitle("Y")
+          hist_final_object.GetZaxis().SetTitle("X")
+          final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
           for h_measurement_array in self.h_measurement_list:
+#             print("entries data => ", np.sum(h_measurement_array))
              for i in range(n_iteration):
                 nevproc+=1
                 if prog: prog.update(nevproc)
                 if i == 0: 
                    _image=hist2array(self.image_init)
                    _object=self.object_init
+#                print(" pre image : ", np.sum(_image), " pre object : ", np.sum(_object))
                 _image_ratio=self.findratio(h_measurement_array, _image) 
                 _object_ratio,_object=self.updateObject(_object, _image_ratio)
                 _image = self.updateImage(_object)
+#                print(" image_ratio : ", np.sum(_image_ratio<10), " object_ratio : ", np.sum(_object_ratio))
+#                print(" new image : ", np.sum(_image), " new object : ", np.sum(_object))
 
                 if ih < n_savehist:# only check n_savehist plots
                    hist_object_ratio=ROOT.TH3D("object_ratio_h{0}_iteration{1}".format(ih,i),"object_ratio_h{0}_iteration{1}".format(ih,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
@@ -678,7 +685,12 @@ class MLEM():
                    array2hist(_image_ratio,hist_image_ratio)
                    array2hist(_image,hist_process_image)
                    self.mlemhist_list.append(hist_image_ratio)
+                   self.mlemhist_list.append(hist_image_ratio.ProjectionX())
+                   self.mlemhist_list.append(hist_image_ratio.ProjectionY())
                    self.mlemhist_list.append(hist_object_ratio)
+                   self.mlemhist_list.append(hist_object_ratio.ProjectionX())
+                   self.mlemhist_list.append(hist_object_ratio.ProjectionY())
+                   self.mlemhist_list.append(hist_object_ratio.ProjectionZ())
                    self.mlemhist_list.append(hist_process_object)
                    self.mlemhist_list.append(hist_process_object.ProjectionX())
                    self.mlemhist_list.append(hist_process_object.ProjectionY())
