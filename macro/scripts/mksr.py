@@ -313,13 +313,13 @@ class MLEM():
           self.npixels=npixels
           self.object_range=20 #mm
           # parametor members
+          self.source_intensity = 363.1*1000 #Bq, Am-241
           self.hist_fit=self.PP.hist_fit
           self.para_dic=self.SR.par_con_x_xsig_y_ysig_rho
           self.ori_image_list=self.PP.imagearray
           self.ob2im_dic=self.mksrfdic()
           if not isinstance(matrix, np.ndarray): self.matrix=self.mkmatrix()
           else: self.matrix=matrix
-          self.source_intensity = 363.1*1000 #Bq, Am-241
           # plots
           self.image_hx_hy_list_ori, self.image_hx_hy_list_sr, self.image_hx_hy_list_matrix, self.hist_delta_mu=self.mkimage()
           self.mlemtree=self.mktree()
@@ -338,22 +338,26 @@ class MLEM():
           #   _name = "h"+str(i)
           #   _mlist.append(hist2array(fint.Get(_name)))          
           fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
-          #_mlist.append(hist2array(fint.Get("image_pos43"))) # 10, 10, -10
+          #_mlist.append(hist2array(fint.Get("image_pos43"))) # (test) 10, 10, -10
+          #_mlist.append(hist2array(fint.Get("image_pos62"))) # (center) 0, 0, 0
+          #_mlist.append(hist2array(fint.Get("image_pos35"))) # -20 0 -10
+          #_mlist.append(hist2array(fint.Get("image_pos60"))) # -20 0 0
+          #_mlist.append(hist2array(fint.Get("image_pos85"))) # -20 0 10
+          #_mlist.append(hist2array(fint.Get("image_pos10"))) # -20 0 -20
+          #_mlist.append(hist2array(fint.Get("image_pos11"))) # -10 0 -20
           #_mlist.append(hist2array(fint.Get("image_pos12"))) # 0 0 -20
-          _mlist.append(hist2array(fint.Get("image_pos112"))) # 0 0 20
+          #_mlist.append(hist2array(fint.Get("image_pos13"))) # 10 0 -20
           #_mlist.append(hist2array(fint.Get("image_pos14"))) # 20 0 -20
+          #_mlist.append(hist2array(fint.Get("image_pos15"))) # -20 10 -20
+          #_mlist.append(hist2array(fint.Get("image_pos19"))) # -20 10 -20
+          _mlist.append(hist2array(fint.Get("image_pos24"))) # -20 20 -20
+          #_mlist.append(hist2array(fint.Get("image_pos112"))) # 0 0 20
           #_mlist.append(hist2array(fint.Get("image_pos114"))) # 20 0 20
           log().info("Position of Test Image: (x,y,z)=({0},{1},{2})".format(10, 10, -10))
           return _mlist
 
       def getconstant(self,_x,_y,_z,par):         
           _c=par[0].value*math.exp((-1)*(par[1].value/((191+_z)**2+_x**2+_y**2))+par[2].value)+par[3].value
-          if _z == -10:
-             if abs(_x) == 20: _c=_c*0.9
-             if abs(_y) == 20: _c=_c*0.9
-          if _z == -20:
-             if abs(_x) == 20: _c=_c*0.5
-             if abs(_y) == 20: _c=_c*0.5 
           return _c
 
       def getmu(self,_x,_y,_z,par,name):         
@@ -390,34 +394,32 @@ class MLEM():
       def mksrfdic(self):
           srfdic={}
           _index=0
-          for x in range(self.npixels):
+          for z in range(self.npixels):
              for y in range(self.npixels):
-                for z in range(self.npixels):
+                for x in range(self.npixels):
                    srfdic.update({_index:self.srf(x,y,z,"bintype")})
                    _index+=1
           return srfdic
 
       def mkmatrix(self):
-          # === structure of matrix : [z,y,x,mux,muy] ===
-          prog = ProgressBar(ntotal=pow(self.npixels,3),text="Processing Matrix",init_t=time.time())
+          # === structure of matrix : [x,y,z,mux,muy] ===
+          prog = ProgressBar(ntotal=pow(self.npixels,3),text="Processing Matrix...",init_t=time.time())
           matrix=np.zeros((self.npixels,self.npixels,self.npixels,self.nbins,self.nbins),dtype=float)          
-          index=0
-          nevproc=0
+          index,nevproc=0,0
           for iz in range(self.npixels):
              for iy in range(self.npixels):
                 for ix in range(self.npixels):
-                   nevproc+=1
                    if prog: prog.update(nevproc)
                    image_var = self.ob2im_dic[index]
                    h_gaus = ROOT.TF2("h_gaus","bigaus",-16,16,-16,16)
                    h_gaus.SetParameters(image_var[0],image_var[1],image_var[2],image_var[3],image_var[4],image_var[5])
 
-                   matrix[ix][iy][iz]=0.
                    for imageix in range(self.nbins):
                       for imageiy in range(self.nbins):
                          _imagex=-16+0.125+imageix*(32./self.nbins)
                          _imagey=-16+0.125+imageiy*(32./self.nbins)
                          matrix[ix][iy][iz][imageix][imageiy]=(h_gaus.Eval(_imagex,_imagey)/self.source_intensity)
+                   nevproc+=1
                    index+=1
           if prog: prog.finalize()
           with open('matrix_temp.npy', 'wb') as f:
@@ -586,6 +588,52 @@ class MLEM():
              _cvori.SaveAs(_pdfname)
              _pdfname = _pdfname.replace("_ori_","_fit_")
              _cvfit.SaveAs(_pdfname)
+
+          # === check entries ===
+          _xp,_yp,_zp=20,20,20
+          h1_entries_x=ROOT.TH1D("entries_alongx","entries_alongx",self.npixels,0,self.npixels)
+          h1_entries_y=ROOT.TH1D("entries_alongy","entries_alongy",self.npixels,0,self.npixels)
+          h1_entries_z=ROOT.TH1D("entries_alongz","entries_alongz",self.npixels,0,self.npixels)
+          h1_constant_x=ROOT.TH1D("constant_alongx","constant_alongx",self.npixels,0,self.npixels)
+          h1_constant_y=ROOT.TH1D("constant_alongy","constant_alongy",self.npixels,0,self.npixels)
+          h1_constant_z=ROOT.TH1D("constant_alongz","constant_alongz",self.npixels,0,self.npixels)
+          h2_temp=ROOT.TH2D("temp_h2","temp_h2",self.nbins,-16,16,self.nbins,-16,16)
+          for _i in range(self.npixels):
+             _image_point_z,_image_point_y,_image_point_x=np.zeros((self.nbins,self.nbins),dtype=float), np.zeros((self.nbins,self.nbins),dtype=float), np.zeros((self.nbins,self.nbins),dtype=float)
+             # matrix (very slow)
+             #object_point=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+             #object_point[_iz,_yp,_xp]=1.*self.source_intensity# matrix is [z,y,x,mux,muy]
+             #for imx in range(self.nbins):
+             #   for imy in range(self.nbins):
+             #      _image_point[imx][imy]=np.sum(object_point*self.matrix[:,:,:,imx,imy])
+             # srf (should be same with matrix)
+             image_var_z, image_var_x, image_var_y = self.srf(_xp,_yp,_i,"bintype"), self.srf(_i,_yp,_zp,"bintype"), self.srf(_xp,_i,_zp,"bintype")
+             h_gaus_z, h_gaus_y, h_gaus_x = ROOT.TF2("h_gaus_z","bigaus",-16,16,-16,16), ROOT.TF2("h_gaus_y","bigaus",-16,16,-16,16), ROOT.TF2("h_gaus_x","bigaus",-16,16,-16,16)
+             h_gaus_x.SetParameters(image_var_x[0],image_var_x[1],image_var_x[2],image_var_x[3],image_var_x[4],image_var_x[5])
+             h_gaus_y.SetParameters(image_var_y[0],image_var_y[1],image_var_y[2],image_var_y[3],image_var_y[4],image_var_y[5])
+             h_gaus_z.SetParameters(image_var_z[0],image_var_z[1],image_var_z[2],image_var_z[3],image_var_z[4],image_var_z[5])
+             for imx in range(128):
+                for imy in range(128):
+                   _x=h2_temp.GetXaxis().GetBinCenter(imx+1)
+                   _y=h2_temp.GetYaxis().GetBinCenter(imy+1)
+                   if h_gaus_x.Eval(_x,_y) > 0.1: _image_point_x[imx][imy]=h_gaus_x.Eval(_x,_y)
+                   if h_gaus_y.Eval(_x,_y) > 0.1: _image_point_y[imx][imy]=h_gaus_y.Eval(_x,_y)
+                   if h_gaus_z.Eval(_x,_y) > 0.1: _image_point_z[imx][imy]=h_gaus_z.Eval(_x,_y)
+             _weightx=np.sum(_image_point_x)  
+             _weighty=np.sum(_image_point_y)
+             _weightz=np.sum(_image_point_z)  
+             h1_entries_x.Fill(_i,_weightx)
+             h1_entries_y.Fill(_i,_weighty)
+             h1_entries_z.Fill(_i,_weightz)
+             h1_constant_x.Fill(_i,image_var_x[0])
+             h1_constant_y.Fill(_i,image_var_y[0])
+             h1_constant_z.Fill(_i,image_var_z[0])
+          image_hx_hy_list_matrix.append(h1_entries_x)             
+          image_hx_hy_list_matrix.append(h1_entries_y)             
+          image_hx_hy_list_matrix.append(h1_entries_z)             
+          image_hx_hy_list_matrix.append(h1_constant_x)             
+          image_hx_hy_list_matrix.append(h1_constant_y)             
+          image_hx_hy_list_matrix.append(h1_constant_z)             
           if prog: prog.finalize()
           return image_hx_hy_list_ori, image_hx_hy_list_sr, image_hx_hy_list_matrix, [h_delta_constant,h_delta_mux,h_delta_sigmax,h_delta_muy,h_delta_sigmay,h_delta_rho]
 
@@ -656,9 +704,9 @@ class MLEM():
           prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iterate",init_t=time.time())
           nevproc, ih, n_savehist=0, 0, 3
           hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
-          hist_final_object.GetXaxis().SetTitle("Z")
+          hist_final_object.GetXaxis().SetTitle("X")
           hist_final_object.GetYaxis().SetTitle("Y")
-          hist_final_object.GetZaxis().SetTitle("X")
+          hist_final_object.GetZaxis().SetTitle("Z")
           final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
           for h_measurement_array in self.h_measurement_list:
 #             print("entries data => ", np.sum(h_measurement_array))
@@ -766,7 +814,6 @@ def mkWeightFunc(filename,_np):
 
 # ======================= run ===================
 def testrun(args):
-    log().info("Loading Matrix...")
 
     _n_iteration=args.loop
     outfilename = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/myMLEMoutput_"+args.output+"_iteration"+str(_n_iteration)
@@ -774,16 +821,19 @@ def testrun(args):
     image_nbins=128 # number of strips of CdTe detector
     _matrix=None
     if args.matrix: 
+       log().info("Loading Matrix...")
        with open(args.matrix, 'rb') as f:
           _matrix=np.load(f)
-       args.npixels = _matrix.shape[0]
+       _npixels = _matrix.shape[0]
+    else:
+       _npixels=args.npixels
     _sr=mkWeightFunc(args.inputFolder, args.npoints)
     testimage = GetImageSpace(args.inputFolder,image_nbins,5,image_nbins,np.array([0,0,0]))
 
     log().info("Progressing the paramaters for fitting ...")
-    PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=args.npixels,nbins=image_nbins) # get cali. image list
+    PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=_npixels,nbins=image_nbins) # get cali. image list
     SR=SystemResponse(fittype=args.matrix)# get system response by TMinuit fitting
-    ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=args.npixels,matrix=_matrix) # do iterate and get final plots
+    ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=_npixels,matrix=_matrix) # do iterate and get final plots
 
     # MLEM iteration
     MLEM_3DHist=ML.iterate(n_iteration=_n_iteration)
@@ -806,7 +856,7 @@ if __name__=="__main__":
 
    parser = argparse.ArgumentParser(description='Process some integers.')
    parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root", help="Input File Name")
-   parser.add_argument("-o", "--output", type=str, default="sr_outputname", help="Output File Name")
+   parser.add_argument("-o", "--output", type=str, default="sr_outputname", help="Additional Output File Name")
    parser.add_argument("-m", "--matrix", type=str, default=None, help="Output File Name")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of images")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="Number of images")
