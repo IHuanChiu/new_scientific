@@ -66,6 +66,7 @@ class PrepareParameters():
           return ROOT.TF2(name,myfunction,_xdown,_xup,_ydown,_yup)
 
       def fitting_para(self):
+          log().info("Progressing the paramaters for fitting ...")
           global paramater_list
           paramater_list,hist_fitlist=[], []
           xcenter = [15.5,7.5,0,-7.5,-15]
@@ -332,11 +333,14 @@ class MLEM():
           # return array type
           log().info("Getting measurment...")
           _mlist=[]
+
           #fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/figs/repro_3Dimage.CdTe_LP_0909.root","read")
-          #n_angles=1
+          #n_angles=16
           #for i in range(n_angles):
+          #   if i != 6 : continue
           #   _name = "h"+str(i)
           #   _mlist.append(hist2array(fint.Get(_name)))          
+
           fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
           #_mlist.append(hist2array(fint.Get("image_pos43"))) # (test) 10, 10, -10
           #_mlist.append(hist2array(fint.Get("image_pos62"))) # (center) 0, 0, 0
@@ -347,10 +351,10 @@ class MLEM():
           #_mlist.append(hist2array(fint.Get("image_pos11"))) # -10 0 -20
           #_mlist.append(hist2array(fint.Get("image_pos12"))) # 0 0 -20
           #_mlist.append(hist2array(fint.Get("image_pos13"))) # 10 0 -20
-          #_mlist.append(hist2array(fint.Get("image_pos14"))) # 20 0 -20
+          _mlist.append(hist2array(fint.Get("image_pos14"))) # 20 0 -20
           #_mlist.append(hist2array(fint.Get("image_pos15"))) # -20 10 -20
-          #_mlist.append(hist2array(fint.Get("image_pos19"))) # -20 10 -20
-          _mlist.append(hist2array(fint.Get("image_pos24"))) # -20 20 -20
+          #_mlist.append(hist2array(fint.Get("image_pos19"))) # 20 10 -20
+          #_mlist.append(hist2array(fint.Get("image_pos24"))) # 20 20 -20
           #_mlist.append(hist2array(fint.Get("image_pos112"))) # 0 0 20
           #_mlist.append(hist2array(fint.Get("image_pos114"))) # 20 0 20
           log().info("Position of Test Image: (x,y,z)=({0},{1},{2})".format(10, 10, -10))
@@ -590,6 +594,14 @@ class MLEM():
              _cvfit.SaveAs(_pdfname)
 
           # === check entries ===
+          _xp,_yp,_zp=2,2,2
+          hori_entries_x=ROOT.TH1D("entries_alongx_ori","entries_alongx_ori",self.npoints,0,self.npoints)
+          hori_entries_y=ROOT.TH1D("entries_alongy_ori","entries_alongy_ori",self.npoints,0,self.npoints)
+          hori_entries_z=ROOT.TH1D("entries_alongz_ori","entries_alongz_ori",self.npoints,0,self.npoints)
+          for _i in range(self.npoints):
+             hori_entries_x.Fill(_i,np.sum(self.ori_image_list[25*_zp+5*_yp+1*_i])) 
+             hori_entries_y.Fill(_i,np.sum(self.ori_image_list[25*_zp+5*_i+1*_xp])) 
+             hori_entries_z.Fill(_i,np.sum(self.ori_image_list[25*_i+5*_yp+1*_xp])) 
           _xp,_yp,_zp=20,20,20
           h1_entries_x=ROOT.TH1D("entries_alongx","entries_alongx",self.npixels,0,self.npixels)
           h1_entries_y=ROOT.TH1D("entries_alongy","entries_alongy",self.npixels,0,self.npixels)
@@ -600,12 +612,6 @@ class MLEM():
           h2_temp=ROOT.TH2D("temp_h2","temp_h2",self.nbins,-16,16,self.nbins,-16,16)
           for _i in range(self.npixels):
              _image_point_z,_image_point_y,_image_point_x=np.zeros((self.nbins,self.nbins),dtype=float), np.zeros((self.nbins,self.nbins),dtype=float), np.zeros((self.nbins,self.nbins),dtype=float)
-             # matrix (very slow)
-             #object_point=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
-             #object_point[_iz,_yp,_xp]=1.*self.source_intensity# matrix is [z,y,x,mux,muy]
-             #for imx in range(self.nbins):
-             #   for imy in range(self.nbins):
-             #      _image_point[imx][imy]=np.sum(object_point*self.matrix[:,:,:,imx,imy])
              # srf (should be same with matrix)
              image_var_z, image_var_x, image_var_y = self.srf(_xp,_yp,_i,"bintype"), self.srf(_i,_yp,_zp,"bintype"), self.srf(_xp,_i,_zp,"bintype")
              h_gaus_z, h_gaus_y, h_gaus_x = ROOT.TF2("h_gaus_z","bigaus",-16,16,-16,16), ROOT.TF2("h_gaus_y","bigaus",-16,16,-16,16), ROOT.TF2("h_gaus_x","bigaus",-16,16,-16,16)
@@ -628,6 +634,9 @@ class MLEM():
              h1_constant_x.Fill(_i,image_var_x[0])
              h1_constant_y.Fill(_i,image_var_y[0])
              h1_constant_z.Fill(_i,image_var_z[0])
+          image_hx_hy_list_matrix.append(hori_entries_x)             
+          image_hx_hy_list_matrix.append(hori_entries_y)             
+          image_hx_hy_list_matrix.append(hori_entries_z)             
           image_hx_hy_list_matrix.append(h1_entries_x)             
           image_hx_hy_list_matrix.append(h1_entries_y)             
           image_hx_hy_list_matrix.append(h1_entries_z)             
@@ -710,6 +719,14 @@ class MLEM():
           final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
           for h_measurement_array in self.h_measurement_list:
 #             print("entries data => ", np.sum(h_measurement_array))
+             measurement_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+             hist_measurement_object=ROOT.TH3D("measurement_object_h{0}".format(ih),"measurement_object_h{0}".format(ih),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+             for ix in range(self.npixels):
+                for iy in range(self.npixels):
+                   for iz in range(self.npixels):
+                      measurement_object[ix][iy][iz]=np.sum(h_measurement_array*self.matrix[ix][iy][iz])
+             array2hist(measurement_object,hist_measurement_object)
+
              for i in range(n_iteration):
                 nevproc+=1
                 if prog: prog.update(nevproc)
@@ -747,6 +764,7 @@ class MLEM():
                    self.mlemhist_list.append(hist_process_image.ProjectionX())
                    self.mlemhist_list.append(hist_process_image.ProjectionY())
              final_object+=_object# projeaction of all images
+             self.mlemhist_list.append(hist_measurement_object)
              ih+=1
           if prog: prog.finalize()
           # TODO test cut & make 3D plot
@@ -819,6 +837,8 @@ def testrun(args):
     outfilename = "/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/myMLEMoutput_"+args.output+"_iteration"+str(_n_iteration)
     outfilename = outfilename+".root"
     image_nbins=128 # number of strips of CdTe detector
+
+    # Load matrix
     _matrix=None
     if args.matrix: 
        log().info("Loading Matrix...")
@@ -827,10 +847,8 @@ def testrun(args):
        _npixels = _matrix.shape[0]
     else:
        _npixels=args.npixels
-    _sr=mkWeightFunc(args.inputFolder, args.npoints)
-    testimage = GetImageSpace(args.inputFolder,image_nbins,5,image_nbins,np.array([0,0,0]))
 
-    log().info("Progressing the paramaters for fitting ...")
+    # Load module
     PP=PrepareParameters(filename=args.inputFolder,npoints=args.npoints,stepsize=args.stepsize,npixels=_npixels,nbins=image_nbins) # get cali. image list
     SR=SystemResponse(fittype=args.matrix)# get system response by TMinuit fitting
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=_npixels,matrix=_matrix) # do iterate and get final plots
@@ -838,7 +856,7 @@ def testrun(args):
     # MLEM iteration
     MLEM_3DHist=ML.iterate(n_iteration=_n_iteration)
 
-    #check plots
+    # Store plots
     log().info("Print outputs...")
     ML.printoutput(ML.mlemtree,outfilename,"re")
     ML.printoutput(ML.image_hx_hy_list_ori,outfilename,"up")
@@ -852,6 +870,9 @@ def testrun(args):
     log().info("Output : %s"%(outfilename))
     exit(0)
 
+    #old backup
+    #_sr=mkWeightFunc(args.inputFolder, args.npoints)
+    #testimage = GetImageSpace(args.inputFolder,image_nbins,5,image_nbins,np.array([0,0,0]))
 if __name__=="__main__":
 
    parser = argparse.ArgumentParser(description='Process some integers.')

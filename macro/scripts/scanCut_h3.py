@@ -3,10 +3,10 @@ from ROOT import TFile, TTree, gROOT, TCut, gDirectory, TMinuit, Long, Double, T
 from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
 
-cutrangeMin=800
-cutrangeMax=1500
-cutstep=10
-name="/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/myMLEMoutput_vector_iteration15.root"
+cutrangeMin=10
+cutrangeMax=100
+cutstep=5
+name="/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/myMLEMoutput_1022_JPARC_h6_iteration10.root"
 f=ROOT.TFile(name,"read")
 
 name2=name.replace(".root","_scancut.root")
