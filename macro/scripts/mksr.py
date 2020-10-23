@@ -6,7 +6,7 @@ This module makes the system response
 __author__    = "I-Huan CHIU"
 __email__     = "ichiu@chem.sci.osaka-u.ac.jp"
 __created__   = "2020-07-07"
-__copyright__ = "Copyright 2019 I-Huan CHIU"
+__copyright__ = "Copyright 2020 I-Huan CHIU"
 __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 
 # modules
