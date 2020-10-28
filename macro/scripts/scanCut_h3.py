@@ -4,9 +4,12 @@ from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
 
 cutrangeMin=10
-cutrangeMax=100
+cutrangeMax=50
 cutstep=5
-name="/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/myMLEMoutput_1022_JPARC_h6_iteration10.root"
+name=input("path of file:")
+if not os.path.exists(name): 
+   print("no this root file!")
+   exit(0)
 f=ROOT.TFile(name,"read")
 
 name2=name.replace(".root","_scancut.root")

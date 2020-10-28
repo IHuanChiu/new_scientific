@@ -145,7 +145,6 @@ def fcn_constant(npar, gin, f, par, iflag):
        #chisq += pow((paramater_list[_index][0] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
        chisq += pow((paramater_list[_index][0] - constantfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
     f[0] = chisq
-#    print("constant = ", chisq)
 def fcn_x(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
@@ -315,7 +314,7 @@ class MLEM():
           self.npixels=npixels
           self.object_range=20 #mm
           # class members
-          self.mlemhist_list, self.measurement_list=[],[]
+          self.mlemhist_list, self.h_data_list=[],[]
           self.source_intensity = 363.1*1000 #Bq, Am-241
           # get paramaters
           self.hist_fit=self.PP.hist_fit
@@ -336,25 +335,27 @@ class MLEM():
           _mlist,_anglelist=[],[]
 
           fint=ROOT.TFile(inputname,"read")
-          n_angles=16
+          n_angles=16 # always 16 for J-PARC data, related to angle
           for i in range(n_angles):
-             #log().info("Get {}...".format("h"+str(i)))
+             #if i%3 != 0: continue
              _h=fint.Get("h"+str(i))
              _h.SetDirectory(0)
              _harray=hist2array(_h)
              _mlist.append(_harray)          
-             _anglelist.append(i*2*(math.pi)/n_angles)
-             self.measurement_list.append(_h)
+             _anglelist.append(i*(360/n_angles))# use Angle, not Radian
+             self.h_data_list.append(_h)
 
-             measurement_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
-             hist_measurement_object=ROOT.TH3D("measurement_object_h{0}".format(i),"measurement_object_h{0}".format(i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
-             for ix in range(self.npixels):
-                for iy in range(self.npixels):
-                   for iz in range(self.npixels):
-                      measurement_object[ix][iy][iz]=np.sum(_harray*self.matrix[ix][iy][iz])/np.sum(self.matrix[ix][iy][iz])
-             measurement_object=ndimage.rotate(measurement_object,_anglelist[i],axes=(1,2),reshape=False)
-             array2hist(measurement_object,hist_measurement_object)
-             self.measurement_list.append(hist_measurement_object)
+#             log().info("For {}...".format("h"+str(i)))
+#             _measurement_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+#             hist_measurement_object=ROOT.TH3D("measurement_object_h{0}".format(i),"measurement_object_h{0}".format(i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+#             hist_measurement_object.SetDirectory(0)
+#             for ix in range(self.npixels):
+#                for iy in range(self.npixels):
+#                   for iz in range(self.npixels):
+#                      _measurement_object[ix][iy][iz]=np.sum(_harray*self.matrix[ix][iy][iz])/np.sum(self.matrix[ix][iy][iz])
+#             measurement_object=ndimage.rotate(_measurement_object,i*(360/n_angles),axes=(2,1),reshape=False)
+#             array2hist(measurement_object,hist_measurement_object)
+#             self.h_data_list.append(hist_measurement_object)
 
           #fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
           #_mlist.append(hist2array(fint.Get("image_pos43"))) # (test) 10, 10, -10
@@ -373,6 +374,7 @@ class MLEM():
           #_mlist.append(hist2array(fint.Get("image_pos112"))) # 0 0 20
           #_mlist.append(hist2array(fint.Get("image_pos114"))) # 20 0 20
           #log().info("Position of Test Image: (x,y,z)=({0},{1},{2})".format(10, 10, -10))
+
           return _mlist,_anglelist
 
       def getconstant(self,_x,_y,_z,par):         
@@ -713,6 +715,18 @@ class MLEM():
           ix,iy,iz=XCor[x0, x1, x2],YrotCor[y0, y1, y2],ZrotCor[z0, z1, z2]
           return [y0, y1, y2] # TODO x0?y0?z0?
 
+      def updateImage(self,_object,_angle):
+          # === rotate matrix to make the images at the different angles ===
+          _image_update=np.zeros((self.nbins,self.nbins),dtype=float)
+          #_matrix_rot=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+          _object_rot=ndimage.rotate(_object,_angle,axes=(0,2),reshape=False)
+          for imx in range(self.nbins):
+             for imy in range(self.nbins):
+                # TODO or use index?
+                #_matrix_rot[_index[0],_index[1],_index[2]]=self.matrix[:,:,:,imx,imy][_index[0],_index[1],_index[2]]
+                _image_update[imx][imy]=np.sum(self.matrix[:,:,:,imx,imy]*_object_rot)
+          return _image_update
+
       def findratio(self,measurement_image_array,reproduction_image_array):
           # === input/output type: numpy.array ===
           _where_0 = np.where(reproduction_image_array == 0)
@@ -728,26 +742,14 @@ class MLEM():
              for iy in range(self.npixels):
                 for iz in range(self.npixels):
                    object_ratio[ix][iy][iz]=np.sum(image_ratio*self.matrix[ix][iy][iz])/np.sum(self.matrix[ix][iy][iz])
-          object_ratio=ndimage.rotate(object_ratio,_angle,axes=(1,2),reshape=False)
-          object_update=object_pre*object_ratio
+          object_pre_rot=ndimage.rotate(object_pre,_angle,axes=(0,2),reshape=False)
+          _object_update=object_pre_rot*object_ratio
+          object_update=ndimage.rotate(_object_update,(-1)*_angle,axes=(0,2),reshape=False)
           return object_ratio, object_update
-
-      def updateImage(self,_object,_angle):
-          # === rotate matrix to make the images at the different angles ===
-          _image_update=np.zeros((self.nbins,self.nbins),dtype=float)
-          _matrix_rot=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
-          for imx in range(self.nbins):
-             for imy in range(self.nbins):
-                _matrix_rot=ndimage.rotate(self.matrix[:,:,:,imx,imy],_angle,axes=(1,2),reshape=False)
-                # TODO or use index?
-                #_matrix_rot[_index[0],_index[1],_index[2]]=self.matrix[:,:,:,imx,imy][_index[0],_index[1],_index[2]]
-                #_matrix_rot.reshape(self.npixels,self.npixels,self.npixels) # no need?
-                _image_update[imx][imy]=np.sum(_object*_matrix_rot)
-          return _image_update
 
       def iterate(self,n_iteration):                   
           prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iterate",init_t=time.time())
-          nevproc, ih, n_savehist=0, 0, 3
+          nevproc, n_savehist=0, 3
           hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
           hist_final_object.GetXaxis().SetTitle("X")
           hist_final_object.GetYaxis().SetTitle("Y")
@@ -760,17 +762,17 @@ class MLEM():
                 if prog: prog.update(nevproc)
                 h_measurement_array=self.h_measurement_list[_ih]
                 h_angle=self.h_angle_list[_ih]
-                h_index=self.getindex(h_angle)
+                #h_index=self.getindex(h_angle)
                 if i == 0 and _ih == 0: _object=self.object_init
                 _image=self.updateImage(_object,h_angle)
                 _image_ratio=self.findratio(h_measurement_array, _image)
                 _object_ratio,_object=self.updateObject(_object, _image_ratio, h_angle)
   
                 if i < n_savehist:# only check n_savehist plots
-                   hist_object_ratio=ROOT.TH3D("object_ratio_h{0}_iteration{1}".format(ih,i),"object_ratio_h{0}_iteration{1}".format(ih,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
-                   hist_image_ratio=ROOT.TH2D("image_ratio_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
-                   hist_process_object=ROOT.TH3D("MLEM_3Dimage_h{0}_iteration{1}".format(ih,i),"MLEM_3Dimage_h{0}_iteration{1}".format(ih,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
-                   hist_process_image=ROOT.TH2D("image_h{0}_iteration{1}".format(ih,i),"image_ratio_h{0}_iteration{1}".format(ih,i),self.nbins,-16,16,self.nbins,-16,16)
+                   hist_object_ratio=ROOT.TH3D("Ratio_object_h{0}_iteration{1}".format(_ih,i),"object_ratio_h{0}_iteration{1}".format(_ih,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+                   hist_image_ratio=ROOT.TH2D("Ratio_image_h{0}_iteration{1}".format(_ih,i),"image_ratio_h{0}_iteration{1}".format(_ih,i),self.nbins,-16,16,self.nbins,-16,16)
+                   hist_process_object=ROOT.TH3D("MLEM_3Dimage_h{0}_iteration{1}".format(_ih,i),"MLEM_3Dimage_h{0}_iteration{1}".format(_ih,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+                   hist_process_image=ROOT.TH2D("MLEM_2Dimage_h{0}_iteration{1}".format(_ih,i),"image_ratio_h{0}_iteration{1}".format(_ih,i),self.nbins,-16,16,self.nbins,-16,16)
                    array2hist(_object,hist_process_object)
                    array2hist(_object_ratio,hist_object_ratio)
                    array2hist(_image_ratio,hist_image_ratio)
@@ -784,7 +786,6 @@ class MLEM():
                    self.mlemhist_list.append(hist_process_image)
                    self.mlemhist_list.append(hist_process_image.ProjectionX())
                    self.mlemhist_list.append(hist_process_image.ProjectionY())
-                ih+=1
 
           final_object=_object
           if prog: prog.finalize()
@@ -884,7 +885,7 @@ def testrun(args):
     ML.printoutput(ML.image_hx_hy_list_sr,outfilename,"up")
     ML.printoutput(ML.image_hx_hy_list_matrix,outfilename,"up")
     ML.printoutput(ML.hist_delta_mu,outfilename,"up")
-    ML.printoutput(ML.measurement_list,outfilename,"up")
+    ML.printoutput(ML.h_data_list,outfilename,"up")
     ML.printoutput(ML.mlemhist_list,outfilename,"up")
     ML.printoutput(MLEM_3DHist,outfilename,"up")
 
@@ -904,7 +905,7 @@ if __name__=="__main__":
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of points in each axis")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="step size of points")
    parser.add_argument("-p","--npixels",dest="npixels",type=int, default=40, help="Number of pixels for object space")
-   parser.add_argument("-l","--loopiteration",dest="loopiteration",type=int, default=2, help="Number of iterations")
+   parser.add_argument("-l","--loopiteration",dest="loopiteration",type=int, default=10, help="Number of iterations")
    args = parser.parse_args()
 
    testrun(args)
