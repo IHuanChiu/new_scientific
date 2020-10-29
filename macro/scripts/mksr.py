@@ -74,6 +74,8 @@ class PrepareParameters():
           ycenter = [15.5,7.5,0,-7.5,-15]
           fit_range=10
           index, constant, xup, xdown, yup, ydown, rho=0,0,0,0,0,0,0
+          print(" _____________________________________________________________________________________________________ ")
+          print(" __________________________________________ START ____________________________________________________ ")
           for iz in range(self.npoints):
              for iy in range(self.npoints):
                 for ix in range(self.npoints):               
@@ -111,6 +113,8 @@ class PrepareParameters():
 
                    index+=1
                    del gb,h2
+          print(" ___________________________________________ END _____________________________________________________ ")
+          print(" _____________________________________________________________________________________________________ ")
           return hist_fitlist
 
 # ======================= fit with TMinuit for the varaibles of function ===================
@@ -314,7 +318,7 @@ class MLEM():
           self.npixels=npixels
           self.object_range=20 #mm
           # class members
-          self.mlemhist_list, self.h_data_list=[],[]
+          self.mlemhist_list,self.mlemratio_list,self.h_data_list=[],[],[]
           self.source_intensity = 363.1*1000 #Bq, Am-241
           # get paramaters
           self.hist_fit=self.PP.hist_fit
@@ -337,12 +341,14 @@ class MLEM():
           fint=ROOT.TFile(inputname,"read")
           n_angles=16 # always 16 for J-PARC data, related to angle
           for i in range(n_angles):
-             #if i%3 != 0: continue
+             #if i%2 != 0: continue
+             if i != 0: continue
              _h=fint.Get("h"+str(i))
              _h.SetDirectory(0)
              _harray=hist2array(_h)
              _mlist.append(_harray)          
-             _anglelist.append(i*(360/n_angles))# use Angle, not Radian
+             #_anglelist.append(i*(360/n_angles))# use Angle, not Radian
+             _anglelist.append((-1)*i*(360/n_angles))# use Angle, not Radian
              self.h_data_list.append(_h)
 
 #             log().info("For {}...".format("h"+str(i)))
@@ -686,7 +692,7 @@ class MLEM():
           return _image_init
 
       def mkInitObject(self):
-          log().info("Initializing guess object...")
+          log().info("Processing guess object...")
           _object_init=np.ones((self.npixels,self.npixels,self.npixels),dtype=float)
           _object_init=_object_init*self.source_intensity
 #          _image_init=ROOT.TH2D("image_init","image_init",self.nbins,-16,16,self.nbins,-16,16)
@@ -718,12 +724,9 @@ class MLEM():
       def updateImage(self,_object,_angle):
           # === rotate matrix to make the images at the different angles ===
           _image_update=np.zeros((self.nbins,self.nbins),dtype=float)
-          #_matrix_rot=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
           _object_rot=ndimage.rotate(_object,_angle,axes=(0,2),reshape=False)
           for imx in range(self.nbins):
              for imy in range(self.nbins):
-                # TODO or use index?
-                #_matrix_rot[_index[0],_index[1],_index[2]]=self.matrix[:,:,:,imx,imy][_index[0],_index[1],_index[2]]
                 _image_update[imx][imy]=np.sum(self.matrix[:,:,:,imx,imy]*_object_rot)
           return _image_update
 
@@ -768,7 +771,7 @@ class MLEM():
                 _image_ratio=self.findratio(h_measurement_array, _image)
                 _object_ratio,_object=self.updateObject(_object, _image_ratio, h_angle)
   
-                if i < n_savehist:# only check n_savehist plots
+                if i < n_savehist or i >= (n_iteration-2) :# only check n_savehist plots and last two iterations
                    hist_object_ratio=ROOT.TH3D("Ratio_object_h{0}_iteration{1}".format(_ih,i),"object_ratio_h{0}_iteration{1}".format(_ih,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
                    hist_image_ratio=ROOT.TH2D("Ratio_image_h{0}_iteration{1}".format(_ih,i),"image_ratio_h{0}_iteration{1}".format(_ih,i),self.nbins,-16,16,self.nbins,-16,16)
                    hist_process_object=ROOT.TH3D("MLEM_3Dimage_h{0}_iteration{1}".format(_ih,i),"MLEM_3Dimage_h{0}_iteration{1}".format(_ih,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
@@ -777,8 +780,8 @@ class MLEM():
                    array2hist(_object_ratio,hist_object_ratio)
                    array2hist(_image_ratio,hist_image_ratio)
                    array2hist(_image,hist_process_image)
-                   self.mlemhist_list.append(hist_image_ratio)
-                   self.mlemhist_list.append(hist_object_ratio)
+                   self.mlemratio_list.append(hist_image_ratio)
+                   self.mlemratio_list.append(hist_object_ratio)
                    self.mlemhist_list.append(hist_process_object)
                    self.mlemhist_list.append(hist_process_object.ProjectionX())
                    self.mlemhist_list.append(hist_process_object.ProjectionY())
@@ -796,11 +799,15 @@ class MLEM():
           array2hist(final_object,hist_final_object)
           return hist_final_object
 
-      def printoutput(self,RootType_list, _outname, savetype):
+      def printoutput(self,RootType_list, _outname, savetype, subname=None):
           if savetype == "re" or savetype == "RE" or savetype == "Re": _savetype = "recreate"
           if savetype == "up" or savetype == "UP" or savetype == "Up": _savetype = "update"
           fout=ROOT.TFile(_outname, _savetype)
           fout.cd()    
+          if subname != None:
+             if fout.FindObjectAny(subname): subdir = fout.GetDirectory(subname)
+             else: subdir = fout.mkdir(subname)
+             subdir.cd()
           if isinstance(RootType_list, list):
              for _iR in RootType_list:
                 _iR.Write()
@@ -881,11 +888,12 @@ def testrun(args):
     # Store plots
     log().info("Print outputs...")
     ML.printoutput(ML.mlemtree,outfilename,"re")
-    ML.printoutput(ML.image_hx_hy_list_ori,outfilename,"up")
-    ML.printoutput(ML.image_hx_hy_list_sr,outfilename,"up")
-    ML.printoutput(ML.image_hx_hy_list_matrix,outfilename,"up")
-    ML.printoutput(ML.hist_delta_mu,outfilename,"up")
-    ML.printoutput(ML.h_data_list,outfilename,"up")
+    ML.printoutput(ML.image_hx_hy_list_ori,outfilename,"up","fitting")
+    ML.printoutput(ML.image_hx_hy_list_sr,outfilename,"up","fitting")
+    ML.printoutput(ML.image_hx_hy_list_matrix,outfilename,"up","fitting")
+    ML.printoutput(ML.hist_delta_mu,outfilename,"up","fitting")
+    ML.printoutput(ML.h_data_list,outfilename,"up","measurement")
+    ML.printoutput(ML.mlemratio_list,outfilename,"up")
     ML.printoutput(ML.mlemhist_list,outfilename,"up")
     ML.printoutput(MLEM_3DHist,outfilename,"up")
 
@@ -905,7 +913,7 @@ if __name__=="__main__":
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of points in each axis")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="step size of points")
    parser.add_argument("-p","--npixels",dest="npixels",type=int, default=40, help="Number of pixels for object space")
-   parser.add_argument("-l","--loopiteration",dest="loopiteration",type=int, default=10, help="Number of iterations")
+   parser.add_argument("-l","--loopiteration",dest="loopiteration",type=int, default=3, help="Number of iterations")
    args = parser.parse_args()
 
    testrun(args)
