@@ -340,7 +340,7 @@ class MLEM():
           fint=ROOT.TFile(inputname,"read")
           n_angles=16 # always 16 for J-PARC data, related to angle
           for i in range(n_angles):
-             if i%10 != 0: continue
+             if i%5 != 0: continue
              #if i == 12 : continue
              _h=fint.Get("h"+str(i))
              _h.SetDirectory(0)
@@ -733,7 +733,7 @@ class MLEM():
           final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
 
           for i in range(n_iteration):
-             if i == 0: _object, _image = self.object_init, hist2array(self.image_init)
+             if i == 0: _object = self.object_init# unit guess object
              for _ih in range(len(self.h_measurement_list)):
                 nevproc+=1
                 if prog: prog.update(nevproc)
@@ -742,9 +742,9 @@ class MLEM():
                 h_name=self.h_name_list[_ih]
                 #h_index=self.getindex(h_angle)
                 # === main parts ===
-                _image_ratio=self.findratio(h_measurement_array, _image)
-                _object_ratio,_object=self.updateObject(_object, _image_ratio, h_angle)
-                _image=self.updateImage(_object,h_angle)
+                _image=self.updateImage(_object,h_angle)# make 2D image corresponding to angle from object
+                _image_ratio=self.findratio(h_measurement_array, _image)# find ratio with data
+                _object_ratio,_object=self.updateObject(_object, _image_ratio, h_angle)# update object
   
                 if i < n_savehist or i >= (n_iteration-3) or n_iteration <= 10:# only check n_savehist plots and last two iterations
                    _object_forh = np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
@@ -762,11 +762,11 @@ class MLEM():
                    array2hist(_image,hist_process_image)
                    self.mlemratio_list.append(hist_image_ratio)
                    self.mlemratio_list.append(hist_object_ratio)
-                   self.mlemhist_list.append(hist_process_object)
                    self.mlemhist_proje_list.append(hist_process_object.ProjectionX())
                    self.mlemhist_proje_list.append(hist_process_object.ProjectionY())
                    self.mlemhist_proje_list.append(hist_process_object.ProjectionZ())
                    self.mlemhist_list.append(hist_process_image)
+                   self.mlemhist_list.append(hist_process_object)
                    self.mlemhist_proje_list.append(hist_process_image.ProjectionX())
                    self.mlemhist_proje_list.append(hist_process_image.ProjectionY())
 
