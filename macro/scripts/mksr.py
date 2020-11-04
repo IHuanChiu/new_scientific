@@ -329,7 +329,7 @@ class MLEM():
           # === plots and tree ===
           self.image_hx_hy_list_ori, self.image_hx_hy_list_sr, self.image_hx_hy_list_matrix, self.hist_delta_mu=self.mkimage()
           self.mlemtree=self.mktree()
-          self.object_init,self.image_init=self.mkInitObject()
+          self.object_init=self.mkInitObject()
           self.h_measurement_list,self.h_angle_list,self.h_name_list=self.getmeasurement(inputname=imageinput)
 
       def getmeasurement(self,inputname):
@@ -350,39 +350,7 @@ class MLEM():
              _namelist.append(_h.GetName())
              #_h.Rebin2D(4,4)
              self.h_data_list.append(_h)
-
-#             log().info("For {}...".format("h"+str(i)))
-#             _measurement_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
-#             hist_measurement_object=ROOT.TH3D("measurement_object_h{0}".format(i),"measurement_object_h{0}".format(i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
-#             hist_measurement_object.SetDirectory(0)
-#             for ix in range(self.npixels):
-#                for iy in range(self.npixels):
-#                   for iz in range(self.npixels):
-#                      _measurement_object[ix][iy][iz]=np.sum(_harray*self.matrix[ix][iy][iz])/np.sum(self.matrix[ix][iy][iz])
-#             measurement_object=ndimage.rotate(_measurement_object,i*(360/n_angles),axes=(2,1),reshape=False)
-#             array2hist(measurement_object,hist_measurement_object)
-#             self.h_data_list.append(hist_measurement_object)
-
-          #fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
-          #_mlist.append(hist2array(fint.Get("image_pos43"))) # (test) 10, 10, -10
-          #_mlist.append(hist2array(fint.Get("image_pos62"))) # (center) 0, 0, 0
-          #_mlist.append(hist2array(fint.Get("image_pos35"))) # -20 0 -10
-          #_mlist.append(hist2array(fint.Get("image_pos60"))) # -20 0 0
-          #_mlist.append(hist2array(fint.Get("image_pos85"))) # -20 0 10
-          #_mlist.append(hist2array(fint.Get("image_pos10"))) # -20 0 -20
-          #_mlist.append(hist2array(fint.Get("image_pos11"))) # -10 0 -20
-          #_mlist.append(hist2array(fint.Get("image_pos12"))) # 0 0 -20
-          #_mlist.append(hist2array(fint.Get("image_pos13"))) # 10 0 -20
-          #_mlist.append(hist2array(fint.Get("image_pos14"))) # 20 0 -20
-          #_mlist.append(hist2array(fint.Get("image_pos15"))) # -20 10 -20
-          #_mlist.append(hist2array(fint.Get("image_pos19"))) # 20 10 -20
-          #_mlist.append(hist2array(fint.Get("image_pos24"))) # 20 20 -20
-          #_mlist.append(hist2array(fint.Get("image_pos112"))) # 0 0 20
-          #_mlist.append(hist2array(fint.Get("image_pos114"))) # 20 0 20
-          #log().info("Position of Test Image: (x,y,z)=({0},{1},{2})".format(10, 10, -10))
-
           return _mlist,_anglelist,_namelist
-
 
       def getconstant(self,_x,_y,_z,par):         
           _c=par[0].value*math.exp((-1)*(par[1].value/((191+_z)**2+_x**2+_y**2))+par[2].value)+par[3].value
@@ -668,15 +636,15 @@ class MLEM():
           log().info("Processing guess object...")
           _object_init=np.ones((self.npixels,self.npixels,self.npixels),dtype=float)
           _object_init=_object_init*self.source_intensity
-          _image_init=ROOT.TH2D("image_init","image_init",self.nbins,-16,16,self.nbins,-16,16)
-          _image_array=np.zeros((self.nbins,self.nbins),dtype=float)
-          for imx in range(self.nbins):
-             for imy in range(self.nbins):
-                _image_array[imx][imy]=np.sum(_object_init*self.matrix[:,:,:,imx,imy])
-          _where_0 = np.where(_image_array < 1)
-          _image_array[_where_0] = 1 # skip divide 0 problem
-          array2hist(_image_array,_image_init)
-          return _object_init,_image_init          
+          #_image_init=ROOT.TH2D("image_init","image_init",self.nbins,-16,16,self.nbins,-16,16)
+          #_image_array=np.zeros((self.nbins,self.nbins),dtype=float)
+          #for imx in range(self.nbins):
+          #   for imy in range(self.nbins):
+          #      _image_array[imx][imy]=np.sum(_object_init*self.matrix[:,:,:,imx,imy])
+          #_where_0 = np.where(_image_array < 1)
+          #_image_array[_where_0] = 1 # skip divide 0 problem
+          #array2hist(_image_array,_image_init)
+          return _object_init          
 
       def getindex(self,_angle): # need to be fixed before appliaction
           # === coordinate rotation ===
@@ -707,10 +675,9 @@ class MLEM():
 
       def findratio(self,measurement_image_array,reproduction_image_array):
           # === input/output type: numpy.array ===
-          #image_ratio=np.zeros((self.nbins,self.nbins),dtype=float)
           _where_0 = np.where(reproduction_image_array == 0)# reproduction image is 0
-          reproduction_image_array[_where_0]=sys.float_info.min # very big ratio if measurement data is not 0
-          image_ratio=measurement_image_array/reproduction_image_array# ratio is zero when reproduction image is zero
+          reproduction_image_array[_where_0]=sys.float_info.min # set very big ratio for those bins if measurement data is also not 0
+          image_ratio=measurement_image_array/reproduction_image_array# get ratio
           return image_ratio
 
       def updateObject(self,object_pre,image_ratio,_angle):
@@ -895,7 +862,7 @@ def main_run(args):
     else:
        _npixels=args.npixels
     if args.matrix:
-       check_list=checkmatrix(_matrix,20,_npixels)#check matrix with guess object
+       check_list=checkmatrix(_matrix,5,_npixels)#check matrix with guess object
     else: check_list=[]
 
     # Load module
@@ -919,7 +886,7 @@ def main_run(args):
     ML.printoutput(ML.mlemhist_proje_list,outfilename,"up","MLEMprojection")
 
     ML.printoutput(ML.mlemratio_list,outfilename,"up")
-    ML.printoutput(ML.image_init,outfilename,"up")
+#    ML.printoutput(ML.image_init,outfilename,"up")
     ML.printoutput(ML.mlemhist_list,outfilename,"up")
     ML.printoutput(MLEM_3DHist,outfilename,"up")
 
