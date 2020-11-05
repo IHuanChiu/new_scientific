@@ -4,7 +4,7 @@ from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
 
 cutrangeMin=5
-cutrangeMax=70
+cutrangeMax=200
 cutstep=5
 name=input("path of file:")
 if not os.path.exists(name): 
