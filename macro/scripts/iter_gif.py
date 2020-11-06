@@ -8,10 +8,17 @@ from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
 
 name=input("path of file:")
+_a=name[-8:-5]
+if "n" in _a: _a=name[-7:-5]
+if "n" in _a: _a=name[-6:-5]
+
 a=input("number of iterations:")
 c=input("cut value (0 for no cut):")
 if not os.path.exists(name):
    print("no this root file!")
+   exit(0)
+if int(a) > int(_a): 
+   print("wrong number of iterations!")
    exit(0)
 gSystem.Unlink("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter.gif")
 c1=createRatioCanvas("rotation", 500, 500)
