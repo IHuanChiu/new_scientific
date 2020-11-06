@@ -14,8 +14,8 @@ f=ROOT.TFile(name,"read")
 
 name2=name.replace(".root","_scancut.root")
 fout=ROOT.TFile(name2,"recreate")
-h3=f.Get("MLEM_3Dimage")
-#h3=f.Get("MLEM_3Dimage_h10_iteration2")
+#h3=f.Get("MLEM_3Dimage")
+h3=f.Get("MLEM_3Dimage_h12_iteration0")
 h3_array=hist2array(h3)
 nbins=h3.GetNbinsX()
 
