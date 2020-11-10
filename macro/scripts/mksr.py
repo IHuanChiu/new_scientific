@@ -346,7 +346,7 @@ class MLEM():
           #   _image[127-c]=0
           #   _image[:,c]=0
           #   _image[:,127-c]=0
-          return _image
+          return image
           
       def getmeasurement(self,inputname):
           """ === return array type ==="""
@@ -690,15 +690,28 @@ class MLEM():
           for imx in range(self.nbins):
              for imy in range(self.nbins):
                 _image_update[imx][imy]=np.sum(self.matrix[:,:,:,imx,imy]*_object)
+          # TODO
+          # cut for region
+          for c in range(24):
+             _image_update[c]=0# left
+             _image_update[127-c]=0 # right
+             _image_update[:,c]=0# bottom
+             _image_update[:,127-c]=0 # upper
+          # cut for value
+          n_top=5
+          _image_sort=np.reshape(_image_update,_image_update.shape[0]*_image_update.shape[1])
+          _image_index=np.argpartition(_image_sort, -n_top)[-n_top:]
+          maxvalue=np.sum(_image_sort[_image_index])/n_top # get max.
+          #maxvalue=np.max(_image_update)# get max.
+          where_bins=np.where(_image_update < maxvalue*0.1)
+          _image_update[where_bins]=0
           return _image_update
 
       def findratio(self,measurement_image_array,reproduction_image_array):
           # === input/output type: numpy.array ===
-          _where_0 = np.where(reproduction_image_array == 0)# reproduction image is 0
-          reproduction_image_array[_where_0]=sys.float_info.min # skip divide 0 problem
-          image_ratio=measurement_image_array/reproduction_image_array# get ratio
-          _where_max = np.where(reproduction_image_array < 0.01)# large ratio 
-          image_ratio[_where_max] = 0 # set 0 for large ratio
+          image_ratio=np.zeros((self.nbins,self.nbins),dtype=float)
+          _where_thre = np.where(reproduction_image_array > 0.0001)# skip divide 0 problem (sys.float_info.min or 0.01 for threshold)
+          image_ratio[_where_thre]=measurement_image_array[_where_thre]/reproduction_image_array[_where_thre] # get ratio
           return image_ratio
 
       def updateObject(self,object_pre,image_ratio):
@@ -721,7 +734,6 @@ class MLEM():
           #for i in range(self.npixels-_mov):
           #   object_movupdate[i]=object_update_rot[i+_mov]
           #return object_movupdate
-          # TODO
           return ndimage.rotate(_object,_angle,axes=(0,2),reshape=False)
           
       def iterate(self,n_iteration):                   
