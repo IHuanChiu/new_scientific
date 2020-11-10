@@ -3,8 +3,8 @@ from ROOT import TFile, TTree, gROOT, TCut, gDirectory, TMinuit, Long, Double, T
 from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
 
-cutrangeMin=5
-cutrangeMax=200
+cutrangeMin=0
+cutrangeMax=100
 cutstep=5
 name=input("path of file:")
 if not os.path.exists(name): 

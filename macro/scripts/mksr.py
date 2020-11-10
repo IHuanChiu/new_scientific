@@ -341,11 +341,11 @@ class MLEM():
           for j in range(self.nbins-ymov):
              image[:,j]=_image[:,j+ymov]
           #TODO cut data
-          for c in range(10):
-             _image[c]=0
-             _image[127-c]=0
-             _image[:,c]=0
-             _image[:,127-c]=0
+          #for c in range(10):
+          #   _image[c]=0
+          #   _image[127-c]=0
+          #   _image[:,c]=0
+          #   _image[:,127-c]=0
           return _image
           
       def getmeasurement(self,inputname):
@@ -357,7 +357,7 @@ class MLEM():
           n_angles=16 # always 16 for J-PARC data, related to angle
           for i in range(n_angles):
              #if i%10 != 0: continue
-             #if i != 12 : continue
+             #if i == 0 : continue
              _h=fint.Get("h"+str(i))
              _h.SetDirectory(0)
              #_harray=hist2array(_h)
@@ -695,8 +695,10 @@ class MLEM():
       def findratio(self,measurement_image_array,reproduction_image_array):
           # === input/output type: numpy.array ===
           _where_0 = np.where(reproduction_image_array == 0)# reproduction image is 0
-          reproduction_image_array[_where_0]=sys.float_info.min # set very big ratio for those bins if measurement data is also not 0
+          reproduction_image_array[_where_0]=sys.float_info.min # skip divide 0 problem
           image_ratio=measurement_image_array/reproduction_image_array# get ratio
+          _where_max = np.where(reproduction_image_array < 0.01)# large ratio 
+          image_ratio[_where_max] = 0 # set 0 for large ratio
           return image_ratio
 
       def updateObject(self,object_pre,image_ratio):
@@ -724,10 +726,11 @@ class MLEM():
           
       def iterate(self,n_iteration):                   
           prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iteration",init_t=time.time())
-          nevproc, n_savehist=0, 3
+          nevproc, n_savehist=0, 20
           hist_final_object=ROOT.TH3D("MLEM_3Dimage","MLEM_3Dimage",self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
           hist_final_object.GetXaxis().SetTitle("X"); hist_final_object.GetYaxis().SetTitle("Y"); hist_final_object.GetZaxis().SetTitle("Z");
 
+          h_angle=(-1)*360/len(self.h_measurement_list)
           for i in range(n_iteration):
              if i == 0: _object = self.object_init# unit guess object
              for _ih in range(len(self.h_measurement_list)):
@@ -735,7 +738,6 @@ class MLEM():
                 if prog: prog.update(nevproc)
                 h_measurement_array=self.h_measurement_list[_ih]
                 #h_angle=self.h_angle_list[_ih]
-                h_angle=(-1)*360/len(self.h_measurement_list)#TODO temp (check getmeasurement)
                 h_name=self.h_name_list[_ih]
                 #h_index=self.getindex(h_angle)
                 # === main parts ===
@@ -743,7 +745,7 @@ class MLEM():
                 _image_ratio=self.findratio(h_measurement_array, _image)# find ratio with data
                 _object_ratio,_object=self.updateObject(_object, _image_ratio)# update object
   
-                if i < n_savehist or i >= (n_iteration-3) or n_iteration <= 10:# only check n_savehist plots and last two iterations
+                if i < n_savehist or i >= (n_iteration-3) or n_iteration <= 15:# only check n_savehist plots and last two iterations
                    hist_object_ratio=ROOT.TH3D("Ratio_object_{0}_iteration{1}".format(h_name,i),"object_ratio_{0}_iteration{1}".format(h_name,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
                    hist_image_ratio=ROOT.TH2D("Ratio_image_{0}_iteration{1}".format(h_name,i),"image_ratio_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
                    hist_process_object=ROOT.TH3D("MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
@@ -764,12 +766,12 @@ class MLEM():
                    self.mlemhist_proje_list.append(hist_process_object.ProjectionZ())
                 _object=self.rotObject(_object,h_angle)# rotate object for next iteration
 
-          _object=self.rotObject(_object,360/len(self.h_measurement_list))# return for the last object
+          _object=self.rotObject(_object,(-1)*h_angle)# return for the last object
           if prog: prog.finalize()
           log().info("Processing array to histogram...")
           final_object=_object
           #final_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
-          #w_0=np.where(_object >=  1) # TODO test cut for 3D plot
+          #w_0=np.where(_object >=  1) # test cut for 3D plot
           #final_object[w_0]=_object[w_0]
           array2hist(final_object,hist_final_object)
           return hist_final_object

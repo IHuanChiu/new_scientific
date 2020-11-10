@@ -18,10 +18,11 @@ if not os.path.exists(name):
    print("no this root file!")
    exit(0)
 if int(a) > int(_a): 
-   print("wrong number of iterations!")
+   print("wrong number for iteration!")
    exit(0)
 gSystem.Unlink("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter.gif")
-c1=createRatioCanvas("rotation", 500, 500)
+gSystem.Unlink("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter_2d.gif")
+c1=createRatioCanvas("rotation", 600, 500)
 f=ROOT.TFile(name,"read")
 
 #c1.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter.gif+");
@@ -33,7 +34,7 @@ for iPhi in range(2):
    c1.SetTheta(10)
    c1.SetPhi(10+iPhi*90)
    for it in range(n_iterations):
-      for ip in range(n_angles):
+      for ip in range(0,n_angles):
           nevproc+=1
           if prog: prog.update(nevproc)
           hname="MLEM_3Dimage_h{0}_iteration{1}".format(ip,it)
@@ -50,4 +51,25 @@ for iPhi in range(2):
              _h3.Draw("BOX2Z")
           c1.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter.gif+{}".format(ip+it*n_angles))
 if prog: prog.finalize()
+
+prog = ProgressBar(ntotal=n_iterations*n_angles,text="Compare images",init_t=time.time())
+nevproc=0
+c2=createRatioCanvas("2dcomparison", 1200, 500)
+c2.Divide(2,1)
+for it in range(n_iterations):
+   for ip in range(0,n_angles):
+       nevproc+=1
+       if prog: prog.update(nevproc)
+       hmname="h{0}".format(ip)
+       h2name="MLEM_2Dimage_h{0}_iteration{1}".format(ip,it)
+       _hm=f.Get("measurement").Get(hmname)
+       _h2=f.Get(h2name)
+       c2.cd(1)
+       _hm.Draw("colz")
+       c2.cd(2)
+       _h2.Draw("colz")
+       c2.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter_2d.gif+{}".format(ip+it*n_angles))
+if prog: prog.finalize()
+
 log().info("Path of gif: {}".format("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter.gif"))
+log().info("Path of gif: {}".format("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter_2d.gif"))
