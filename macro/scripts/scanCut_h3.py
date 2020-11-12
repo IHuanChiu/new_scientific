@@ -4,7 +4,7 @@ from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
 
 cutrangeMin=0
-cutrangeMax=100
+cutrangeMax=500
 cutstep=5
 name=input("path of file:")
 if not os.path.exists(name): 
@@ -14,8 +14,8 @@ f=ROOT.TFile(name,"read")
 
 name2=name.replace(".root","_scancut.root")
 fout=ROOT.TFile(name2,"recreate")
-#h3=f.Get("MLEM_3Dimage")
-h3=f.Get("MLEM_3Dimage_h12_iteration0")
+h3=f.Get("MLEM_3Dimage")
+#h3=f.Get("MLEM_3Dimage_h12_iteration0")
 h3_array=hist2array(h3)
 nbins=h3.GetNbinsX()
 

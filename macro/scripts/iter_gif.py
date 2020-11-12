@@ -8,42 +8,51 @@ from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
 
 name=input("path of file:")
+a=input("number of iterations:")
+c=input("cut value (0 for no cut): %")
 _a=name[-8:-5]
 if "n" in _a: _a=name[-7:-5]
 if "n" in _a: _a=name[-6:-5]
-
-a=input("number of iterations:")
-c=input("cut value (0 for no cut):")
 if not os.path.exists(name):
    print("no this root file!")
+   exit(0)
+if "_scancut.root" in name:
+   print("wrong root file!")
    exit(0)
 if int(a) > int(_a): 
    print("wrong number for iteration!")
    exit(0)
+if int(c) >= int(100): 
+   print("wrong cut!")
+   exit(0)
+
 gSystem.Unlink("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter.gif")
 gSystem.Unlink("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter_2d.gif")
 c1=createRatioCanvas("rotation", 600, 500)
 f=ROOT.TFile(name,"read")
 
-#c1.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter.gif+");
 n_iterations,n_angles=int(a),16
+n_phi,n_top,phi_range=9,8,30
 
-prog = ProgressBar(ntotal=n_iterations*n_angles*2,text="Rotating images",init_t=time.time())
+prog = ProgressBar(ntotal=n_iterations*n_angles*n_phi,text="3D images",init_t=time.time())
 nevproc=0
-for iPhi in range(2):
+for iPhi in range(n_phi):
    c1.SetTheta(10)
-   c1.SetPhi(10+iPhi*90)
+   c1.SetPhi(10+iPhi*phi_range)
    for it in range(n_iterations):
       for ip in range(0,n_angles):
           nevproc+=1
           if prog: prog.update(nevproc)
           hname="MLEM_3Dimage_h{0}_iteration{1}".format(ip,it)
+          if not f.GetListOfKeys().Contains(hname): continue
           _h3=f.Get(hname)
           if c != 0:
              ha=hist2array(_h3)       
-             h3=ROOT.TH3D(hname+"_Phi{}".format(10+iPhi*90),hname+"_Phi{}".format(10+iPhi*90),40,-20,20,40,-20,20,40,-20,20)
-             if it == 0 and ip == 0: _where0=np.where(ha<(float(c)/10.))
-             else:_where0=np.where(ha<float(c))
+             h3=ROOT.TH3D(hname+"_Phi{}".format(10+iPhi*phi_range),hname+"_Phi{}".format(10+iPhi*phi_range),40,-20,20,40,-20,20,40,-20,20)
+             _ha_sort=np.reshape(ha,ha.shape[0]*ha.shape[1]*ha.shape[2]) # reshape
+             _ha_index=np.argpartition(_ha_sort, -n_top)[-n_top:]# get n_top of the leading values
+             maxvalue=np.sum(_ha_sort[_ha_index])/n_top # get max. content
+             _where0=np.where(ha < maxvalue*float(c)/100)# drop c% of max. content
              ha[_where0]=0
              array2hist(ha,h3)
              h3.Draw("BOX2Z")
@@ -52,7 +61,7 @@ for iPhi in range(2):
           c1.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter.gif+{}".format(ip+it*n_angles))
 if prog: prog.finalize()
 
-prog = ProgressBar(ntotal=n_iterations*n_angles,text="Compare images",init_t=time.time())
+prog = ProgressBar(ntotal=n_iterations*n_angles,text="2D images",init_t=time.time())
 nevproc=0
 c2=createRatioCanvas("2dcomparison", 1200, 500)
 c2.Divide(2,1)
@@ -62,6 +71,7 @@ for it in range(n_iterations):
        if prog: prog.update(nevproc)
        hmname="h{0}".format(ip)
        h2name="MLEM_2Dimage_h{0}_iteration{1}".format(ip,it)
+       if not f.GetListOfKeys().Contains(h2name): continue
        _hm=f.Get("measurement").Get(hmname)
        _h2=f.Get(h2name)
        c2.cd(1)
