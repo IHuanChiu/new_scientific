@@ -28,6 +28,7 @@ if int(c) >= int(100):
 
 gSystem.Unlink("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter.gif")
 gSystem.Unlink("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter_2d.gif")
+gSystem.Unlink("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter_pro.gif")
 c1=createRatioCanvas("rotation", 600, 500)
 f=ROOT.TFile(name,"read")
 
@@ -70,6 +71,12 @@ for it in range(n_iterations):
        nevproc+=1
        if prog: prog.update(nevproc)
        hmname="h{0}".format(ip)
+       # TODO temp
+       if ip == 0: num=91
+       if ip == 1: num=93
+       if ip == 2: num=43
+       if ip == 3: num=41
+       hmname="image_pos"+str(num)
        h2name="MLEM_2Dimage_h{0}_iteration{1}".format(ip,it)
        if not f.GetListOfKeys().Contains(h2name): continue
        _hm=f.Get("measurement").Get(hmname)
@@ -81,5 +88,33 @@ for it in range(n_iterations):
        c2.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter_2d.gif+{}".format(ip+it*n_angles))
 if prog: prog.finalize()
 
-log().info("Path of gif: {}".format("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter.gif"))
-log().info("Path of gif: {}".format("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter_2d.gif"))
+prog = ProgressBar(ntotal=n_iterations*n_angles,text="Projection",init_t=time.time())
+nevproc=0
+c3=createRatioCanvas("Projection", 1500, 500)
+c3.Divide(3,1)
+for it in range(n_iterations):
+   for ip in range(0,n_angles):
+       nevproc+=1
+       if prog: prog.update(nevproc)
+       if it == 0 and ip == 0: continue
+       hname="MLEM_3Dimage_h{0}_iteration{1}".format(ip,it)
+       if not f.GetListOfKeys().Contains(hname): continue
+       hxname="MLEM_3Dimage_h{0}_iteration{1}_px".format(ip,it)
+       hyname="MLEM_3Dimage_h{0}_iteration{1}_py".format(ip,it)
+       hzname="MLEM_3Dimage_h{0}_iteration{1}_pz".format(ip,it)
+       _hx=f.Get("MLEMprojection").Get(hxname)
+       _hy=f.Get("MLEMprojection").Get(hyname)
+       _hz=f.Get("MLEMprojection").Get(hzname)
+       _hx.SetLineColor(2)
+       _hy.SetLineColor(4)
+       _hz.SetLineColor(ROOT.kTeal)
+       c3.cd(1)
+       _hx.Draw("hist")
+       c3.cd(2)
+       _hy.Draw("hist")
+       c3.cd(3)
+       _hz.Draw("hist")
+       c3.Print("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/anim_iter_pro.gif+{}".format(ip+it*n_angles))
+if prog: prog.finalize()
+
+log().info("Path of gif: {}".format("/Users/chiu.i-huan/Desktop/new_scientific/run/root/MLEM_output/"))

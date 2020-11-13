@@ -347,22 +347,38 @@ class MLEM():
           log().info("Getting measurment data...")
           _mlist,_anglelist,_namelist=[],[],[]
 
-          fint=ROOT.TFile(inputname,"read")
-          n_angles=16 # always 16 for J-PARC data, related to angle
+#          fint=ROOT.TFile(inputname,"read")
+#          n_angles=16 # always 16 for J-PARC data, related to angle
+#          for i in range(n_angles):
+#             #if i%2 != 0: continue
+#             _h=fint.Get("h"+str(i))
+#             _h.SetDirectory(0)
+#             _harray=self.movemeasurement(hist2array(_h))
+#             _mlist.append(_harray)          
+#             _anglelist.append((-1)*i*(360/n_angles))# use Angle for ratation, not Radian
+#             _namelist.append(_h.GetName())
+#             hmov=ROOT.TH2D(_h.GetName(),_h.GetName(),128,-16,16,128,-16,16)
+#             hmov.SetDirectory(0)
+#             array2hist(_harray,hmov)
+#             self.h_data_list.append(hmov)
+
+          fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
+          n_angles,num=4,0 # always 16 for J-PARC data, related to angle
           for i in range(n_angles):
-             #if i%2 != 0: continue
-             #if i == 0 : continue
-             _h=fint.Get("h"+str(i))
+             if i == 0: num=91
+             if i == 1: num=93
+             if i == 2: num=43
+             if i == 3: num=41
+             _h=fint.Get("image_pos"+str(num))
              _h.SetDirectory(0)
-             #_harray=hist2array(_h)
-             _harray=self.movemeasurement(hist2array(_h))
+             _harray=hist2array(_h)
              _mlist.append(_harray)          
-             _anglelist.append((-1)*i*(360/n_angles))# use Angle for ratation, not Radian
+             _anglelist.append(-90*i)# use Angle for ratation, not Radian
+             _h.SetName("h{}".format(i))
              _namelist.append(_h.GetName())
              hmov=ROOT.TH2D(_h.GetName(),_h.GetName(),128,-16,16,128,-16,16)
              hmov.SetDirectory(0)
              array2hist(_harray,hmov)
-             #self.h_data_list.append(_h)
              self.h_data_list.append(hmov)
           return _mlist,_anglelist,_namelist
 
