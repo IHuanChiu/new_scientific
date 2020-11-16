@@ -71,12 +71,6 @@ for it in range(n_iterations):
        nevproc+=1
        if prog: prog.update(nevproc)
        hmname="h{0}".format(ip)
-       # TODO temp
-       if ip == 0: num=91
-       if ip == 1: num=93
-       if ip == 2: num=43
-       if ip == 3: num=41
-       hmname="image_pos"+str(num)
        h2name="MLEM_2Dimage_h{0}_iteration{1}".format(ip,it)
        if not f.GetListOfKeys().Contains(h2name): continue
        _hm=f.Get("measurement").Get(hmname)

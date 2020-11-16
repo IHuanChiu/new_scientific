@@ -757,26 +757,27 @@ class MLEM():
                 _image=self.updateImage(_object)# make 2D image corresponding to angle from object
                 _image_ratio=self.findratio(h_measurement_array, _image)# find ratio with data
                 _object_ratio,_object=self.updateObject(_object, _image_ratio)# update object
-  
-                if i < n_savehist or i >= (n_iteration-n_savehist) or n_iteration <= n_savehist:# only check n_savehist plots and last two iterations
-                   hist_image_ratio=ROOT.TH2D("Ratio_image_{0}_iteration{1}".format(h_name,i),"image_ratio_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
-                   hist_object_ratio=ROOT.TH3D("Ratio_object_{0}_iteration{1}".format(h_name,i),"object_ratio_{0}_iteration{1}".format(h_name,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
-                   hist_process_object=ROOT.TH3D("MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
-                   hist_process_image=ROOT.TH2D("MLEM_2Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_2Dimage_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
-                   hist_object_ratio.SetStats(0); hist_image_ratio.SetStats(0); hist_process_object.SetStats(0); hist_process_image.SetStats(0);
-                   array2hist(_object,hist_process_object)
-                   #array2hist(_object_ratio,hist_object_ratio)
-                   array2hist(_image,hist_process_image)
-                   array2hist(_image_ratio,hist_image_ratio)
-                   self.mlemratio_list.append(hist_image_ratio)
-                   #self.mlemratio_list.append(hist_object_ratio)
-                   self.mlemhist_list.append(hist_process_image)
-                   self.mlemhist_list.append(hist_process_object)
-                   self.mlemhist_proje_list.append(hist_process_image.ProjectionX())
-                   self.mlemhist_proje_list.append(hist_process_image.ProjectionY())
-                   self.mlemhist_proje_list.append(hist_process_object.ProjectionX())
-                   self.mlemhist_proje_list.append(hist_process_object.ProjectionY())
-                   self.mlemhist_proje_list.append(hist_process_object.ProjectionZ())
+
+                # === save plots ===  
+                hist_image_ratio=ROOT.TH2D("Ratio_image_{0}_iteration{1}".format(h_name,i),"image_ratio_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
+                hist_object_ratio=ROOT.TH3D("Ratio_object_{0}_iteration{1}".format(h_name,i),"object_ratio_{0}_iteration{1}".format(h_name,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+                hist_process_object=ROOT.TH3D("MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+                hist_process_image=ROOT.TH2D("MLEM_2Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_2Dimage_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
+                hist_object_ratio.SetStats(0); hist_image_ratio.SetStats(0); hist_process_object.SetStats(0); hist_process_image.SetStats(0);
+                array2hist(_object,hist_process_object)
+                #array2hist(_object_ratio,hist_object_ratio)
+                array2hist(_image,hist_process_image)
+                array2hist(_image_ratio,hist_image_ratio)
+                self.mlemratio_list.append(hist_image_ratio)
+                #self.mlemratio_list.append(hist_object_ratio)
+                self.mlemhist_list.append(hist_process_image)
+                self.mlemhist_list.append(hist_process_object)
+                self.mlemhist_proje_list.append(hist_process_image.ProjectionX())
+                self.mlemhist_proje_list.append(hist_process_image.ProjectionY())
+                self.mlemhist_proje_list.append(hist_process_object.ProjectionX())
+                self.mlemhist_proje_list.append(hist_process_object.ProjectionY())
+                self.mlemhist_proje_list.append(hist_process_object.ProjectionZ())
+
                 _object=self.rotObject(_object,h_angle)# rotate object for next iteration
           _object=self.rotObject(_object,(-1)*h_angle)# return object
           if prog: prog.finalize()
@@ -807,7 +808,8 @@ class MLEM():
                 _object_ratio,_=self.updateObject(_temp, _image_ratio)# get object ratio for rotated object
                 _object_ratio=self.rotObject(_object_ratio,(-1)*h_angle)# anti-rotate ratio for nor. object
                 _object_sumratio+=_object_ratio# sum of all ratio
-  
+
+                # === save plots ===  
                 hist_image_ratio=ROOT.TH2D("Ratio_image_{0}_iteration{1}".format(h_name,i),"image_ratio_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
                 hist_process_image=ROOT.TH2D("MLEM_2Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_2Dimage_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
                 hist_image_ratio.SetStats(0); hist_process_image.SetStats(0);
@@ -918,8 +920,8 @@ def main_run(args):
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=_npixels,matrix=_matrix,imageinput=args.imageinput) # do iteration and get final plots
 
     # MLEM iteration
-    #MLEM_3DHist=ML.iterate_osem(n_iteration=_n_iteration)# Ordered Subset Expectation Maximization
-    MLEM_3DHist=ML.iterate_mlem(n_iteration=_n_iteration)# Maximum Likelihood Expectation Maximisation
+    MLEM_3DHist=ML.iterate_osem(n_iteration=_n_iteration)# Ordered Subset Expectation Maximization
+    #MLEM_3DHist=ML.iterate_mlem(n_iteration=_n_iteration)# Maximum Likelihood Expectation Maximisation
 
     # Store tree and plots
     log().info("Print outputs...")
@@ -932,8 +934,8 @@ def main_run(args):
     ML.printoutput(ML.h_data_list,outfilename,"up","measurement")
     ML.printoutput(check_list,outfilename,"up","checkmatrix")
     ML.printoutput(ML.mlemhist_proje_list,outfilename,"up","MLEMprojection")
+    ML.printoutput(ML.mlemratio_list,outfilename,"up","Ratio")
 
-    ML.printoutput(ML.mlemratio_list,outfilename,"up")
     ML.printoutput(ML.mlemhist_list,outfilename,"up")
     ML.printoutput(ML.mlem3Dhist_list,outfilename,"up")
     ML.printoutput(MLEM_3DHist,outfilename,"up")
