@@ -33,7 +33,7 @@ c1=createRatioCanvas("rotation", 600, 500)
 f=ROOT.TFile(name,"read")
 
 n_iterations,n_angles=int(a),16
-n_phi,n_top,phi_range=9,8,30
+n_phi,n_top,phi_range=2,8,30
 
 prog = ProgressBar(ntotal=n_iterations*n_angles*n_phi,text="3D images",init_t=time.time())
 nevproc=0
