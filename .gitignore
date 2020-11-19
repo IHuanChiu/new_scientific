@@ -1,6 +1,7 @@
 data/*
 CdTe123
 GeAnalysis/data
+GeAnalysis/*/data
 TRIM_simulation
 other
 run/*
