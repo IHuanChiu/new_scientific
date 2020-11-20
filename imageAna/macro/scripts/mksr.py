@@ -347,39 +347,42 @@ class MLEM():
           log().info("Getting measurment data...")
           _mlist,_anglelist,_namelist=[],[],[]
 
-#          fint=ROOT.TFile(inputname,"read")
-#          n_angles=16 # always 16 for J-PARC data, related to angle
+          # J-PARC data
+          fint=ROOT.TFile(inputname,"read")
+          n_angles=16 # always 16 for J-PARC data, related to angle
+          for i in range(n_angles):
+             #if i%2 != 0: continue
+             _h=fint.Get("h"+str(i))
+             _h.SetDirectory(0)
+             _harray=self.movemeasurement(hist2array(_h))
+             _mlist.append(_harray)          
+             _anglelist.append((-1)*i*(360/n_angles))# use Angle for ratation, not Radian
+             _namelist.append(_h.GetName())
+             hmov=ROOT.TH2D(_h.GetName(),_h.GetName(),128,-16,16,128,-16,16)
+             hmov.SetDirectory(0)
+             array2hist(_harray,hmov)
+             self.h_data_list.append(hmov)
+
+          # roation sample
+#          fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
+#          n_angles,num=4,0
 #          for i in range(n_angles):
-#             #if i%2 != 0: continue
-#             _h=fint.Get("h"+str(i))
+#             if i == 0: num=91
+#             if i == 1: num=93
+#             if i == 2: num=43
+#             if i == 3: num=41
+#             _h=fint.Get("image_pos"+str(num))
 #             _h.SetDirectory(0)
-#             _harray=self.movemeasurement(hist2array(_h))
+#             _harray=hist2array(_h)
 #             _mlist.append(_harray)          
-#             _anglelist.append((-1)*i*(360/n_angles))# use Angle for ratation, not Radian
+#             _anglelist.append(-90*i)# use Angle for ratation, not Radian
+#             _h.SetName("h{}".format(i))
 #             _namelist.append(_h.GetName())
 #             hmov=ROOT.TH2D(_h.GetName(),_h.GetName(),128,-16,16,128,-16,16)
 #             hmov.SetDirectory(0)
 #             array2hist(_harray,hmov)
 #             self.h_data_list.append(hmov)
 
-          fint=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20200406a_5to27_cali_caldatat_0828_split.root","read")
-          n_angles,num=4,0 # always 16 for J-PARC data, related to angle
-          for i in range(n_angles):
-             if i == 0: num=91
-             if i == 1: num=93
-             if i == 2: num=43
-             if i == 3: num=41
-             _h=fint.Get("image_pos"+str(num))
-             _h.SetDirectory(0)
-             _harray=hist2array(_h)
-             _mlist.append(_harray)          
-             _anglelist.append(-90*i)# use Angle for ratation, not Radian
-             _h.SetName("h{}".format(i))
-             _namelist.append(_h.GetName())
-             hmov=ROOT.TH2D(_h.GetName(),_h.GetName(),128,-16,16,128,-16,16)
-             hmov.SetDirectory(0)
-             array2hist(_harray,hmov)
-             self.h_data_list.append(hmov)
           return _mlist,_anglelist,_namelist
 
       def getconstant(self,_x,_y,_z,par):         
@@ -925,8 +928,9 @@ def main_run(args):
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=_npixels,matrix=_matrix,imageinput=args.imageinput) # do iteration and get final plots
 
     # MLEM iteration
-    MLEM_3DHist=ML.iterate_osem(n_iteration=_n_iteration)# Ordered Subset Expectation Maximization
-    #MLEM_3DHist=ML.iterate_mlem(n_iteration=_n_iteration)# Maximum Likelihood Expectation Maximisation
+    if   "osem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_osem(n_iteration=_n_iteration)# Ordered Subset Expectation Maximization
+    elif "mlem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_mlem(n_iteration=_n_iteration)# Maximum Likelihood Expectation Maximisation
+    else: log().error("Wrong type, only MLEM or OSEM is supported.")
 
     # Store tree and plots
     log().info("Print outputs...")
@@ -953,12 +957,14 @@ if __name__=="__main__":
    parser = argparse.ArgumentParser(description='Process some integers.')
    parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20200406a_5to27_cali_caldatat_0828_split.root", help="Input File Name for system response")
    parser.add_argument("--imageinput", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_LP_0909.root", help="Input File Name for 3D image")
+   #parser.add_argument("--imageinput", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.Si_1120.root", help="Input File Name for 3D image")
    parser.add_argument("-o", "--output", type=str, default="sr_outputname", help="Additional Output File Name")
    parser.add_argument("-m", "--matrix", type=str, default=None, help="System response database")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of points in each axis")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="step size of points")
    parser.add_argument("-p","--npixels",dest="npixels",type=int, default=40, help="Number of pixels for object space")
    parser.add_argument("-l","--loopiteration",dest="loopiteration",type=int, default=3, help="Number of iterations")
+   parser.add_argument("-t","--iterationtype",dest="iterationtype",type=str, default="MLEM", help="osem or mlem")
    args = parser.parse_args()
 
    main_run(args)
