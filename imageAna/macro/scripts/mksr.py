@@ -108,7 +108,7 @@ class PrepareParameters():
                       print("index: {0}, fitting (constant, mux, muy, sigmax, sigmay, \u03C1) = ({1:.3f},{2:.3f},{3:.3f},{4:.3f},{5:.3f},{6:.3f})".format(index,constant,mean_x,mean_y,sigma_x,sigma_y,rho))
                    # Cheching bad fitting channels
                    if paramater_list[index][0] > 1000: 
-                      log().warn("bad fitting point : {0}, {1}".format(index, paramater_list[index]))
+                      log().warning("bad fitting point : {0}, {1}".format(index, paramater_list[index]))
 
                    index+=1
                    del gb,h2

@@ -5,7 +5,7 @@ GeAnalysis/*/data
 TRIM_simulation
 other
 imageAna/run/*
-*.root
+*/data/*
 *.pdf
 *.pyc
 *.npy
