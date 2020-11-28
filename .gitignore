@@ -4,11 +4,16 @@ GeAnalysis/data
 GeAnalysis/*/data
 TRIM_simulation
 other
-imageAna/run/*
 */data/*
 *.pdf
 *.pyc
 *.npy
+imageAna/run/root
+imageAna/run/log
+imageAna/run/*.py
+imageAna/run/figs
+imageAna/run/auxfile
+imageAna/run/ATLASStyle
 imageAna/macro/__pycache__/
 imageAna/macro/latest
 imageAna/macro/utils/__pycache__/
