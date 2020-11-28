@@ -1,7 +1,9 @@
 NTUPDIR="/Users/chiu.i-huan/Desktop/new_scientific/data/minami_data"
 NCORES=8
 
-parallel --eta -j ${NCORES} python3 stability.py -i ${NTUPDIR} -c {1} -s {2} -tr {3} -o 0915 ::: 300n20 400n20 500n20 ::: Am Ba Co ::: 3
+python stability.py -i /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali -c 500n5 -s Am -o machine2_stability -tr 0.3 
+
+#parallel --eta -j ${NCORES} python3 stability.py -i ${NTUPDIR} -c {1} -s {2} -tr {3} -o 0915 ::: 300n20 400n20 500n20 ::: Am Ba Co ::: 3
 
 #parallel --eta -j ${NCORES} python3 stability.py -i ${NTUPDIR} -c {1} -s {2} -tr {3} -o 0915 ::: 300n20 ::: 0901Am Am Ba Co ::: 5 2
 #parallel --eta -j ${NCORES} python3 stability.py -i ${NTUPDIR} -c {1} -s {2} -tr {3} -o 0915 ::: 400n20 ::: 0803Co Am Ba Co ::: 5 2
