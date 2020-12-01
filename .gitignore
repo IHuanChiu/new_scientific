@@ -1,13 +1,16 @@
-imageAna/data/*
-CdTe123
-GeAnalysis/data
-GeAnalysis/*/data
-TRIM_simulation
-other
 */data/*
 *.pdf
 *.pyc
 *.npy
+.DS_Store
+CdTe123
+TRIM_simulation
+ANLNext
+DSDAnalysisTools
+other
+GeAnalysis/data
+GeAnalysis/*/data
+imageAna/data/*
 imageAna/run/root
 imageAna/run/log
 imageAna/run/*.py
@@ -21,4 +24,3 @@ imageAna/macro/__pycache__/*
 imageAna/macro/utils/__pycache__/*
 imageAna/macro/scripts/filt-back-proj
 imageAna/macro/scripts/matrix*
-.DS_Store

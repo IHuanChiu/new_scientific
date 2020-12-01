@@ -37,7 +37,8 @@ class Calibration():
           self.source=source
           self.hist_list,self.name_list=self.gethist()
           self.element_list_pside, self.element_list_nside,self.element_list_1,self.element_list_2,self.element_list_3,self.element_list_4,self.element_list_5,self.element_list_6,self.element_list_7,self.element_list_8=self.getrange()
-          self.fit_result=self.fit()
+          self.hist_fitpoints=[]
+          self.fit_result=self.fit("weight")
           self.graph_list,self.spline_list=self.mkTSpline()
 
       def gethist(self):
@@ -126,7 +127,7 @@ class Calibration():
              if _e[0] == self.source: element_list_8.append(_e)  
           return element_list_pside, element_list_nside, element_list_1, element_list_2, element_list_3, element_list_4, element_list_5, element_list_6, element_list_7, element_list_8
 
-      def fit(self):
+      def fit(self,fittype):
           fit_result=[]
           ich=0
           for ih in self.hist_list:
@@ -141,16 +142,31 @@ class Calibration():
              elif ich < 224: element_list=self.element_list_7
              else: element_list=self.element_list_8
              dic, n_fit={}, 0
+             hfp=ROOT.TH1D("hfp{}".format(ich),"hfp{}".format(ich),1024,-50.5,1024-50.5)
+             hfp.SetDirectory(0)
              for ifit in element_list:
                 E_down, E_up=float(ifit[2]), float(ifit[3])
-                g1=ROOT.TF1("g1","gaus",E_down,E_up)
-                g1.SetLineColor(ROOT.kRed)
-                if n_fit == 0: ih.Fit("g1","QR")
-                else: ih.Fit("g1","QR+")
-                dic.update({ifit[1]:g1.GetParameter(1)})
-                n_fit+=1   
-             ich+=1
+                if fittype == "gaus": 
+                   g1=ROOT.TF1("g1","gaus",E_down,E_up)
+                   g1.SetLineColor(ROOT.kRed)
+                   if n_fit == 0: ih.Fit("g1","QR")
+                   else: ih.Fit("g1","QR+")
+                   dic.update({ifit[1]:g1.GetParameter(1)})                
+                   n_fit+=1   
+                else:
+                   E_down, E_up=E_down+50, E_up+50 # Minimum bin is -50
+                   _poix, _sumw, _w, _maxbin = 0.,0.,0.,-1.
+                   for ibin in range(int(E_down),int(E_up+1)):
+                      _sumw+=ih.GetBinCenter(ibin)*ih.GetBinContent(ibin)
+                      _w+=ih.GetBinContent(ibin)
+                      if ih.GetBinContent(ibin) > _maxbin: _maxbin = ih.GetBinContent(ibin)
+                   if _w == 0: _w = 1
+                   _poix=_sumw/_w    
+                   hfp.Fill(_poix,_maxbin)
+                   dic.update({ifit[1]:_poix})
              fit_result.append(dic)
+             self.hist_fitpoints.append(hfp)
+             ich+=1
           return fit_result
 
       def mkTSpline(self):
@@ -209,14 +225,19 @@ class Calibration():
              else : temp_name = "hist_cmn" + str(i*2)
              new_name=self.name_list[i].replace(temp_name,"ch : {}".format(i))
              gROOT.ProcessLine("gErrorIgnoreLevel = kWarning;")
+             self.hist_list[i].SetLineColor(1)
+             self.hist_fitpoints[i].SetLineColorAlpha(ROOT.kRed,0.7)
+             self.hist_fitpoints[i].SetLineWidth(2)
+
              c0.cd(1)
              gPad.SetLogy(1)
-             self.hist_list[i].SetLineColor(1)
              self.hist_list[i].Draw()
+             self.hist_fitpoints[i].Draw("hist SAME")
              latex.DrawLatex(0.5,0.85,new_name)
              c1.cd()
              gPad.SetLogy(1)
              self.hist_list[i].Draw()
+             self.hist_fitpoints[i].Draw("hist SAME")
              latex.DrawLatex(0.5,0.85,new_name)
 
              c0.cd(2)
