@@ -51,9 +51,10 @@ void make_pnES_base(){
   TH1D *ha_p,*ha_n, *ha;
 
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/2mmCdTe_root/cdtedsd_2020b_0917a_battery_Ba.root","READ");
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/2mmCdTe_root/cdtedsd_2020b_0917a_battery_Co.root","READ");
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00015_001_wani_20201202.root","READ");
 
-  name.Form("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/EnergySpectrum_combine_battery_all_co.pdf");
+//  name.Form("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/EnergySpectrum_combine_battery_all_co.pdf");
+  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_wani_ba.pdf");
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
   tree_a->Draw("energy >> ha(300,0,150)","","");
@@ -77,8 +78,8 @@ void make_pnES_base(){
   leg->SetLineColor(0);
   leg->SetBorderSize(0);
   leg->AddEntry(ha,  "#gamma", "l");
-  leg->AddEntry(ha_p,  "p-side", "l");
-  leg->AddEntry(ha_n,   "n-side",   "l");
+  leg->AddEntry(ha_p,  "Pt side (Cathode)", "l");
+  leg->AddEntry(ha_n,   "Al side (Anode)",   "l");
 
   TLine *line0 = new TLine(14.41,0,14.41,ha_n->GetMaximum());//Co
   TLine *line1 = new TLine(31,0,31,ha_n->GetMaximum());//Ba

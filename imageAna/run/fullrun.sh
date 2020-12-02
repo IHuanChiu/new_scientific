@@ -13,7 +13,8 @@ OUTNAME="test1020"
      
 # ================== Simple test run ====================
 #python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
-#python3 main.py ${NTUPDIRSI}/test_f_00007_001.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root -o removebadch_20201005
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Am/data1201a_00002_001.root -d Si_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o wani_20201202
+python3 main.py ../data/machine2_cali/400n5/image/data1201a_00015_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o wani_20201202
 
 # ================== Scan cut ====================
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRCDTE}/20200307a_00057_001.root -o cut{1}_delta{2} -cut {1} -m {2} ::: 5 10 20 40 ::: 10 5 3 2
@@ -46,4 +47,4 @@ OUTNAME="test1020"
 
 # ================== run 3Dimage ====================
 #python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe -o LP_0909 
-python3 image.py -i ${OUTDIR}/Si_root_fix -d Si -o 1120
+#python3 image.py -i ${OUTDIR}/Si_root_fix -d Si -o 1120

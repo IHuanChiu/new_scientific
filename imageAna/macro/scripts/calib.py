@@ -201,6 +201,7 @@ class Calibration():
           return graph_list,spline_list
 
       def plot(self):
+          islog = 0
           __location__ = os.path.realpath(
                   os.path.join(os.getcwd(), os.path.dirname(__file__)))
           ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
@@ -229,13 +230,20 @@ class Calibration():
              self.hist_fitpoints[i].SetLineColorAlpha(ROOT.kRed,0.7)
              self.hist_fitpoints[i].SetLineWidth(2)
 
+             if islog == 0:
+                _maxbincon = -1.
+                for ibin in range(int(50+50),int(700+50)):
+                   if self.hist_list[i].GetBinContent(ibin) > _maxbincon: _maxbincon = self.hist_list[i].GetBinContent(ibin)
+                self.hist_list[i].SetMinimum(0)
+                self.hist_list[i].SetMaximum(_maxbincon*1.2)
+
              c0.cd(1)
-             gPad.SetLogy(1)
+             gPad.SetLogy(islog)
              self.hist_list[i].Draw()
              self.hist_fitpoints[i].Draw("hist SAME")
              latex.DrawLatex(0.5,0.85,new_name)
              c1.cd()
-             gPad.SetLogy(1)
+             gPad.SetLogy(islog)
              self.hist_list[i].Draw()
              self.hist_fitpoints[i].Draw("hist SAME")
              latex.DrawLatex(0.5,0.85,new_name)

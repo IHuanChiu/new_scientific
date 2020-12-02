@@ -247,15 +247,15 @@ def Level1Hit(tree, adccut, coef_R, dblist, efname, eline, dtype):
        adc_name, cmn_name, index_name, hitnum_name = "adc"+str(iasic), "cmn"+str(iasic), "index"+str(iasic), "hitnum"+str(iasic)
        tree_adc, tree_cmn, tree_index, tree_hitnum = getattr(tree,adc_name), getattr(tree,cmn_name), getattr(tree,index_name), getattr(tree,hitnum_name)
        for ich in range(tree_hitnum): #number of hit channels in a ASIC
-          taa=time.time() # TODO : check processing time by "taa" var.
+          taa=time.time() # TODO : imporve processing time, check "taa" var.
           # === quick selection ===
           if tree_adc[ich] < tree_cmn+10 or tree_adc[ich] >= 1023: continue
-          istrip = tree_index[ich] # read strip in ASIC, 0~63 for each CdTe ASIC
+          istrip = tree_index[ich] # read ch of each ASIC -> 0~63 for FEC-1; 0~31 for FEC-2 (ie. Si detector)
           if "CdTe" in dtype: 
-             if istrip%2 != 0 : continue #TODO: for FEC-1 with "readoutall" setting (only loop even channel)
+             if istrip%2 != 0 : continue #FEC-1 with "readoutall" setting -> only loop even channel
              ChannelID=int(istrip/2+iasic*32) #scale to 0~255
           else: 
-             if iasic == 6 and (istrip==13 or istrip==16 or istrip==20): continue #TODO : Si bad channels
+             if iasic == 6 and (istrip==13 or istrip==16 or istrip==20): continue #TODO : Si bad channels for 2020 March
              ChannelID=int(istrip+iasic*32) #0~255
 
           taa2=time.time()

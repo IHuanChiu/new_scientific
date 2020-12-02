@@ -24,3 +24,4 @@ imageAna/macro/__pycache__/*
 imageAna/macro/utils/__pycache__/*
 imageAna/macro/scripts/filt-back-proj
 imageAna/macro/scripts/matrix*
+imageAna/macro/scripts/files_cali/*

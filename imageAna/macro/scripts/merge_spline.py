@@ -13,11 +13,13 @@ __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 import sys,os,random,math,ROOT
 from ROOT import TFile, TTree, gPad, TGraphAsymmErrors, TSpline3, gStyle, gErrorIgnoreLevel, gROOT
 ROOT.gROOT.SetBatch(1)
-voltage="300n20"
+#TODO change here =>
+outname="machine2"
+voltage="400n5"
 
-fa=ROOT.TFile("files_cali/spline_calibration_2mmtest_"+voltage+"_Am.root","read")
-fb=ROOT.TFile("files_cali/spline_calibration_2mmtest_"+voltage+"_Ba.root","read")
-fc=ROOT.TFile("files_cali/spline_calibration_2mmtest_"+voltage+"_Co.root","read")
+fa=ROOT.TFile("files_cali/spline_calibration_"+outname+"_"+voltage+"_Am.root","read")
+fb=ROOT.TFile("files_cali/spline_calibration_"+outname+"_"+voltage+"_Ba.root","read")
+fc=ROOT.TFile("files_cali/spline_calibration_"+outname+"_"+voltage+"_Co.root","read")
 
 def getLatex(ch, x = 0.85, y = 0.85):
     _t = ROOT.TLatex()
@@ -74,7 +76,7 @@ def compare(spline):
 def merge():
     spline_list=[]
     useCoHight = True
-    fout=ROOT.TFile("./files_cali/spline_calibration_2mmtest_"+voltage+"_merge_1008.root","recreate")
+    fout=ROOT.TFile("./files_cali/spline_calibration_"+outname+"_"+voltage+"_merge.root","recreate")
     fout.cd()
     for i in range(256):
        _g = ROOT.TGraph()
@@ -87,29 +89,41 @@ def merge():
        _gc=fc.Get(graph_name)
        # === check fitting plots & adc range (adc, energy) ===       
 #       _index=_index+1
+#       if i == 0 and _ga.GetPointY(1) != 13.94: print("should be 13.94 : ", _ga.GetPointY(1))
 #       _g.SetPoint(_index, _ga.GetPointX(1), _ga.GetPointY(1))#Am 13.94
 
        _index=_index+1
+       if i == 0 and _gc.GetPointY(1) != 14.41: print("should be 14.41 : ", _gc.GetPointY(1))
        _g.SetPoint(_index, _gc.GetPointX(1), _gc.GetPointY(1))#Co 14.41
 
        _index=_index+1
+       if i == 0 and _ga.GetPointY(2) != 17.75: print("should be 17.75 : ", _ga.GetPointY(2))
        _g.SetPoint(_index, _ga.GetPointX(2), _ga.GetPointY(2))#Am 17.75
 
        _index=_index+1
-       _g.SetPoint(_index, _ga.GetPointX(3), _ga.GetPointY(3))#Am 26.3
+       if i == 0 and _ga.GetPointY(3) != 20.8: print("should be 20.8 : ", _ga.GetPointY(3))
+       _g.SetPoint(_index, _ga.GetPointX(3), _ga.GetPointY(3))#Am 20.8
 
        _index=_index+1
+       if i == 0 and _ga.GetPointY(4) != 26.3: print("should be 26.3 : ", _ga.GetPointY(4))
+       _g.SetPoint(_index, _ga.GetPointX(4), _ga.GetPointY(4))#Am 26.3
+
+       _index=_index+1
+       if i == 0 and _gb.GetPointY(1) != 31.0: print("should be 31 : ", _gb.GetPointY(1))
        _g.SetPoint(_index, _gb.GetPointX(1), _gb.GetPointY(1))#Ba 31
 
        _index=_index+1
-       _g.SetPoint(_index, _ga.GetPointX(4), _ga.GetPointY(4))#Am 59.5
+       if i == 0 and _ga.GetPointY(5) != 59.5: print("should be 59.5 : ", _ga.GetPointY(5))
+       _g.SetPoint(_index, _ga.GetPointX(5), _ga.GetPointY(5))#Am 59.5
 
        _index=_index+1
+       if i == 0 and _gb.GetPointY(3) != 81.0: print("should be 81 : ", _gb.GetPointY(3))
        _g.SetPoint(_index, _gb.GetPointX(3), _gb.GetPointY(3))#Ba 81
 
        if useCoHight:
           _index=_index+1
-          _g.SetPoint(_index, _gc.GetPointX(2), _gc.GetPointY(2))#Co 122
+          if i == 0 and _gc.GetPointY(2) != 122.06: print("should be 122.06 : ", _gc.GetPointY(2))
+          _g.SetPoint(_index, _gc.GetPointX(2), _gc.GetPointY(2))#Co 122.06
 
           if i < 128:#p-side
              slope = (_gc.GetPointY(2) - _gb.GetPointY(3))/(_gc.GetPointX(2) - _gb.GetPointX(3))
@@ -118,13 +132,14 @@ def merge():
              _g.SetPoint(_index, 1200, (1200-f_x)*slope + f_y)
           else:#n-side
              _index=_index+1
-             _g.SetPoint(_index, _gc.GetPointX(3), _gc.GetPointY(3))#Co 136.5
+             if i == 0 and _gc.GetPointY(3) != 136.47: print("should be 136.47 : ", _gc.GetPointY(3))
+             _g.SetPoint(_index, _gc.GetPointX(3), _gc.GetPointY(3))#Co 136.47
              slope = (_gc.GetPointY(3) - _gc.GetPointY(2))/(_gc.GetPointX(3) - _gc.GetPointX(2))
              f_x, f_y = _gc.GetPointX(3), _gc.GetPointY(3)
              _index=_index+1
              _g.SetPoint(_index, 1200, (1200-f_x)*slope + f_y)       
        else:
-          slope = (_gb.GetPointY(3) - _ga.GetPointY(4))/(_gb.GetPointX(3) - _ga.GetPointX(4))
+          slope = (_gb.GetPointY(3) - _ga.GetPointY(5))/(_gb.GetPointX(3) - _ga.GetPointX(5))
           f_x, f_y = _gb.GetPointX(3), _gb.GetPointY(3)
           _index=_index+1
           _g.SetPoint(_index, 1200, (1200-f_x)*slope + f_y)
