@@ -51,10 +51,10 @@ void make_pnES_base(){
   TH1D *ha_p,*ha_n, *ha;
 
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/2mmCdTe_root/cdtedsd_2020b_0917a_battery_Ba.root","READ");
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00015_001_wani_20201202.root","READ");
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/jparcdata_1205a_00004_001_c0_20201205.root","READ");
 
 //  name.Form("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/EnergySpectrum_combine_battery_all_co.pdf");
-  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_wani_ba.pdf");
+  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_temp.pdf");
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
   tree_a->Draw("energy >> ha(300,0,150)","","");
@@ -69,15 +69,16 @@ void make_pnES_base(){
   ha_n->GetXaxis()->SetTitle("Energy [keV]");
   ha_n->GetYaxis()->SetTitle("Counts");
 
-  ha->SetLineColor(kAzure);
+  ha->SetLineColor(1);
+  ha_n->SetLineColor(kAzure);
   ha_p->SetLineColor(kPink);
-  ha_n->SetLineColor(kSpring-6);
+//  ha_n->SetLineColor(kSpring-6);
 
-  TLegend* leg = new TLegend(.35,.75,.55,.90);
+  TLegend* leg = new TLegend(.25,.75,.55,.90);
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize(0);
-  leg->AddEntry(ha,  "#gamma", "l");
+  leg->AddEntry(ha,  "#gamma (Matching)", "l");
   leg->AddEntry(ha_p,  "Pt side (Cathode)", "l");
   leg->AddEntry(ha_n,   "Al side (Anode)",   "l");
 

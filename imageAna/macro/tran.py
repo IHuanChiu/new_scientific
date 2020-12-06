@@ -356,6 +356,7 @@ class tran_process():
           struct.ncluster = len(hitx_lv2)*len(hity_lv2)
           struct.nhit = len(hit_signal)
           struct.trigger  = self.tree.integral_livetime
+          if struct.trigger > 2147482648: print(struct.trigger)
           struct.unixtime = self.tree.unixtime
           struct.initUT   = int(self.initUT)
           makentuple(hit_signal,cluster,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
