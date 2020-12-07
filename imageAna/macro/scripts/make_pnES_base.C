@@ -46,12 +46,13 @@ void make_pnES_base(){
   #endif
   SetAtlasStyle();
 
-  TCanvas *c1 = new TCanvas("c1","Energy Spectum",10,10,800,800);
+  TCanvas *c1 = new TCanvas("c1","Energy Spectum",10,10,1100,800);
   TString name;
   TH1D *ha_p,*ha_n, *ha;
 
-//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/2mmCdTe_root/cdtedsd_2020b_0917a_battery_Ba.root","READ");
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/jparcdata_1205a_00004_001_c0_20201205.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00006_001_cali_am.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1130d_00005_001_cali_ba.root","READ");
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00026_001_cali_co.root","READ");
 
 //  name.Form("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/EnergySpectrum_combine_battery_all_co.pdf");
   name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_temp.pdf");
@@ -64,7 +65,10 @@ void make_pnES_base(){
   ha_p = (TH1D*)gDirectory->Get("ha_p");
   ha_n = (TH1D*)gDirectory->Get("ha_n");
 
-  ha_n->SetMaximum((ha_n->GetMaximum())*1.1);
+  int maxbin = ha_n->GetMaximum();
+  if (ha_p->GetMaximum() > maxbin) { maxbin = ha_p->GetMaximum(); }
+  if (ha->GetMaximum() > maxbin) { maxbin = ha->GetMaximum(); }
+  ha_n->SetMaximum(maxbin*1.1);
 
   ha_n->GetXaxis()->SetTitle("Energy [keV]");
   ha_n->GetYaxis()->SetTitle("Counts");
@@ -74,7 +78,7 @@ void make_pnES_base(){
   ha_p->SetLineColor(kPink);
 //  ha_n->SetLineColor(kSpring-6);
 
-  TLegend* leg = new TLegend(.25,.75,.55,.90);
+  TLegend* leg = new TLegend(.55,.75,.85,.90);
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize(0);
@@ -94,6 +98,7 @@ void make_pnES_base(){
   line4->SetLineColorAlpha(1, 0.9);
 
   c1->cd();
+  //gPad->SetLeftMargin(0.2);
   ha_n->Draw();
   ha_p->Draw("same");
   ha->Draw("same");

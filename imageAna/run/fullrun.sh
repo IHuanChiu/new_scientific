@@ -15,8 +15,9 @@ OUTNAME="test1020"
 #python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Am/data1201a_00002_001.root -d Si_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o wani_20201202
 #jparc1205 test
-python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/jparc1205/Co -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o co_20201205 
-#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/image/wani_am -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o wani_am -n 20000
+python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Am/data1201a_00006_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o cali_am 
+python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Ba/data1130d_00005_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o cali_ba 
+python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Co/data1201a_00026_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o cali_co 
 
 # ================== Scan cut ====================
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRCDTE}/20200307a_00057_001.root -o cut{1}_delta{2} -cut {1} -m {2} ::: 5 10 20 40 ::: 10 5 3 2
