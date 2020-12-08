@@ -33,8 +33,8 @@ from utils.helpers import ProgressBar
 gROOT.ProcessLine(
 "struct RootStruct {\
    Int_t      trigger;\
+   Int_t      livetime;\
    Int_t      unixtime;\
-   Int_t      initUT;\
    Int_t      nhit;\
    Int_t      ncluster;\
    Int_t      nsignalx_lv1;\
@@ -220,8 +220,7 @@ class tran_process():
                    efile=None,
                    dtype=None,
                    ecut=None,
-                   deltae=None,
-                   initUT=None
+                   deltae=None
                    ):
           # config
           self.ifile      = ifile
@@ -231,7 +230,6 @@ class tran_process():
           self.ecut       = ecut
           self.deltae     = deltae
           self.efile      = efile
-          self.initUT     = initUT
            
           # members
           self.hist_list = []
@@ -265,7 +263,7 @@ class tran_process():
 
           self.tout = TTree('tree','tree') 
           self.tout.SetDirectory(0)
-          self.tout.Branch( 'intvar', struct, 'trigger/I:unixtime:initUT:nhit:ncluster:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' )  
+          self.tout.Branch( 'intvar', struct, 'trigger/I:livetime:unixtime:nhit:ncluster:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' )  
 
           self.tout.Branch( 'energy', AddressOf( struct, 'energy' ),  'energy[nhit]/D' )
           self.tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),  'energy_p[nhit]/D' )
@@ -358,7 +356,6 @@ class tran_process():
           struct.trigger  = self.tree.integral_livetime
           if struct.trigger > 2147482648: print(struct.trigger)
           struct.unixtime = self.tree.unixtime
-          struct.initUT   = int(self.initUT)
           makentuple(hit_signal,cluster,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
           tti6=time.time()
           self.tout.Fill()

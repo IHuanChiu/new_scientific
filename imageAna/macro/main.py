@@ -30,7 +30,7 @@ def main(args):
     ilist = GetInputList(args.inputFolder)
 
     outname = "/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/"
-    p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype, ecut = args.cut, deltae=args.delta, initUT=0)
+    p = Processor(ifilelist = ilist, ofile=outname, addname=args.output, ncores=args.ncores, nevents=args.nevents, efile=args.efile, dtype=args.dtype, ecut = args.cut, deltae=args.delta)
     p.mainprocess()
 
     if p.fout is not None:

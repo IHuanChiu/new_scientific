@@ -52,6 +52,7 @@ def DisableBranch(tree):
     tree.SetBranchStatus("hitnum6",1) 
     tree.SetBranchStatus("hitnum7",1) 
     tree.SetBranchStatus("integral_livetime",1) 
+    tree.SetBranchStatus("livetime",1) 
     tree.SetBranchStatus("unixtime",1) 
     return tree
 
