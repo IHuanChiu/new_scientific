@@ -56,15 +56,12 @@ class makecut():
 
 def image(tree, icut, position):
 # =============== make image =============
-#    addition_cut = TCut("weight * (energy_p>{} && energy_p < {})".format(e_min, e_max))
-#    icut += addition_cut
-    tree.Draw("x:y >> h2(128,-16,16,128,-16,16)",icut,"colz")
+    tree.Draw("y:x >> h2(128,-16,16,128,-16,16)",icut,"colz")
     h2 = gDirectory.Get("h2")
-#    h2.SetTitle(icut.GetTitle())
-    h2.GetXaxis().SetTitle("n-side [mm]")
-    h2.GetYaxis().SetTitle("p-side [mm]")
+    h2.GetYaxis().SetTitle("Al side [mm]")
+    h2.GetXaxis().SetTitle("Pt side [mm]")
     h2.SetDirectory(0)
-#    gPad.SetLogz()
+#    gPad.SetLogz(1)
     return h2
 
 
@@ -73,9 +70,9 @@ def spectrum(tree, scut):
     h1_p = ROOT.TH1F("Spectrum_pside","Spectrum pside", 300,0,150)
     h1_n = ROOT.TH1F("Spectrum_nside","Spectrum nside", 300,0,150)
 
-    tree.Draw("energy >> h1_s(300,0,150)",scut,"")
-    tree.Draw("energy_p >> h1_p(300,0,150)",scut,"same")
-    tree.Draw("energy_n >> h1_n(300,0,150)",scut,"same")
+    tree.Draw("energy >> h1_s(500,0,200)",scut,"")
+    tree.Draw("energy_p >> h1_p(500,0,200)",scut,"same")
+    tree.Draw("energy_n >> h1_n(500,0,200)",scut,"same")
     h1_s=gDirectory.Get("h1_s")
     h1_p=gDirectory.Get("h1_p")
     h1_n=gDirectory.Get("h1_n")
@@ -98,11 +95,13 @@ class Baseplot():
           self.infile = infile
           self.outname = outname
           self.dtype = dtype
+#          self.tri_cut1_d, self.tri_cut1_u, self.trig_cut2_d, self.trig_cut2_u = 1625, 1640, 1655, 1670
 
       def plots(self):
           log().info("Plotting...")
           ROOT.SetAtlasStyle()
-          filename = self.infile.GetName()
+          if type(self.infile) == str : filename = self.infile
+          else : filename = self.infile.GetName()          
           f = ROOT.TFile(filename)
           mytree   =  f.Get("tree")
 
@@ -114,7 +113,11 @@ class Baseplot():
           cv.Divide(2,2)
 
           cv.cd(1)
-          if "CdTe" in self.dtype:
+          if "Lab" in self.dtype or "lab" in self.dtype:
+             mytree.Draw("trigger >> h_trigger","","")
+          elif "JPARCDec" in self.dtype:
+             mytree.Draw("trigger >> h_trigger(300,1550,1850)","","")
+          elif "CdTe" in self.dtype:
              mytree.Draw("trigger >> h_trigger(100,200,300)","","")
           else:
              mytree.Draw("trigger >> h_trigger(300,550,850)","","")
@@ -124,12 +127,28 @@ class Baseplot():
           h_tri.GetXaxis().SetTitle("trigger")
           h_tri.GetYaxis().SetTitle("count")
           h_tri.Write()         
+          if "Lab" in self.dtype or "lab" in self.dtype:
+             Cut = makecut(basecut="1")
+          elif "JPARCDec" in self.dtype:
+             Cut = makecut(basecut="((trigger > 1625 && trigger < 1640) || (trigger > 1655 && trigger < 1670))")
+          elif "CdTe" in self.dtype:
+             Cut = makecut(basecut="((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253))")
+          else:
+             Cut = makecut(basecut="((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))")
+          cut = Cut.get()
+          line1_d = ROOT.TLine(1625,0,1625,h_tri.GetMaximum())
+          line1_u = ROOT.TLine(1640,0,1640,h_tri.GetMaximum())
+          line2_d = ROOT.TLine(1655,0,1655,h_tri.GetMaximum())
+          line2_u = ROOT.TLine(1670,0,1670,h_tri.GetMaximum())
+          line1_d.SetLineColor(ROOT.kAzure); line1_u.SetLineColor(ROOT.kAzure);
+          line2_d.SetLineColor(2); line2_u.SetLineColor(2);
+          line1_d.Draw("same");line1_u.Draw("same");line2_d.Draw("same");line2_u.Draw("same");          
 
           cv.cd(2)
           gPad.SetRightMargin(0.15)   
           gPad.SetLogz(1) 
           gStyle.SetPalette(56)
-          mytree.Draw("nsignaly_lv2:nsignalx_lv2 >> hn2d(25,0,25,25,0,25)","","colz")
+          mytree.Draw("nsignaly_lv2:nsignalx_lv2 >> hn2d(25,0,25,25,0,25)",cut,"colz")
           h_nhit = gDirectory.Get("hn2d")
           h_nhit.SetTitle("nhits of lv2")
           h_nhit.GetXaxis().SetTitle("nhits Xaxis")
@@ -137,31 +156,30 @@ class Baseplot():
           h_nhit.Write()
  
           cv.cd(3)
-          if "Lab" in self.dtype or "lab" in self.dtype:
-             Cut = makecut(basecut="1")
-          elif "CdTe" in self.dtype:
-             Cut = makecut(basecut="((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253))")
-          else:
-             Cut = makecut(basecut="((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))")
-          cut = Cut.get()
           hist_spectrum_s, hist_spectrum_p, hist_spectrum_n = spectrum(mytree,cut)
           hist_spectrum_s.Write()
           hist_spectrum_p.Write()
           hist_spectrum_n.Write()
           hist_spectrum_s.SetLineColor(1)
           hist_spectrum_s.SetLineWidth(1)
-          hist_spectrum_s.SetMaximum(hist_spectrum_s.GetMaximum()*1.3);
-          hist_spectrum_p.SetLineColor(ROOT.kPink+9)
+          #hist_spectrum_p.SetLineColor(ROOT.kPink+9)
+          hist_spectrum_p.SetLineColor(2)
           hist_spectrum_p.SetLineWidth(1)
           hist_spectrum_n.SetLineColor(ROOT.kAzure-1)
           hist_spectrum_n.SetLineWidth(1)
-          hist_spectrum_s.Draw()
+
+          maxbin = hist_spectrum_n.GetMaximum()
+          if  hist_spectrum_p.GetMaximum() > maxbin : maxbin = hist_spectrum_p.GetMaximum()
+          if  hist_spectrum_s.GetMaximum() > maxbin : maxbin = hist_spectrum_s.GetMaximum()
+          hist_spectrum_n.SetMaximum(maxbin*1.15)
+
+          leg = ROOT.TLegend(.55,.78,.90,.90)
+          hist_spectrum_n.Draw()
           hist_spectrum_p.Draw("same")
-          hist_spectrum_n.Draw("same")
-          leg = ROOT.TLegend(.55,.78,.75,.90)
-          leg.AddEntry(hist_spectrum_s,  "E #gamma", "l")
-          leg.AddEntry(hist_spectrum_p,  "P-side", "l")
-          leg.AddEntry(hist_spectrum_n,  "N-side", "l")
+          #hist_spectrum_s.Draw("same")
+          #leg.AddEntry(hist_spectrum_s,  "E #gamma", "l")
+          leg.AddEntry(hist_spectrum_p,  "Pt side (Cathode)", "l")
+          leg.AddEntry(hist_spectrum_n,  "Al side (Anode)", "l")
           leg.Draw("same")
           
  
@@ -169,6 +187,8 @@ class Baseplot():
           gPad.SetLeftMargin(0.15)
           gPad.SetBottomMargin(0.15)
           if "Lab" in self.dtype or "lab" in self.dtype:
+             Cut.add("1")
+          elif "JPARCDec" in self.dtype:
              Cut.add("1")
           elif "CdTe" in self.dtype:
              Cut.add("(energy > 72 && energy < 78)")
@@ -180,7 +200,7 @@ class Baseplot():
           gPad.SetLogz(0) 
           gStyle.SetPalette(56)
           gPad.SetRightMargin(0.15)
-          if "Lab" in self.dtype or "lab" in self.dtype:
+          if "Lab" in self.dtype or "JPARC" in self.dtype:
              hist_image.RebinX(1)
              hist_image.RebinY(1)
           else:
@@ -190,5 +210,5 @@ class Baseplot():
 
           outf.Write()
           cv.Print(printname+".pdf")
-#          log().info("Finished plots!")
+          log().info("plot in : {}".format(printname))
 
