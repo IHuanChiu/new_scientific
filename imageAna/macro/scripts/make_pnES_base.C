@@ -77,7 +77,7 @@ void make_pnES_base(){
   ha_p->SetLineColor(kPink);
 //  ha_n->SetLineColor(kSpring-6);
 
-  TLegend* leg = new TLegend(.55,.75,.85,.90);
+  TLegend* leg = new TLegend(.25,.75,.55,.90);
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize(0);

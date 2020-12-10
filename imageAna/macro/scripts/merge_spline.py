@@ -144,10 +144,13 @@ def merge():
           _index=_index+1
           _g.SetPoint(_index, 1200, (1200-f_x)*slope + f_y)
        _s = ROOT.TSpline3("spline_"+str(i), _g)
-       _s.SetName("spline_"+str(i))
-       _s.Write()
+#       _s.SetName("spline_"+str(i))
+#       _s.Write()
+
 #       _g.SetName(graph_name)
-#       _g.Write()
+       _g.SetName("spline_"+str(i))
+       _g.Write()
+
        spline_list.append(_s)
        del _g,_s    
     fout.Write()

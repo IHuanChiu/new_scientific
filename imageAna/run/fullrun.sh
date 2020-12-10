@@ -14,9 +14,9 @@ OUTNAME="test1020"
 # ================== Simple test run ====================
 #python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
 #jparc1205 test
-#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Am/data1201a_00006_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge2.root -o cali_am2 
-#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Ba/data1130d_00005_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge2.root -o cali_ba2 
-python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Co/data1201a_00022_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge2.root -o cali_co2 
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Am/data1201a_00006_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge_graph.root -o cali_am2 
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Ba/data1130d_00005_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge_graph.root -o cali_ba2 
+python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Co/data1201a_00022_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge_graph.root -o cali_co2 
 #python3 main.py /Users/chiu.i-huan/Desktop/particle/particle.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o particle
 #python3 main.py /Users/chiu.i-huan/Desktop/blank/blank.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o blank
 #python3 sum_plots.py ../../../2020.12.09/sumroot_si.root -d CdTe_JPARCDec -o Si
