@@ -13,11 +13,19 @@ OUTNAME="test1020"
      
 # ================== Simple test run ====================
 #python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
-#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Am/data1201a_00002_001.root -d Si_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o wani_20201202
 #jparc1205 test
-python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Am/data1201a_00006_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o cali_am 
-python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Ba/data1130d_00005_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o cali_ba 
-python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Co/data1201a_00026_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o cali_co 
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Am/data1201a_00006_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge2.root -o cali_am2 
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Ba/data1130d_00005_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge2.root -o cali_ba2 
+python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Co/data1201a_00022_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge2.root -o cali_co2 
+#python3 main.py /Users/chiu.i-huan/Desktop/particle/particle.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o particle
+#python3 main.py /Users/chiu.i-huan/Desktop/blank/blank.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o blank
+#python3 sum_plots.py ../../../2020.12.09/sumroot_si.root -d CdTe_JPARCDec -o Si
+#python3 sum_plots.py ../../../2020.12.09/sumrootC_noPb.root -d CdTe_JPARCDec -o pb
+#python3 sum_plots.py ../../../2020.12.09/sumrootMg.root -d CdTe_JPARCDec -o Mg 
+#python3 sum_plots.py ../../../2020.12.09/sumrootblank.root -d CdTe_JPARCDec -o blank
+#python3 sum_plots.py ../../../2020.12.09/sumrootblank2.root -d CdTe_JPARCDec -o blank2
+#python3 sum_plots.py ../../../2020.12.09/sumrootparti.root -d CdTe_JPARCDec -o particle
+
 
 # ================== Scan cut ====================
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRCDTE}/20200307a_00057_001.root -o cut{1}_delta{2} -cut {1} -m {2} ::: 5 10 20 40 ::: 10 5 3 2

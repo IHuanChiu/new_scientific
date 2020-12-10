@@ -49,13 +49,12 @@ void make_pnES_base(){
   TCanvas *c1 = new TCanvas("c1","Energy Spectum",10,10,1100,800);
   TString name;
   TH1D *ha_p,*ha_n, *ha;
+  
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00006_001_cali_am2.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1130d_00005_001_cali_ba2.root","READ");
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00022_001_cali_co2.root","READ");
 
-//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00006_001_cali_am.root","READ");
-//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1130d_00005_001_cali_ba.root","READ");
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00026_001_cali_co.root","READ");
-
-//  name.Form("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/EnergySpectrum_combine_battery_all_co.pdf");
-  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_temp.pdf");
+  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_co2.pdf");
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
   tree_a->Draw("energy >> ha(300,0,150)","","");

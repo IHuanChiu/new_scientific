@@ -11,7 +11,7 @@ __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 
 
 import sys,os,random,math,ROOT
-from ROOT import TFile, TTree, gPad, TGraphAsymmErrors, TSpline3, gStyle, gErrorIgnoreLevel, gROOT
+from ROOT import TFile, TTree, gPad, TGraphAsymmErrors, TSpline, TSpline3, TSpline5, gStyle, gErrorIgnoreLevel, gROOT
 ROOT.gROOT.SetBatch(1)
 #TODO change here =>
 outname="machine2"
