@@ -194,7 +194,7 @@ class Calibration():
                     if fit_adc == fit_adcpre: fit_adc +=1
                     slope = (float(source_E) - float(source_Epre))/(fit_adc - fit_adcpre)
                     f_x, f_y = fit_adc, float(source_E)
-             _g.SetPoint(len(element_list) + 1, 1500, (1500-f_x)*slope + f_y) 
+             _g.SetPoint(len(element_list) + 1, 1024, (1024-f_x)*slope + f_y) 
              _s = ROOT.TSpline3("spline_"+str(i), _g)
              spline_list.append(_s)
              graph_list.append(_g)

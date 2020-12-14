@@ -50,11 +50,11 @@ void make_pnES_base(){
   TString name;
   TH1D *ha_p,*ha_n, *ha;
   
-//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00006_001_cali_am2.root","READ");
-//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1130d_00005_001_cali_ba2.root","READ");
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00022_001_cali_co2.root","READ");
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00006_001_cali_am2.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1130d_00005_001_cali_ba3.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00022_001_cali_co3.root","READ");
 
-  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_co2.pdf");
+  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_am3.pdf");
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
   tree_a->Draw("energy >> ha(300,0,150)","","");
@@ -77,7 +77,7 @@ void make_pnES_base(){
   ha_p->SetLineColor(kPink);
 //  ha_n->SetLineColor(kSpring-6);
 
-  TLegend* leg = new TLegend(.25,.75,.55,.90);
+  TLegend* leg = new TLegend(.55,.75,.85,.90);
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize(0);

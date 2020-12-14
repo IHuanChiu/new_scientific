@@ -129,7 +129,7 @@ def merge():
              slope = (_gc.GetPointY(2) - _gb.GetPointY(3))/(_gc.GetPointX(2) - _gb.GetPointX(3))
              f_x, f_y = _gc.GetPointX(2), _gc.GetPointY(2)
              _index=_index+1
-             _g.SetPoint(_index, 1200, (1200-f_x)*slope + f_y)
+             _g.SetPoint(_index, 1024, (1024-f_x)*slope + f_y)
           else:#n-side
              _index=_index+1
              if i == 0 and _gc.GetPointY(3) != 136.47: print("should be 136.47 : ", _gc.GetPointY(3))
@@ -137,12 +137,12 @@ def merge():
              slope = (_gc.GetPointY(3) - _gc.GetPointY(2))/(_gc.GetPointX(3) - _gc.GetPointX(2))
              f_x, f_y = _gc.GetPointX(3), _gc.GetPointY(3)
              _index=_index+1
-             _g.SetPoint(_index, 1200, (1200-f_x)*slope + f_y)       
+             _g.SetPoint(_index, 1024, (1024-f_x)*slope + f_y)       
        else:
           slope = (_gb.GetPointY(3) - _ga.GetPointY(5))/(_gb.GetPointX(3) - _ga.GetPointX(5))
           f_x, f_y = _gb.GetPointX(3), _gb.GetPointY(3)
           _index=_index+1
-          _g.SetPoint(_index, 1200, (1200-f_x)*slope + f_y)
+          _g.SetPoint(_index, 1024, (1024-f_x)*slope + f_y)
        _s = ROOT.TSpline3("spline_"+str(i), _g)
 #       _s.SetName("spline_"+str(i))
 #       _s.Write()

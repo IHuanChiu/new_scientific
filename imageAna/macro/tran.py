@@ -82,9 +82,14 @@ def getlineEnergy(energyFile,channel):
        if channel >= 219 and channel <= 225:  return energyFile.Get('spline_%s'%(218))
        if channel == 127:  return energyFile.Get('spline_%s'%(126))
        return energyFile.Get('spline_%s'%(channel))
-    else : 
+    elif "m5c400v.root" in energyFile.GetName(): # watanabe file 
+       if channel < 10: cal_name = "calfunc_" + "00" + str(channel) 
+       elif channel < 100:  cal_name = "calfunc_" + "0" + str(channel) 
+       else : cal_name = "calfunc_" + str(channel)
+       return energyFile.Get(cal_name)
+    else: 
        return energyFile.Get('spline_%s'%(channel))
-       
+ 
 def getTSpline(self,fname,efname,dblist):
     f = ROOT.TFile(fname) 
     line = list()
