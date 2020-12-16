@@ -50,16 +50,19 @@ void make_pnES_base(){
   TString name;
   TH1D *ha_p,*ha_n, *ha;
   
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00006_001_cali_am2.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_particle_collimator_201215_2.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_particle_201215_2.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_blank_201215_2.root","READ");
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_blank_collimator_201215_2.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1130d_00005_001_cali_ba3.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00022_001_cali_co3.root","READ");
 
-  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_am3.pdf");
+  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_blank_colli_tricut_2.pdf");
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
-  tree_a->Draw("energy >> ha(300,0,150)","","");
-  tree_a->Draw("energy_p >> ha_p(300,0,150)","","");
-  tree_a->Draw("energy_n >> ha_n(300,0,150)","","");
+  tree_a->Draw("energy >> ha(300,0,150)",    "(trigger > 1632 && trigger < 1648) || (trigger > 1665 && trigger < 1680)","");
+  tree_a->Draw("energy_p >> ha_p(300,0,150)","(trigger > 1632 && trigger < 1648) || (trigger > 1665 && trigger < 1680)","");
+  tree_a->Draw("energy_n >> ha_n(300,0,150)","(trigger > 1632 && trigger < 1648) || (trigger > 1665 && trigger < 1680)","");
   ha = (TH1D*)gDirectory->Get("ha");
   ha_p = (TH1D*)gDirectory->Get("ha_p");
   ha_n = (TH1D*)gDirectory->Get("ha_n");
@@ -77,11 +80,11 @@ void make_pnES_base(){
   ha_p->SetLineColor(kPink);
 //  ha_n->SetLineColor(kSpring-6);
 
-  TLegend* leg = new TLegend(.55,.75,.85,.90);
+  TLegend* leg = new TLegend(.20,.75,.45,.90);
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize(0);
-  leg->AddEntry(ha,  "#gamma (Matching)", "l");
+  leg->AddEntry(ha,  "Recon. #gamma", "l");
   leg->AddEntry(ha_p,  "Pt side (Cathode)", "l");
   leg->AddEntry(ha_n,   "Al side (Anode)",   "l");
 
@@ -90,11 +93,17 @@ void make_pnES_base(){
   TLine *line2 = new TLine(59.5,0,59.5,ha_n->GetMaximum());//Am
   TLine *line3 = new TLine(81,0,81,ha_n->GetMaximum());//Ba
   TLine *line4 = new TLine(122.06,0,122.06,ha_n->GetMaximum());//Co
+  TLine *line5 = new TLine(75.22,0,75.22,ha_n->GetMaximum());//C 75.22
+  TLine *line6 = new TLine(134.35,0,134.35,ha_n->GetMaximum());//O 134.35
+  TLine *line7 = new TLine(24.86,0,24.86,ha_n->GetMaximum());//O 24.86
   line0->SetLineColorAlpha(1, 0.9);
   line1->SetLineColorAlpha(1, 0.9);
   line2->SetLineColorAlpha(1, 0.9);
   line3->SetLineColorAlpha(1, 0.9);
   line4->SetLineColorAlpha(1, 0.9);
+  line5->SetLineColorAlpha(1, 0.9);
+  line6->SetLineColorAlpha(1, 0.9);
+  line7->SetLineColorAlpha(1, 0.9);
 
   c1->cd();
   //gPad->SetLeftMargin(0.2);
@@ -103,11 +112,14 @@ void make_pnES_base(){
   ha->Draw("same");
 
   leg->Draw("same");
-  line0->Draw("same");
-  line1->Draw("same");
-  line2->Draw("same");
-  line3->Draw("same");
-  line4->Draw("same");
+//  line0->Draw("same");
+//  line1->Draw("same");
+//  line2->Draw("same");
+//  line3->Draw("same");
+//  line4->Draw("same");
+  line5->Draw("same");
+  line6->Draw("same");
+  line7->Draw("same");
 
   c1->SaveAs(name.Data());
 

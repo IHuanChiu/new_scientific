@@ -14,16 +14,13 @@ OUTNAME="test1020"
 # ================== Simple test run ====================
 #python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
 #jparc1205 test
-#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2020Dec/merge_root/sample_particle.root -d CdTe_JPARCDec -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o particle
-python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2020Dec/merge_root/sample_blank.root -d CdTe_JPARCDec -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o blank
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2020Dec/merge_root/sample_particle.root -d CdTe_JPARCDec -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o 201215_2
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2020Dec/merge_root/sample_particle_collimator.root -d CdTe_JPARCDec -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o 201215_2
+python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2020Dec/merge_root/sample_C.root -d CdTe_JPARCDec -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o 201215_2
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2020Dec/merge_root/sample_blank.root -d CdTe_JPARCDec -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o 201215_2
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2020Dec/merge_root/sample_blank_collimator.root -d CdTe_JPARCDec -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o 201215_2
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Ba/data1130d_00005_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o cali_ba3 
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/machine2_cali/400n5/Co/data1201a_00022_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o cali_co3
-#python3 main.py /Users/chiu.i-huan/Desktop/particle/particle.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o particle
-#python3 main.py /Users/chiu.i-huan/Desktop/blank/blank.root -d CdTe_Lab -e ${MACRODIR}/auxfile/spline_calibration_machine2_400n5_merge.root -o blank
-#python3 sum_plots.py ../../../2020.12.09/sumroot_si.root -d CdTe_JPARCDec -o Si
-#python3 sum_plots.py ../../../2020.12.09/sumrootC_noPb.root -d CdTe_JPARCDec -o pb
-#python3 sum_plots.py ../../../2020.12.09/sumrootMg.root -d CdTe_JPARCDec -o Mg 
-#python3 sum_plots.py ../../../2020.12.09/sumrootblank.root -d CdTe_JPARCDec -o blank
 #python3 sum_plots.py ../../../2020.12.09/sumrootblank2.root -d CdTe_JPARCDec -o blank2
 #python3 sum_plots.py ../../../2020.12.09/sumrootparti.root -d CdTe_JPARCDec -o particle
 
