@@ -1,5 +1,5 @@
 
-void test_run(){
+void test_spec(){
 TTree* t1;
 TTree* t2;
 TH1D* h1;
