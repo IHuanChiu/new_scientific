@@ -695,7 +695,7 @@ class MLEM():
           for imx in range(self.nbins):
              for imy in range(self.nbins):
                 _image_update[imx][imy]=np.sum(self.matrix[:,:,:,imx,imy]*_object)
-          # TODO
+          # TODO - selection is fine?
           # cut for region
           _cutBinHorizontal,_cutBinVertical=8,24 # bins; 4 bins for 1mm
           for c in range(int(_cutBinHorizontal)):
@@ -742,7 +742,8 @@ class MLEM():
           #return object_movupdate
           return ndimage.rotate(_object,_angle,axes=(0,2),reshape=False)
           
-      def iterate_osem(self,n_iteration):                   
+      def iterate_osem(self,n_iteration,subset):                   
+          #TODO add subset selection in OSEM
           prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iteration",init_t=time.time())
           nevproc, n_savehist=0, 20
 
@@ -821,7 +822,7 @@ class MLEM():
                 self.mlemratio_list.append(hist_image_ratio)
                 self.mlemhist_list.append(hist_process_image)
                 self.mlemhist_proje_list.append(hist_process_image.ProjectionX());self.mlemhist_proje_list.append(hist_process_image.ProjectionY());             
-             _object=_object*_object_sumratio/int(len(self.h_measurement_list))# update object, TODO over n_plots?
+             _object=_object*_object_sumratio/int(len(self.h_measurement_list))# update object
              hist_process_object=ROOT.TH3D("MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
              hist_process_object.SetStats(0);
              array2hist(_object,hist_process_object)
@@ -928,7 +929,7 @@ def main_run(args):
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=_npixels,matrix=_matrix,imageinput=args.imageinput) # do iteration and get final plots
 
     # MLEM iteration
-    if   "osem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_osem(n_iteration=_n_iteration)# Ordered Subset Expectation Maximization
+    if   "osem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_osem(n_iteration=_n_iteration,subset)# Ordered Subset Expectation Maximization
     elif "mlem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_mlem(n_iteration=_n_iteration)# Maximum Likelihood Expectation Maximisation
     else: log().error("Wrong type, only MLEM or OSEM is supported.")
 

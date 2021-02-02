@@ -32,7 +32,8 @@ def setrange(_h, _axis,_up,_down):
 
 def doslice(hist3d,outname,axisname):
     name = "/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/3Dslices/hist_"+outname+"_"+axisname+".pdf"
-    cv  = createRatioCanvas("cv_"+axisname, 1200, 1600)
+    cv  = createRatioCanvas("cv_"+axisname, 1000, 900)
+    cv.SetLeftMargin(0.1)
     cv.Print(name + "[", "pdf")
     _scan_axis="xyz"
     scan_axis=_scan_axis.replace(axisname,"")
