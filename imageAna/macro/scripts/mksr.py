@@ -760,7 +760,7 @@ class MLEM():
                 # === main parts ===
                 _image=self.updateImage(_object)# make 2D image corresponding to angle from object
                 _image_ratio=self.findratio(h_measurement_array, _image)# find ratio with data
-                _object_ratio,_object=self.updateObject(_object, _image_ratio)# update object
+                _object_ratio,_object=self.updateObject(_object, _image_ratio)# UPDATE object
 
                 # === save plots ===  
                 hist_image_ratio=ROOT.TH2D("Ratio_image_{0}_iteration{1}".format(h_name,i),"image_ratio_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
@@ -822,7 +822,7 @@ class MLEM():
                 self.mlemratio_list.append(hist_image_ratio)
                 self.mlemhist_list.append(hist_process_image)
                 self.mlemhist_proje_list.append(hist_process_image.ProjectionX());self.mlemhist_proje_list.append(hist_process_image.ProjectionY());             
-             _object=_object*_object_sumratio/int(len(self.h_measurement_list))# update object
+             _object=_object*_object_sumratio/int(len(self.h_measurement_list))# UPDATE object
              hist_process_object=ROOT.TH3D("MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
              hist_process_object.SetStats(0);
              array2hist(_object,hist_process_object)
