@@ -548,13 +548,13 @@ class MLEM():
                    hx.SetMaximum(300); hy.SetMaximum(300); hx_ori.SetMaximum(300); hy_ori.SetMaximum(300); hx_fit.SetMaximum(300); hy_fit.SetMaximum(300)
 
                    _cvfit.cd((_ix+1)+_iy*self.npoints)
-                   h2.SetStats(0); h2.Draw("colz");
+                   h2.SetStats(0); h2.Draw("colz"); # fit 2D image
                    _cvori.cd((_ix+1)+_iy*self.npoints)
-                   _h2.SetStats(0);_h2.Draw("colz");
+                   _h2.SetStats(0);_h2.Draw("colz"); # ori 2D image
                    _cvx.cd((_ix+1)+_iy*self.npoints) 
-                   hx_ori.Draw(); hx.Draw("hist same"); hx_fit.Draw("hist same");
+                   hx_ori.Draw(); hx.Draw("hist same"); hx_fit.Draw("hist same"); # X comparison; ori->black, MLEM->red, fit->blue
                    _cvy.cd((_iy+1)+_ix*self.npoints) 
-                   hy_ori.Draw(); hy.Draw("hist same"); hy_fit.Draw("hist same")
+                   hy_ori.Draw(); hy.Draw("hist same"); hy_fit.Draw("hist same") # Y comparison; ori->black, MLEM->red, fit->blue
                    del _h2, h2, hx, hy, h_gaus
 
                    # === MLEM plots with matrix ===
