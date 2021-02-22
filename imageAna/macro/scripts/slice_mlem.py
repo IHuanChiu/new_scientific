@@ -13,9 +13,13 @@ ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
 #ROOT.SetAtlasStyle()
 
 nplots=40
-_outname="mlem_image"
-inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_1111_mlemall_iteration30.root"]
-#inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_1109_cut0p01_iteration15.root"]
+Ymaxrange=12
+_outname=input("output name is : ")
+if _outname == '':
+   _outname="mlem_image"
+
+#inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_1111_mlemall_iteration30.root"]
+inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_35MeV_iteration5.root"]
 
 def namelist(_name):
     if _name == "x": return ["Y [mm]", "Z [mm]"]
@@ -51,7 +55,7 @@ def doslice(hist3d,outname,axisname):
        _h2.SetTitle("slice %s %.1f mm"%(axisname,(_d+_u)/2.)) 
        _h2.GetXaxis().SetTitle(titlename[0])
        _h2.GetYaxis().SetTitle(titlename[1])
-       _h2.GetZaxis().SetRangeUser(0, 100)
+       _h2.GetZaxis().SetRangeUser(0, Ymaxrange)
        gPad.SetLogz(0)
        gStyle.SetPalette(62)
        _h2.Draw("colz")

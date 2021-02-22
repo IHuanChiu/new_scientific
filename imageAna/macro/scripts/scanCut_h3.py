@@ -4,8 +4,8 @@ from root_numpy import hist2array, array2hist, tree2array
 import numpy as np
 
 cutrangeMin=0
-cutrangeMax=500
-cutstep=5
+cutrangeMax=20
+cutstep=2
 name=input("path of file:")
 if not os.path.exists(name): 
    print("no this root file!")

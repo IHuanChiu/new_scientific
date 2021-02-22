@@ -351,7 +351,8 @@ class MLEM():
           fint=ROOT.TFile(inputname,"read")
           n_angles=16 # always 16 for J-PARC data, related to angle
           for i in range(n_angles):
-             #if i%2 != 0: continue
+             #if i%2 != 0: continue # you can remove some plots
+             #if i == 1: continue # you can remove some plots
              _h=fint.Get("h"+str(i))
              _h.SetDirectory(0)
              _harray=self.movemeasurement(hist2array(_h))
@@ -742,7 +743,7 @@ class MLEM():
           #return object_movupdate
           return ndimage.rotate(_object,_angle,axes=(0,2),reshape=False)
           
-      def iterate_osem(self,n_iteration,subset):                   
+      def iterate_osem(self,n_iteration):                   
           #TODO add subset selection in OSEM
           prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iteration",init_t=time.time())
           nevproc, n_savehist=0, 20
@@ -754,6 +755,8 @@ class MLEM():
                 nevproc+=1
                 if prog: prog.update(nevproc)
                 h_measurement_array=self.h_measurement_list[_ih]
+                # TODO should use this angle_list to find relat angle
+                # ex. we remove h0, and h1 for reconstruction, h_angle is 360/14. WRONG!
                 #h_angle=self.h_angle_list[_ih]
                 h_name=self.h_name_list[_ih]
                 #h_index=self.getindex(h_angle)
@@ -914,7 +917,7 @@ def main_run(args):
        _npixels=args.npixels
     else:
        log().info("Loading Matrix...")
-       with open("./matrix_vector.npy", 'rb') as f:
+       with open("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/macro/scripts/matrix_vector.npy", 'rb') as f:
           _matrix=np.load(f)
        _npixels = _matrix.shape[0]
 
@@ -929,7 +932,7 @@ def main_run(args):
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=_npixels,matrix=_matrix,imageinput=args.imageinput) # do iteration and get final plots
 
     # MLEM iteration
-    if   "osem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_osem(n_iteration=_n_iteration,subset)# Ordered Subset Expectation Maximization
+    if   "osem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_osem(n_iteration=_n_iteration)# Ordered Subset Expectation Maximization
     elif "mlem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_mlem(n_iteration=_n_iteration)# Maximum Likelihood Expectation Maximisation
     else: log().error("Wrong type, only MLEM or OSEM is supported.")
 
@@ -959,7 +962,7 @@ if __name__=="__main__":
    parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20200406a_5to27_cali_caldatat_0828_split.root", help="Input File Name for system response")
    parser.add_argument("--imageinput", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_LP_0909.root", help="Input File Name for 3D image")
    #parser.add_argument("--imageinput", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.Si_1120.root", help="Input File Name for 3D image")
-   parser.add_argument("-o", "--output", type=str, default="sr_outputname", help="Additional Output File Name")
+   parser.add_argument("-o", "--output", type=str, default="temp", help="Additional Output File Name")
    parser.add_argument("-m", "--matrix", type=str, default=None, help="System response database")
    parser.add_argument("-n","--npoints",dest="npoints",type=int, default=5, help="Number of points in each axis")
    parser.add_argument("-s","--stepsize",dest="stepsize",type=int, default=10, help="step size of points")

@@ -71,7 +71,7 @@ def run3Dimage(args):
     else: _outfig = "/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/hist_3D_image."+args.dtype+"_cut{}.ROOT.pdf".format(args.cut)
     cv.Print(_outfig)
 
-    # === make slices for xyz-sxis & projection ===
+    # === make slices along xyz-axis & projection ===
     if args.input3Dhist is None: 
        
        log().info("Making 2D Slices")

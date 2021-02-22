@@ -153,7 +153,9 @@ def makeTH2D(_chain,dtype):
        cutname = "((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253)) && (energy_p > 72 && energy_p < 78)" 
     else: 
        cutname = "((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630)) && (energy_p > 12 && energy_p < 16)" 
-    UTcut = "((unixtime-{0}) > 0)".format(_it)
+    UTcut = "((unixtime-{0}) > 0)".format(_it)# all momentum
+#    UTcut = "((unixtime > 1583663336 && unixtime < 1583663640) || (unixtime > 1583665785 && unixtime < 1583668072) || (unixtime > 1583670126 && unixtime < 1583728926) || (unixtime > 1583797615 && unixtime < 1583807420) || (unixtime > 1583808902 && unixtime < 1583823904) || (unixtime > 1583825103 && unixtime < 1583837643) || (unixtime > 1583838416 && unixtime < 1583846500) || (unixtime > 1583847476 && unixtime < 1583872201))"# momentum 30MeV
+#    UTcut = "((unixtime > 1583663750 && unixtime < 1583664003) || (unixtime > 1583668150 && unixtime < 1583669991) || (unixtime > 1583736792 && unixtime < 1583795103))".format(_it)# momentum 35MeV
     for _i in range(_nsteps):
 #       icut = TCut(cutname+"&&"+UTcut+"&&"+"(int(((unixtime-{0})/{1})%{2})=={3})".format(_it,_timerange,_nsteps,_i)) 
        icut = TCut(cutname+"&&"+UTcut+"&&"+_getUTcut(_i))
@@ -166,7 +168,7 @@ def makeTH2D(_chain,dtype):
     return h2list
 
 def mergeTH2D(_h2list):
-    # merge hist. with same angle
+    # merge hist. at same angle
     _n_angle_step, _n_step=16, 31
     h2list=[]
     h2list.append(_h2list[0])
