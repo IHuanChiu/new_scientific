@@ -12,19 +12,25 @@ __location__ = os.path.realpath(
 ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
 #ROOT.SetAtlasStyle()
 
+#inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_1111_mlemall_iteration30.root"]
+inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_iteration100.root"]
+
 nplots=40
-Ymaxrange=12
+Ymaxrange=50
+print("input name is : {}".format(inputname_list))
 _outname=input("output name is : ")
 if _outname == '':
    _outname="mlem_image"
 
-#inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_1111_mlemall_iteration30.root"]
-inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_35MeV_iteration5.root"]
 
 def namelist(_name):
-    if _name == "x": return ["Y [mm]", "Z [mm]"]
-    if _name == "y": return ["X [mm]", "Z [mm]"]
-    if _name == "z": return ["X [mm]", "Y [mm]"]
+    # y->Z, z -> X, x->Y
+    if _name == "x": return ["X", "Z [mm]", "Y [mm]"]
+    if _name == "y": return ["Y", "Z [mm]", "X [mm]"] 
+    if _name == "z": return ["Z", "Y [mm]", "X [mm]"]
+#    if _name == "x": return ["Z", "Y [mm]", "X [mm]"]
+#    if _name == "y": return ["Y", "Z [mm]", "X [mm]"] 
+#    if _name == "z": return ["X", "Z [mm]", "Y [mm]"]
 
 def setrange(_h, _axis,_up,_down):
     _h.GetXaxis().SetRangeUser(-20, 20)
@@ -52,9 +58,9 @@ def doslice(hist3d,outname,axisname):
        _array[np.where(_array == 0)]=0.001
        array2hist(_array,_h2)
        _h2.SetStats(0)
-       _h2.SetTitle("slice %s %.1f mm"%(axisname,(_d+_u)/2.)) 
-       _h2.GetXaxis().SetTitle(titlename[0])
-       _h2.GetYaxis().SetTitle(titlename[1])
+       _h2.SetTitle("slice %s %.1f mm"%(titlename[0],(_d+_u)/2.)) 
+       _h2.GetXaxis().SetTitle(titlename[1])
+       _h2.GetYaxis().SetTitle(titlename[2])
        _h2.GetZaxis().SetRangeUser(0, Ymaxrange)
        gPad.SetLogz(0)
        gStyle.SetPalette(62)
@@ -64,7 +70,8 @@ def doslice(hist3d,outname,axisname):
 
 for _if in inputname_list:
    f_mlem=ROOT.TFile(_if,"read")
-   h3=f_mlem.Get("MLEM_3Dimage")
+#   h3=f_mlem.Get("MLEM_3Dimage")
+   h3=f_mlem.Get("MLEM_3Dimage_h15_iteration14")
    doslice(h3,_outname,"x")
    doslice(h3,_outname,"y")
    doslice(h3,_outname,"z")

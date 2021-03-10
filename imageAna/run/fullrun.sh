@@ -61,4 +61,4 @@ OUTNAME="test1020"
 
 # ================== run MLEM ====================
 #python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_LP_0909.root 
-python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_35MeV.root -o 35MeV -l 5 
+python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV.root -o 30MeV -l 100
