@@ -12,7 +12,7 @@ OUTNAME="test1020"
 
      
 # ================== Simple test run ====================
-#python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
+python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
 #jparc1205 test
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2020Dec/merge_root/sample_particle.root -d CdTe_JPARCDec -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o 201215_2
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2020Dec/merge_root/sample_particle_collimator.root -d CdTe_JPARCDec -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o 201215_2
@@ -61,4 +61,4 @@ OUTNAME="test1020"
 
 # ================== run MLEM ====================
 #python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_LP_0909.root 
-python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV.root -o 30MeV -l 100
+python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV.root -o 30MeV -l 1
