@@ -9,13 +9,13 @@ using namespace std;
 
 int usage(void)
 {
-    std::string message = "Usage: ./run <input root file> <output>";
+    std::string message = "Usage: ./run <input file> <output name>";
     std::cerr << message << std::endl;
     return 0;
 }
 
 void tran(std::string input_name, std::string output_name){
-  int skiplines = 18;//skip haed lines
+  int skiplines = 10;//skip haed lines
   int nch=8192;
   int inti_channel = 1;
   string str, str_temp;
@@ -31,7 +31,7 @@ void tran(std::string input_name, std::string output_name){
   //get real nch for data
   getline(fin,str_temp);
   str_temp.erase(str_temp.begin(), str_temp.begin()+2); 
-  nch = stod(str_temp); 
+//  nch = stod(str_temp); 
   cout << "number of channels : " << nch << endl;
   
   struct Event{
@@ -46,18 +46,25 @@ void tran(std::string input_name, std::string output_name){
   tree->Branch("energy",&eve.energy,"energy/D");
   TH1F * h1 = new TH1F ("ADCspectrum","ADCspectrum",nch,0,nch);
   TH1F * h2 =  new TH1F ("energy","energy",nch,0,415);;
- 
-  while(getline(fin,str))
+
+  bool find_data_line=false;
+  while(getline(fin,str)) // get each line in fin
   { 
+      //Get region => Data->End
+      if(!find_data_line){
+        if(str.find("<<DATA>>") != string::npos) find_data_line=true;
+        continue; // <<DATA>> is continue
+      }
+      if(!find_data_line) continue;
+      if(str.find("<<END>>") != string::npos) break;
+
       str.erase(str.end()-1, str.end()); //remove "," from string
-      eve.count = stod(str);//number of event in each channel
+      eve.count = stod(str);//number of count in each channel
 
       eve.channel = inti_channel;//find channel
-      if(input_name.find("CH3") != string::npos) eve.energy = (inti_channel+13.467)/19.833;
-      if(input_name.find("CH5") != string::npos) eve.energy = (inti_channel);
-      if(input_name.find("CH7") != string::npos) eve.energy = (inti_channel+11.467)/19.833;
-
+      eve.energy = 0.264337+eve.channel*0.0447607;
       cout << eve.channel << "|" << eve.count << " ";
+      if(inti_channel%10 == 0) cout << " \n";
       for (int ie=0; ie < eve.count; ie++){
          tree->Fill();
          h1->Fill(eve.channel);
