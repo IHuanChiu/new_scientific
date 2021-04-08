@@ -1,0 +1,28 @@
+Input:
+ - path : ["/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/root/"]
+ - file1 : ["203079_beam.root"]
+ - file2 : ["203080_beam.root"]
+
+Atom:
+ - O : [133.5]
+ - Mg : [56.09]
+ - Al : [65.87]
+ - Si : [76.42]
+ - Ca : [54.65, 156.29]
+ - Fe : [42.78, 92.49]
+ - Cu : [115]
+
+#PreSelection:
+#  cuts:
+#   - NOTHING : [name=PreSelection_AllEvents]
+#   - $VERTEX_PRESEL : [kVertex, name=VERTEX_SELECTION]
+#   - N_MIN : [kVertex, 1, name=MIN_ONE_VERTEX]
+#   - $MUON_PRESEL : [kMuons, 26, name=MUON_PRE]
+#   - N_EQUAL : [kMuons, 1, name=MUONVETO]
+#   - $ELECTRON_PRESEL : [kElectrons, 15, name=ELE_PRE]
+#   - ELEVETO : [kElectrons, name=ELEVETO]
+#   - HAS_NO_BTAG : [kJets, name=BVETOED]
+#   - ANALYSISTRIGGERSTT : [kTaus, kEventinfo, 0.2, name=TriggerRegionSTT]
+#   - MINPT_INDEX : [kTaus, 0, 20, name=LEADINGTAU_PT]
+#   - $TAU_PRESEL : [kTaus, name=TAU_BASESELECTION]
+#   - $N_MIN : [kTaus, 1, name=STILL_TWO_TAUS]
