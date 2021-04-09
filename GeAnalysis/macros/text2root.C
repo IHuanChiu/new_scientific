@@ -25,24 +25,28 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   Double_t c[6]={0.260015,0.372299,0.447283,0.098903,0.297717,0.271931};
 
   struct Event{
-    Int_t nDetector;
-    Int_t channel[6];
-    Double_t energy[6];
-    Double_t count[6];
+    Int_t detID;
+    Int_t channel;
+    Double_t energy;
+    Double_t count;
   };
   Event eve;
   TFile * outputTfile = new TFile (Form("%s.root",(run_number+"_beam"+output_name).c_str()),"RECREATE");
   TTree * tree = new TTree ("tree","Event tree from ascii file");
-  tree->Branch("nDetector",&eve.nDetector,"nDetector/I");
-  tree->Branch("channel",&eve.channel,"channel[nDetector]/I");
-  tree->Branch("energy",&eve.energy,"energy[nDetector]/D");
+  tree->Branch("detID",&eve.detID,"detID/I");
+  tree->Branch("channel",&eve.channel,"channel/I");
+  tree->Branch("energy",&eve.energy,"energy/D");
   TH1F * h1 = new TH1F ("Channel","Channel",nch,0,nch);
-  TH1F * h2 =  new TH1F ("Energy","Energy",nch,0,220);;
+  TH1F * h2 =  new TH1F ("Energy","Energy",220*20,0,220);//1keV/20 = 50 eV per bin
+  TH1F * h2_l =  new TH1F ("el","el",50*20,20,70);
+  TH1F * h2_m =  new TH1F ("em","em",70*20,70,140);
+  TH1F * h2_h =  new TH1F ("eh","eh",60*20,140,200);
 
-  eve.nDetector=total_dets;
 
   for(int idet=0; idet < total_dets; idet++){
      std::cout << " =================================   Current detector : " << idet+1  << " ================================ "<< std::endl;
+     eve.detID=idet+1;
+
      int init_channel = 1;
      std::string input_name=run_number+"_beam_CH"+std::to_string(idet+1)+".pha";
      std::ifstream fin;
@@ -64,17 +68,19 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
      while(getline(fin,str))
      { 
          str.erase(str.end()-1, str.end()); //remove "," from string
-         eve.count[idet] = stod(str);//number of event in each channel
+         eve.count = stod(str);//number of event in each channel
    
-         eve.channel[idet] = init_channel;//find channel
-         eve.energy[idet] = a[idet]*pow(eve.channel[idet],2)+b[idet]*eve.channel[idet]+c[idet];
+         eve.channel = init_channel;//find channel
+         eve.energy = a[idet]*pow(eve.channel,2)+b[idet]*eve.channel+c[idet];
          if(idet == 0){
-         cout << eve.channel[idet] << "|" << eve.count[idet] << " ";}
-//         if(eve.channel[idet]%10 == 0) cout << " \n";
-         for (int ie=0; ie < eve.count[idet]; ie++){
-            tree->Fill();//TODO: why you fill idet = 0, 1~5 is wrong number
-            h1->Fill(eve.channel[idet]);
-            h2->Fill(eve.energy[idet]);
+         cout << eve.channel << "|" << eve.count << " ";}
+         for (int ie=0; ie < eve.count; ie++){
+            h1->Fill(eve.channel);
+            h2->Fill(eve.energy);
+            if(eve.energy < 70){ h2_l->Fill(eve.energy);
+            }else if(eve.energy < 140){ h2_m->Fill(eve.energy);
+            }else if(eve.energy < 210) {h2_h->Fill(eve.energy);}
+            tree->Fill();
          }
          init_channel++;
      }

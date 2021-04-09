@@ -64,17 +64,23 @@ def main(args):
                       n_bkg_down=_h.Integral(_h.FindBin(e_central-_3sigma*2),_h.FindBin(e_central-_3sigma))
                       n_bkg_up=_h.Integral(_h.FindBin(e_central+_3sigma),_h.FindBin(e_central+_3sigma*2))
                       final_count = n_signal-n_bkg_down-n_bkg_up
+                      error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(n_bkg_down+n_bkg_up),2))
                    if Type == "Up":
                       n_bkg_down=_h.Integral(_h.FindBin(e_central-_3sigma*2),_h.FindBin(e_central-_3sigma))
                       final_count = n_signal-2*n_bkg_down
+                      error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_down),2))
                    if Type == "Down":
                       n_bkg_up=_h.Integral(_h.FindBin(e_central+_3sigma),_h.FindBin(e_central+_3sigma*2))
                       final_count = n_signal-2*n_bkg_up
+                      error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_up),2))
 
                    if final_count < 0: 
-                      print(" Atom : {0},  Energy : {1}, Count : {2} ".format(_atom,e_central, "No Peak"))
+                      print(" Atom : {0},  Energy : \033[1;36m {1} \033[0m, Count : \033[1;35m {2} \033[0m ".format(_atom,e_central, "No Peak"))
                    else:
-                      print(" Atom : {0},  Energy : {1}, Count : {2} , Type : {3}".format(_atom,e_central, final_count, Type))
+                      if Type != "None":
+                         print(" Atom : {0},  Energy : \033[1;36m {1} \033[0m, Count : \033[1;32m {2} \033[0m ({4}) , Type : \033[1;33m {3} \033[0m".format(_atom,e_central, final_count, Type, int(error)))
+                      else:
+                         print(" Atom : {0},  Energy : \033[1;36m {1} \033[0m, Count : \033[1;32m {2} \033[0m ({4}), Type : {3}".format(_atom,e_central, final_count, Type, int(error)))
 
        print(" ============================================== ")
 
