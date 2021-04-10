@@ -6,7 +6,8 @@ Input:
 # - file : ["Fe/203082_beam.root"]
  - file : ["White/203084_beam.root"]
  - file : ["Black/203086_beam.root"]
- - file : ["NWA4734/203088_beam.root"]
+# - file : ["NWA4734/203088_beam.root"]
+ - file : ["DEW12007_bar/203089_beam.root"]
 
 Atom:
  - O : [33.5848, 133.5]

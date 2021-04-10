@@ -82,9 +82,9 @@ void mk_Comparison(){
   TH1F* h3_s;
 
 //Load file : change name and number of matrix
-  std::string mainname[3]={"DEW12007","White","Black","NWA4734"};//DEW12007, White, Black
-  std::string  mainrun[3]={"203079","203084","203086","203088"};//203079, 203084, ??
-  for (int j = 0;  j < 3 ; j++){
+  std::string mainname[4]={"DEW12007","White","Black","DEW12007_bar"};//DEW12007, White, Black
+  std::string  mainrun[4]={"203079","203084","203086","203089"};//203079, 203084, ??
+  for (int j = 0;  j < 4 ; j++){
      std::string inputname[4]={"Al","Fe","Holder","Ti"};
      std::string   runname[4]={"203081","203082","203068","203080"};
      for (int i = 0;   i < 4 ; i++){
