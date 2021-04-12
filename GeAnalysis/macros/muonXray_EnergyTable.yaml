@@ -4,10 +4,15 @@ Input:
 # - file : ["Ti/203080_beam.root"]
 # - file : ["Al/203081_beam.root"]
 # - file : ["Fe/203082_beam.root"]
- - file : ["White/203084_beam.root"]
- - file : ["Black/203086_beam.root"]
+# - file : ["White/203084_beam.root"]
+# - file : ["Black/203086_beam.root"]
 # - file : ["NWA4734/203088_beam.root"]
  - file : ["DEW12007_bar/203089_beam.root"]
+# - file : ["Blank_dsl9/203090_beam.root"]
+# - file : ["Blank_dsl13/203091_beam.root"]
+# - file : ["Blank_dsl20/203092_beam.root"]
+# - file : ["Blank_35MeV/203094_beam.root"]
+ - file : ["DEW12007_bar_35MeV/203095_beam.root"]
 
 Atom:
  - O : [33.5848, 133.5]

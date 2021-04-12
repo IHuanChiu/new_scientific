@@ -16,6 +16,11 @@ from ROOT import gROOT, AddressOf
 import enums 
 from hits import hitphoton
 
+def energy_correction(ep1, ep2, _file):
+    # === ep1 is (e_pt+e_al)/2 ===
+    # === ep2 is (e_pt-e_al)/2 ===
+    return e_corr
+
 class Category():
       def __init__(self, cluster=None):
           # category for single cluster
