@@ -3,7 +3,6 @@
 *.pyc
 *.npy
 .DS_Store
-CdTe123/data
 CdTe123/*.xlsx
 CdTe123/*.pdf
 TRIM_simulation
