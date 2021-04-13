@@ -232,7 +232,7 @@ def Level1HitArray(rawdata_list, Eline, dblist):
           signaly.update({n_hit_y:SetHitInfo(n_hit_y, i_data.adcm, energy, poi, i_data.stripid, i_data.asicid)})
     return signalx, signaly
         
-def Level1Hit(tree, adccut, coef_R, dblist, efname, eline, dtype):
+def Level1Hit(tree, coef_R, dblist, efname, eline, dtype):
     n_hit_x, n_hit_y, istrip = 0, 0, 0
     signalx, signaly = {}, {}
     EnergyCut = enums.EnergyCut

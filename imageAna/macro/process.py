@@ -54,7 +54,8 @@ class Processor():
 
       def __get_selector__(self):
           log().info("Preparing jobs...")
-          selectorjob_list = list()          
+          selectorjob_list = list()         
+#          treeList = ROOT.TList()
           sele,nfile = 0,0
           log().info("Current Tpye : %s "%(self.dtype))
           #MYTIME
@@ -62,23 +63,25 @@ class Processor():
              nfile+=1
              self.ifile = ROOT.TFile(self.ifilename)
              self.tree = self.ifile.Get("eventtree")  
-             self.tree = DisableBranch(self.tree)
 
+             self.tree = DisableBranch(self.tree)
              if self.nevents:   self.Nevents = min(self.nevents, self.tree.GetEntries())
              else: self.Nevents = self.tree.GetEntries()
-             self.skimmingtree = PreEventSelection(self.ifilename, self.tree, self.Nevents) # this is ROOT.TEventList
+             self.skimmingtree, _cutname = PreEventSelection(self.ifilename, self.tree, self.Nevents) # this is ROOT.TEventList
+
              sele += self.skimmingtree.GetN()     
+#             treeList.append(self.tree)
              printname = self.ifilename.split("/")[-1]
              log().info("Total passed events : %d / %d (%s, %d/%d)"%(self.skimmingtree.GetN(),self.Nevents,printname,nfile,len(self.ifilelist)))
-
-             self.T = tran_process(ifile=self.ifilename, tree=self.tree, event_list=self.skimmingtree ,efile=self.efile, dtype=self.dtype, ecut=self.ecut, deltae=self.deltae)        
+#             if nfile == 1 : _inputname=self.ifilename
+#             else:_inputname=self.ifilename+"_Sum"
+             self.T = tran_process(tree=self.tree, event_list=self.skimmingtree ,efile=self.efile, dtype=self.dtype, ecut=self.ecut, deltae=self.deltae)        
              self.register(self.ifilename, self.T.drawables) 
-             #self.T.h1_event_cutflow.Fill(0,self.Nevents)
-             #selectorjob_list.append(SelectorCfg(tree=self.skimmingtree, tran=self.T))
 
+#          _tree=ROOT.TTree.MergeTrees(treeList)
           selectorjob_list = [SelectorCfg(run_id=i, tran=self.T) for i in range(sele)]
           return sele, selectorjob_list 
-                
+
       def __process__(self,neventsum, selectorjob_list):
           if not self.ncores:   ncores = min(2, cpu_count())
           else: ncores = min(self.ncores, cpu_count())
@@ -130,8 +133,7 @@ def __print_output__(ofile, Drawables):
     ofile.Close()
 
 class SelectorCfg(object):
-      def __init__(self,ifile=None,tree=None,eventlist=None,efile=None, run_id=None, tran=None):
-          self.ifile = ifile
+      def __init__(self,tree=None,eventlist=None,efile=None, run_id=None, tran=None):
           self.tree = tree          
           self.eventlist = eventlist
           self.efile = efile

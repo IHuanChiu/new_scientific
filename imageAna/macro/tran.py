@@ -90,23 +90,12 @@ def getlineEnergy(energyFile,channel):
     else: 
        return energyFile.Get('spline_%s'%(channel))
  
-def getTSpline(self,fname,efname,dblist):
-    f = ROOT.TFile(fname) 
+def getTSpline(self,efname,dblist):
     line = list()
     if efname:
        ef = ROOT.TFile(efname, 'read')
        for ch in range(0, 256): 
           line.append(getlineEnergy(ef,ch))
-          if ch < 128:#x
-             if ch < 10: hist_name = "hist_cmn" + "00" + str(ch) 
-             elif ch < 100:  hist_name = "hist_cmn" + "0" + str(ch) 
-             else : hist_name = "hist_cmn" + str(ch)
-             hist = f.Get(hist_name) 
-             self.hx.Add(hist)
-          else:#y
-             hist_name = "hist_cmn" + str(ch)
-             hist = f.Get(hist_name) 
-             self.hy.Add(hist)
        ef.Close()
     else:
        for ch in range(0, 256):
@@ -219,7 +208,6 @@ def GetEventTree(tree, adccut, coef_R, dtype):
 
 class tran_process():
       def __init__(self,
-                   ifile=None,
                    tree=None,
                    event_list=None,
                    efile=None,
@@ -228,7 +216,6 @@ class tran_process():
                    deltae=None
                    ):
           # config
-          self.ifile      = ifile
           self.tree       = tree
           self.event_list = event_list
           self.dtype      = dtype
@@ -251,10 +238,10 @@ class tran_process():
           self.h1_lv2_x_nstrips.SetDirectory(0)
           self.h1_lv2_y_nstrips = ROOT.TH1D("n-side_n","n-side nstrips of level2hit",20,0,20)
           self.h1_lv2_y_nstrips.SetDirectory(0)
-          self.hx = ROOT.TH1D("hist_cmn_pside","p-side adc - cmn",1024,-50.5,973.5)
-          self.hy = ROOT.TH1D("hist_cmn_nside","n-side adc - cmn",1024,-50.5,973.5)
-          self.hx.SetDirectory(0)
-          self.hy.SetDirectory(0)
+          #self.hx = ROOT.TH1D("hist_cmn_pside","p-side adc - cmn",1024,-50.5,973.5)
+          #self.hy = ROOT.TH1D("hist_cmn_nside","n-side adc - cmn",1024,-50.5,973.5)
+          #self.hx.SetDirectory(0)
+          #self.hy.SetDirectory(0)
           self.h2_cutflow_x = ROOT.TH2D("hist_cutflow_x","remained hit after the selections",3,0,3,128,0,128)
           self.h2_cutflow_y = ROOT.TH2D("hist_cutflow_y","remained hit after the selections",3,0,3,128,0,128)
           self.h2_cutflow_x.SetDirectory(0)
@@ -306,14 +293,14 @@ class tran_process():
           if not enums.IsRandom : self.coef_R = 0
           self.dblist = Getdatabase()
 
-          self.line = getTSpline(self, ifile, self.efile, self.dblist) 
-          self.cut = findadccut(self.line, self.dtype, self.ecut)
+          self.line = getTSpline(self, self.efile, self.dblist) 
+#          self.cut = findadccut(self.line, self.dtype, self.ecut)
       #    coef_a, coef_b = findx2yshift(self.hx, self.hy)
 
           self.hist_list.append(self.h2_lv1)
           self.hist_list.append(self.h2_lv2)
-          self.hist_list.append(self.hx)
-          self.hist_list.append(self.hy)
+#          self.hist_list.append(self.hx)
+#          self.hist_list.append(self.hy)
 #          self.hist_list.append(self.h2_cutflow_x)
 #          self.hist_list.append(self.h2_cutflow_y)
 #          self.hist_list.append(self.h1_lv2_x_nstrips)
@@ -332,7 +319,7 @@ class tran_process():
           tti2=time.time()
 #          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 #          hitx_lv1, hity_lv1 = Level1HitArray(rawdata_list, self.line, self.dblist)
-          hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.cut, self.coef_R, self.dblist, self.efile, self.line, self.dtype)#Slow
+          hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.coef_R, self.dblist, self.efile, self.line, self.dtype)#Slow
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
 
           tti3=time.time()

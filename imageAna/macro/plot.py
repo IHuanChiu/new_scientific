@@ -210,5 +210,5 @@ class Baseplot():
 
           outf.Write()
           cv.Print(printname+".pdf")
-          log().info("plot in : {}".format(printname))
+          log().info("Show plot : {}".format(printname.replace("../run/", "./")+".pdf"))
 

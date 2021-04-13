@@ -25,7 +25,8 @@ def PreEventSelection(ifile, tree, nmax):
     cv = ROOT.TCanvas("","")
     tree.Draw(">>elist", cut) 
     elist = gROOT.FindObject("elist")
-    return elist
+    _cutname=cut.GetTitle()
+    return elist,_cutname
 
 def findx2yshift(h_x, h_y):
     g1x = ROOT.TF1("g1x","gaus",100,300)
