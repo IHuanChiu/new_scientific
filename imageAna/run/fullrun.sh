@@ -16,7 +16,7 @@ OUTNAME="test1020"
 # =====
 #python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/STD27MeV/ -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV
-python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/STD27MeV/cdtedsd_0403a_00087_001.root -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV
+python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/watanabe_sample/cdtedsd_inseki2_tmp1.root -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV_corr
 #python3 sum_plots.py ../../../2020.12.09/sumrootblank2.root -d CdTe_JPARCDec -o blank2
 
 

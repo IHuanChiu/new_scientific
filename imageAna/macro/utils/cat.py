@@ -16,10 +16,6 @@ from ROOT import gROOT, AddressOf
 import enums 
 from hits import hitphoton
 
-def energy_correction(ep1, ep2, _file):
-    # === ep1 is (e_pt+e_al)/2 ===
-    # === ep2 is (e_pt-e_al)/2 ===
-    return e_corr
 
 class Category():
       def __init__(self, cluster=None):
@@ -173,12 +169,13 @@ class Category():
 
 
 class EventCategory():
-      def __init__(self, hitx=None, hity=None, deltae=None):
+      def __init__(self, hitx=None, hity=None, deltae=None, response=None):
           # category for single cluster
           self.hitx = hitx 
           self.hity = hity
           self.DeltaEnergy = enums.DeltaEnergy
           if deltae is not None: self.DeltaEnergy = deltae
+          self.response_dic = response # check tran.py for the order of list 
           self.case1, self.case2, self.case3, self.case4, self.case5 = None, None, None, None, None
 
           self.GetCategory(self.hitx, self.hity)
@@ -221,11 +218,29 @@ class EventCategory():
                 _dic.update({_n:self.case5[_i]})
           return _dic
 
+      def energy_correction(self, _hitp, _hitn):
+          _name="p"+str(_hitp.nstrips)+"n"+str(_hitn.nstrips)
+          if not self.response_dic.get(_name): _name="p"+str(4)+"n"+str(3)
+          _response=self.response_dic[_name]
+          epi1=(_hitp.energy+_hitn.energy)/2 # === epi1 is (e_pt+e_al)/2 ===
+          epi2=(_hitp.energy-_hitn.energy)/2 # === epi2 is (e_pt-e_al)/2 ===
+          _e_corr=_response.Interpolate(epi1,epi2)
+          if _e_corr == 0:
+             _e_corr = (_hitp.energy+_hitn.energy)*0.5
+#             print("epi1 : ", epi1 , " epi2 : ", epi2 , " n,p = ", _hitp.nstrips," ", _hitn.nstrips)
+#             print("p : ", _hitp.energy)
+#             print("n : ", _hitn.energy)
+
+#          _ratio=epi2/_e_corr
+          return _e_corr
+
       def get1and1(self, _x0, _y0, _type=None):
           if _type is None: _t = 1
           else: _t = _type
           _d, _n={}, 0
-          _p = setphoton((_x0.energy+_y0.energy)*0.5, _x0.energy,_y0.energy,_x0.adc,_y0.adc,_x0.position,_y0.position,_t)
+          _e_corr=self.energy_correction(_x0,_y0)
+          #_p = setphoton((_x0.energy+_y0.energy)*0.5, _x0.energy,_y0.energy,_x0.adc,_y0.adc,_x0.position,_y0.position,_t)
+          _p = setphoton(_e_corr, _x0.energy,_y0.energy,_x0.adc,_y0.adc,_x0.position,_y0.position,_t)
           _n+=1
           _d.update({_n:_p})
           return _d

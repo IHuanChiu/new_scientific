@@ -90,7 +90,7 @@ def getlineEnergy(energyFile,channel):
     else: 
        return energyFile.Get('spline_%s'%(channel))
  
-def getTSpline(self,efname,dblist):
+def getTSpline(efname,dblist):
     line = list()
     if efname:
        ef = ROOT.TFile(efname, 'read')
@@ -102,6 +102,25 @@ def getTSpline(self,efname,dblist):
           func=dblist[ch].calfunc.Clone()
           line.append(func)
     return line       
+
+def getResponse():
+    _response_list=dict()
+    _file=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/macro/auxfile/epi2_epi1_caldata.root")
+    _response_list.update({"p1n1":_file.Get("graph2d_1_1")})
+    _response_list.update({"p1n2":_file.Get("graph2d_1_2")})
+    _response_list.update({"p1n3":_file.Get("graph2d_1_3")})
+    _response_list.update({"p2n1":_file.Get("graph2d_2_1")})
+    _response_list.update({"p2n2":_file.Get("graph2d_2_2")})
+    _response_list.update({"p2n3":_file.Get("graph2d_2_3")})
+    _response_list.update({"p3n1":_file.Get("graph2d_3_1")})
+    _response_list.update({"p3n2":_file.Get("graph2d_3_2")})
+    _response_list.update({"p3n3":_file.Get("graph2d_3_2")})
+    _response_list.update({"p4n1":_file.Get("graph2d_4_1")})
+    _response_list.update({"p4n2":_file.Get("graph2d_4_2")})
+    _response_list.update({"p4n3":_file.Get("graph2d_4_2")})
+    for _n in _response_list:
+       _response_list[_n].SetDirectory(0)
+    return _response_list
 
 def Getdatabase():
     databasename = "/Users/chiu.i-huan/Desktop/new_scientific/imageAna/macro/auxfile/database.root"
@@ -215,7 +234,9 @@ class tran_process():
                    ecut=None,
                    deltae=None
                    ):
-          # config
+          # ==================================
+          # config 
+          # ==================================
           self.tree       = tree
           self.event_list = event_list
           self.dtype      = dtype
@@ -223,7 +244,9 @@ class tran_process():
           self.deltae     = deltae
           self.efile      = efile
            
+          # ==================================
           # members
+          # ==================================
           self.hist_list = []
           self.tree_list = []
           self.h2_lv1 = ROOT.TH2D("hist_level1","level1 hit channel",20,0,20,20,0,20)
@@ -253,10 +276,13 @@ class tran_process():
              self.h2_cutflow_x.GetXaxis().SetBinLabel(i+1,h2_Label[i])
              self.h2_cutflow_y.GetXaxis().SetBinLabel(i+1,h2_Label[i])
 
+          # ==================================
+          # tree
+          # ==================================
           self.tout = TTree('tree','tree') 
           self.tout.SetDirectory(0)
           self.tout.Branch( 'intvar', struct, 'trigger/I:livetime:unixtime:nhit:ncluster:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' )  
-
+          #  === match hit (case-1, case-2 ...) ===
           self.tout.Branch( 'energy', AddressOf( struct, 'energy' ),  'energy[nhit]/D' )
           self.tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),  'energy_p[nhit]/D' )
           self.tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ),  'energy_n[nhit]/D' )
@@ -266,6 +292,7 @@ class tran_process():
           self.tout.Branch( 'y',        AddressOf( struct, 'axis_y' ),    'y[nhit]/D' )
           self.tout.Branch( 'type',        AddressOf( struct, 'type' ),   'type[nhit]/D' )
 
+          #  === Lv1: raw data with base energy cut; Lv2: merged hit ===
           self.tout.Branch( 'E_p_lv1', AddressOf( struct, 'E_p_lv1' ),    'E_p_lv1[nsignalx_lv1]/D' )
           self.tout.Branch( 'E_n_lv1', AddressOf( struct, 'E_n_lv1' ),    'E_n_lv1[nsignaly_lv1]/D' )
           self.tout.Branch( 'E_p_lv2', AddressOf( struct, 'E_p_lv2' ),    'E_p_lv2[nsignalx_lv2]/D' )
@@ -277,8 +304,8 @@ class tran_process():
 #          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
 #          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
 #          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
-          self.tout.Branch( 'Stripid_x_lv1', AddressOf( struct, 'Stripid_x_lv1' ),'Stripid_x_lv1[nsignalx_lv1]/D' )
-          self.tout.Branch( 'Stripid_y_lv1', AddressOf( struct, 'Stripid_y_lv1' ),'Stripid_y_lv1[nsignaly_lv1]/D' )
+#          self.tout.Branch( 'Stripid_x_lv1', AddressOf( struct, 'Stripid_x_lv1' ),'Stripid_x_lv1[nsignalx_lv1]/D' )
+#          self.tout.Branch( 'Stripid_y_lv1', AddressOf( struct, 'Stripid_y_lv1' ),'Stripid_y_lv1[nsignaly_lv1]/D' )
 
            # === Cluster ===
 #          self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[ncluster]/D' )
@@ -289,14 +316,18 @@ class tran_process():
 #          self.tout.Branch( 'Nstrips_x', AddressOf( struct, 'Nstrips_x' ),'Nstrips_x[ncluster]/D' )
 #          self.tout.Branch( 'Nstrips_y', AddressOf( struct, 'Nstrips_y' ),'Nstrips_y[ncluster]/D' )
 
+          # ==================================
+          # auxfiles
+          # ==================================
           self.coef_R = 1 # random to ADC to avoid quantum phenomenon
           if not enums.IsRandom : self.coef_R = 0
           self.dblist = Getdatabase()
+          self.line = getTSpline(self.efile, self.dblist) 
+          self.response = getResponse()
 
-          self.line = getTSpline(self, self.efile, self.dblist) 
-#          self.cut = findadccut(self.line, self.dtype, self.ecut)
-      #    coef_a, coef_b = findx2yshift(self.hx, self.hy)
-
+          # ==================================
+          # Draw hist. & tree
+          # ==================================
           self.hist_list.append(self.h2_lv1)
           self.hist_list.append(self.h2_lv2)
 #          self.hist_list.append(self.hx)
@@ -332,7 +363,7 @@ class tran_process():
           if len(hitx_lv2) != 0 and len(hity_lv2) != 0:   
    #          cluster = findcluster(hitx_lv2, hity_lv2)#Slow
    #          hit_signal = ClusterCategory(cluster)#Slow
-             hit_signal = matchLv2(hitx_lv2, hity_lv2, self.deltae)
+             hit_signal = matchLv2(hitx_lv2, hity_lv2, self.deltae, self.response)
 
           tti5=time.time()
           if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 

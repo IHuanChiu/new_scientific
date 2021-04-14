@@ -38,6 +38,7 @@ def isAdjacent(i, _hit):
     else: return False
 
 def reset(index, _lv1hit, nad, _mhit):
+    # === find energy and hit position of merge hit === 
     energy, adc = 0., 0.
     dic = {}
     for i in range(nad+1):
@@ -55,7 +56,8 @@ def reset(index, _lv1hit, nad, _mhit):
     _mhit.nstrips = nad+1
     return _mhit
           
-def Level2Hit(_hitx, _hity):  
+def Level2Hit(_hitx, _hity): 
+    # === merge adjacent hit === 
     merge_xhit, merge_yhit = {}, {}
     merge_nx, merge_ny = {}, {}
     m_nx, m_ny = 0, 0  #id 
@@ -145,9 +147,9 @@ def loophit(energy, _hit):
                 if math.fabs(energy-Etot) < enums.ClusterMatch and Etot != 0: return _l, Etot
                 else: return None, None
 
-def matchLv2(_hitx, _hity, _d):
+def matchLv2(_hitx, _hity, _d, _r):
     # === matching Lv2 hit with energy info. ===
-    c = EventCategory(hitx=_hitx, hity=_hity, deltae=_d)
+    c = EventCategory(hitx=_hitx, hity=_hity, deltae=_d, response=_r)
     return c.photon_list
 
 def ClusterCategory(_p):   
