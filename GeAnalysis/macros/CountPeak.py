@@ -3,7 +3,7 @@ import sys,os,argparse,random,math,ROOT,yaml
 def get_yaml_conf(yamlfile):
     if not os.path.isfile(yamlfile):
         raise Exception("File {} not found. Please supply valid yaml input file.".format(yamlfile))
-    with open('./muonXray_EnergyTable.yaml') as f:
+    with open(yamlfile) as f:
        data = yaml.load(f, Loader=yaml.FullLoader)
     return data
 
@@ -87,7 +87,7 @@ def main(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument( "-y", "--yamlfile", type=str, default="./muonXray_EnergyTable.yaml", help="Yaml File Name")
+    parser.add_argument( "-y", "--yamlfile", type=str, default="./configs/muonXray_EnergyTable.yaml", help="Yaml File Name")
     args = parser.parse_args()
 
     main( args)

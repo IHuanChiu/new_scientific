@@ -9,9 +9,33 @@ using namespace std;
 
 int usage(void)
 {
-    std::string message = "Usage: ./run <run number> <Total detector>";
+    std::string message = "Usage: ./text2root <path + run number>";
+    std::cerr << message << std::endl;
+    message = "Usage: check configs";
     std::cerr << message << std::endl;
     return 0;
+}
+
+string ReadInputFiles(void){
+    std::ifstream runListFile("configs/data_list.txt");
+    if (!runListFile)
+    {
+        return "None";
+    }
+    // TODO not finished yet
+    return "None";
+//    TString line;
+//    while (1)
+//    {
+//        line.ReadLine(runListFile);
+//        if (!runListFile.good())
+//            break;
+//        TObjArray *list_by_dquate = line.Tokenize("\"");
+//        TString rootFileName(((TObjString *)list_by_dquate->At(0))->String());
+//        TString comment(((TObjString *)list_by_dquate->At(2))->String());
+//        vRootFileNames.push_back(rootFileName);
+//        vRootFileComments.push_back(comment);
+//    }
 }
 
 void tran(std::string run_number, std::string nDets, std::string output_name){
@@ -37,7 +61,7 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   tree->Branch("channel",&eve.channel,"channel/I");
   tree->Branch("energy",&eve.energy,"energy/D");
   TH1F * h1 = new TH1F ("Channel","Channel",nch,0,nch);
-  TH1F * h2 =  new TH1F ("Energy","Energy",220*20,0,220);//1keV/20 = 50 eV per bin
+  TH1F * h2 =  new TH1F ("Energy","Energy",230*20,0,230);//1keV/20 = 50 eV per bin
   TH1F * h2_l =  new TH1F ("el","el",50*20,20,70);
   TH1F * h2_m =  new TH1F ("em","em",70*20,70,140);
   TH1F * h2_h =  new TH1F ("eh","eh",60*20,140,200);
@@ -104,21 +128,44 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   outputTfile->Write();
   cout << "output : " <<Form("%s.root",(run_number+"_beam"+output_name).c_str()) << endl;
 
+  //----------------------------------------------------
+  // make pha text data file from merged hist.
+  //----------------------------------------------------
+  TString phaDataName(run_number+"_beam"+output_name+"_Sum.pha");
+  ofstream phaDataFile(phaDataName.Data());
+  TDatime now;
+  phaDataFile << "# Merged PHA DATA for J-PARC created by I-Huan CHIU" << std::endl;
+  phaDataFile << "# Date: " << now.AsSQLString() << std::endl;
+  phaDataFile << "# PHA data format: binID, energy(keV) at the bin center, content" << endl;
+  Int_t nbin = h2->GetNbinsX();
+  for (Int_t i = 1; i < nbin + 1; i++)
+  {
+      Double_t binCenter = h2->GetBinCenter(i);
+      Double_t binContent = h2->GetBinContent(i);
+      phaDataFile << i << ", " << binCenter << ", " << binContent << endl;
+  }
+  phaDataFile.close();
+  cout << "output pha : " << phaDataName << endl;
+
 }
 
 int main(int argc, char *argv[]){
-  
+    
   if(argc < 4){
     argv[3] = "";
   }
   if(argc < 3){
     argv[2] = "6";
   }
+  TString inputlist;
   if(argc < 2){
+    inputlist=ReadInputFiles();
+  }
+  if(inputlist == "None"){
     usage();
     exit(1);
   }
-
+  
   printf("%s <run number>=%s <nDets>=%s <output file>=%s\n",argv[0],argv[1],argv[2],argv[3]);
   tran(argv[1], argv[2], argv[3]);
  

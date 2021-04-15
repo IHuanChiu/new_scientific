@@ -1,0 +1,3 @@
+Path="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/"
+Folder="JPARC_2021Apri/"
+SampleNameAndRunNumber="DEW12007/203079"
