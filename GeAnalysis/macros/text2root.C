@@ -4,6 +4,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH1F.h>
+#include <TRandom3.h>
 
 using namespace std;
 
@@ -43,14 +44,21 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   int nch=8192;
   string str, str_temp;
   static const int total_dets=std::stoi( nDets );
-  //calibration TODO: why I cannot use Double_t a[total_dets]?
+  //calibration
   Double_t a[6]={0.,0.,0.,0.,0.,0.};
   Double_t b[6]={0.025,0.024995,0.024995,0.025053,0.025006,0.024983};
   Double_t c[6]={0.260015,0.372299,0.447283,0.098903,0.297717,0.271931};
+  double a_base=a[0];//CH1
+  double b_base=b[0];//CH1
+  double c_base=c[0];//CH1
+  double emax_base=a_base*pow(nch,2)+b_base*nch+c_base;//CH1
+  double emin_base=a_base*pow(0,2)+b_base*0+c_base;//CH1
+  double e_shift;
 
   struct Event{
     Int_t detID;
     Int_t channel;
+    Double_t energy_ori;
     Double_t energy;
     Double_t count;
   };
@@ -59,12 +67,14 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   TTree * tree = new TTree ("tree","Event tree from ascii file");
   tree->Branch("detID",&eve.detID,"detID/I");
   tree->Branch("channel",&eve.channel,"channel/I");
+  tree->Branch("energy_ori",&eve.energy_ori,"energy_ori/D");
   tree->Branch("energy",&eve.energy,"energy/D");
   TH1F * h1 = new TH1F ("Channel","Channel",nch,0,nch);
-  TH1F * h2 =  new TH1F ("Energy","Energy",230*20,0,230);//1keV/20 = 50 eV per bin
-  TH1F * h2_l =  new TH1F ("el","el",50*20,20,70);
-  TH1F * h2_m =  new TH1F ("em","em",70*20,70,140);
-  TH1F * h2_h =  new TH1F ("eh","eh",60*20,140,200);
+  TH1F * h2 =  new TH1F ("Energy","Energy",nch,emin_base,emax_base);//1keV/20 = 50 eV per bin
+  TH1F * h2_l =  new TH1F ("el","el",int(50/b_base),20,70);
+  TH1F * h2_m =  new TH1F ("em","em",int(70/b_base),70,140);
+  TH1F * h2_h =  new TH1F ("eh","eh",int(60/b_base),140,200);
+  TRandom *r3 = new TRandom3();
 
 
   for(int idet=0; idet < total_dets; idet++){
@@ -87,37 +97,43 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
      str_temp.erase(str_temp.begin(), str_temp.begin()+2); 
      nch = stod(str_temp); 
      cout << "number of channels : " << nch << endl;
-     
+
+     //energy shift
+     e_shift=0;
+     if(c[idet]-c_base > b_base) e_shift = c[idet]-c_base;
     
      while(getline(fin,str))
      { 
          str.erase(str.end()-1, str.end()); //remove "," from string
-         eve.count = stod(str);//number of event in each channel
-   
+         eve.count = stod(str);//number of event in each channel   
          eve.channel = init_channel;//find channel
-         eve.energy = a[idet]*pow(eve.channel,2)+b[idet]*eve.channel+c[idet];
+         eve.energy_ori = a[idet]*pow(eve.channel,2)+b[idet]*eve.channel+c[idet];
+         eve.energy = eve.energy_ori-e_shift;
+         //energy correction TODO problem: check hist. and compare energy, energy_ori
+         double channel_base=(eve.energy-c_base)/b_base;
+         double E_down=a_base*pow(floor(channel_base),2)+b_base*floor(channel_base)+c_base;
+         double E_up=a_base*pow(ceil(channel_base),2)+b_base*ceil(channel_base)+c_base;
+         double Rcentral=(eve.energy-E_down)/(E_up-E_down);
+
          if(idet == 0){
          cout << eve.channel << "|" << eve.count << " ";}
          for (int ie=0; ie < eve.count; ie++){
+            //count distribution
+            if (r3->Rndm(ie)<Rcentral) eve.energy = E_down;
+            if (r3->Rndm(ie)>=Rcentral) eve.energy = E_up;
+
+            //make histograms
             h1->Fill(eve.channel);
-            h2->Fill(eve.energy);
+            h2->Fill(eve.energy);//hist. is for corrected energy
             if(eve.energy < 70){ h2_l->Fill(eve.energy);
             }else if(eve.energy < 140){ h2_m->Fill(eve.energy);
             }else if(eve.energy < 210) {h2_h->Fill(eve.energy);}
+
             tree->Fill();
          }
          init_channel++;
      }
          cout << endl;
-   
-   //  while(!fin.eof())
-   //  { 
-   //      eve.channel = inti_channel;
-   //      fin >> eve.count;
-   //      cout << "  " << eve.count << " ";
-   //      tree->Fill();
-   //      inti_channel++;
-   //  }
    
      fin.close();
   }//loop all detector
@@ -149,13 +165,13 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
 
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char const *argv[]){
     
   if(argc < 4){
     argv[3] = "";
   }
   if(argc < 3){
-    argv[2] = "6";
+    argv[2] = "6";//you should not chagne constant char
   }
   TString inputlist;
   if(argc < 2){
