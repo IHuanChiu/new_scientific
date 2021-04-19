@@ -51,8 +51,6 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   double a_base=a[0];//CH1
   double b_base=b[0];//CH1
   double c_base=c[0];//CH1
-  double emax_base=a_base*pow(nch,2)+b_base*nch+c_base;//CH1
-  double emin_base=a_base*pow(0,2)+b_base*0+c_base;//CH1
   double e_shift;
 
   struct Event{
@@ -68,9 +66,9 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   tree->Branch("detID",&eve.detID,"detID/I");
   tree->Branch("channel",&eve.channel,"channel/I");
   tree->Branch("energy_ori",&eve.energy_ori,"energy_ori/D");
-  tree->Branch("energy",&eve.energy,"energy/D");
+  tree->Branch("energy",&eve.energy,"energy/D"); //8192,0.26001500,205.06002
   TH1F * h1 = new TH1F ("Channel","Channel",nch,0,nch);
-  TH1F * h2 =  new TH1F ("Energy","Energy",nch,emin_base,emax_base);//1keV/20 = 50 eV per bin
+  TH1F * h2 =  new TH1F ("Energy","Energy",int(200/b_base),0,200);//1keV/20 = 50 eV per bin
   TH1F * h2_l =  new TH1F ("el","el",int(50/b_base),20,70);
   TH1F * h2_m =  new TH1F ("em","em",int(70/b_base),70,140);
   TH1F * h2_h =  new TH1F ("eh","eh",int(60/b_base),140,200);
@@ -109,18 +107,21 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
          eve.channel = init_channel;//find channel
          eve.energy_ori = a[idet]*pow(eve.channel,2)+b[idet]*eve.channel+c[idet];
          eve.energy = eve.energy_ori-e_shift;
-         //energy correction TODO problem: check hist. and compare energy, energy_ori
+         //energy correction
          double channel_base=(eve.energy-c_base)/b_base;
          double E_down=a_base*pow(floor(channel_base),2)+b_base*floor(channel_base)+c_base;
          double E_up=a_base*pow(ceil(channel_base),2)+b_base*ceil(channel_base)+c_base;
          double Rcentral=(eve.energy-E_down)/(E_up-E_down);
+         if(Rcentral < 0.1 && idet != 0)std::cout << "ID : " << idet  << " channel : " << channel_base << " ch up : " << ceil(channel_base) << " ch down : " << floor(channel_base)  << " main : " << eve.energy << " up : " << E_up << " down : " << E_down << " ratio down : " << Rcentral << std::endl;
 
          if(idet == 0){
          cout << eve.channel << "|" << eve.count << " ";}
          for (int ie=0; ie < eve.count; ie++){
             //count distribution
-            if (r3->Rndm(ie)<Rcentral) eve.energy = E_down;
-            if (r3->Rndm(ie)>=Rcentral) eve.energy = E_up;
+            if(idet != 0){
+               if (r3->Rndm(ie)<Rcentral){ eve.energy = E_down;
+               }else{ eve.energy = E_up;}
+            }
 
             //make histograms
             h1->Fill(eve.channel);
