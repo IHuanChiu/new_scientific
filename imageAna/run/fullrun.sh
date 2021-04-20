@@ -16,7 +16,9 @@ OUTNAME="test1020"
 # =====
 #python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/STD27MeV/ -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV
-python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/watanabe_sample/cdtedsd_inseki2_tmp1.root -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV_corr
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/watanabe_sample/cdtedsd_inseki2_tmp1.root -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV_corr
+parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/Co57/cdtedsd_0402a_0000{1}_001.root -d CdTe_Lab -o Co57_{1} -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root ::: 5 6 7 8 9 
+parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/Co57/cdtedsd_0403a_0000{1}_001.root -d CdTe_Lab -o Co57_{1} -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root ::: 3 4 5 6 7 8 9
 #python3 sum_plots.py ../../../2020.12.09/sumrootblank2.root -d CdTe_JPARCDec -o blank2
 
 

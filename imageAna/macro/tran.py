@@ -55,8 +55,8 @@ gROOT.ProcessLine(
    Double_t   E_n_lv1[128];\
    Double_t   E_p_lv2[128];\
    Double_t   E_n_lv2[128];\
-   Double_t   Nstrips_p_lv2[128];\
-   Double_t   Nstrips_n_lv2[128];\
+   Int_t   Nstrips_p_lv2[128];\
+   Int_t   Nstrips_n_lv2[128];\
    Double_t     Poi_x[512];\
    Double_t     Poi_y[512];\
    Double_t Poi_x_lv1[128];\
@@ -297,8 +297,8 @@ class tran_process():
           self.tout.Branch( 'E_n_lv1', AddressOf( struct, 'E_n_lv1' ),    'E_n_lv1[nsignaly_lv1]/D' )
           self.tout.Branch( 'E_p_lv2', AddressOf( struct, 'E_p_lv2' ),    'E_p_lv2[nsignalx_lv2]/D' )
           self.tout.Branch( 'E_n_lv2', AddressOf( struct, 'E_n_lv2' ),    'E_n_lv2[nsignaly_lv2]/D' )
-          self.tout.Branch( 'Nstrips_p_lv2', AddressOf( struct, 'Nstrips_p_lv2' ),    'Nstrips_p_lv2[nsignalx_lv2]/D' )
-          self.tout.Branch( 'Nstrips_n_lv2', AddressOf( struct, 'Nstrips_n_lv2' ),    'Nstrips_n_lv2[nsignaly_lv2]/D' )
+          self.tout.Branch( 'Nstrips_p_lv2', AddressOf( struct, 'Nstrips_p_lv2' ),    'Nstrips_p_lv2[nsignalx_lv2]/I' )
+          self.tout.Branch( 'Nstrips_n_lv2', AddressOf( struct, 'Nstrips_n_lv2' ),    'Nstrips_n_lv2[nsignaly_lv2]/I' )
 
 #          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),'Poi_x_lv1[nsignalx_lv1]/D' )
 #          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )

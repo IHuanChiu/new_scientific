@@ -112,7 +112,7 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
          double E_down=a_base*pow(floor(channel_base),2)+b_base*floor(channel_base)+c_base;
          double E_up=a_base*pow(ceil(channel_base),2)+b_base*ceil(channel_base)+c_base;
          double Rcentral=(eve.energy-E_down)/(E_up-E_down);
-         if(Rcentral < 0.1 && idet != 0)std::cout << "ID : " << idet  << " channel : " << channel_base << " ch up : " << ceil(channel_base) << " ch down : " << floor(channel_base)  << " main : " << eve.energy << " up : " << E_up << " down : " << E_down << " ratio down : " << Rcentral << std::endl;
+         if(eve.energy > 160 && idet != 0)std::cout << "ID : " << idet  << " channel : " << channel_base << " ch up : " << ceil(channel_base) << " ch down : " << floor(channel_base)  << " main : " << eve.energy << " up : " << E_up << " down : " << E_down << " ratio down : " << Rcentral << std::endl;
 
          if(idet == 0){
          cout << eve.channel << "|" << eve.count << " ";}
