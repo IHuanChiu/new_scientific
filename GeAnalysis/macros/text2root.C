@@ -48,15 +48,17 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   Double_t a[6]={0.,0.,0.,0.,0.,0.};
   Double_t b[6]={0.025,0.024995,0.024995,0.025053,0.025006,0.024983};
   Double_t c[6]={0.260015,0.372299,0.447283,0.098903,0.297717,0.271931};
-  double a_base=a[0];//CH1
-  double b_base=b[0];//CH1
-  double c_base=c[0];//CH1
+  int base_CH=1;
+  double a_base=a[base_CH-1];//CH1
+  double b_base=b[base_CH-1];//CH1
+  double c_base=c[base_CH-1];//CH1
   double e_shift;
 
   struct Event{
     Int_t detID;
     Int_t channel;
     Double_t energy_ori;
+    Double_t energy_shift;
     Double_t energy;
     Double_t count;
   };
@@ -66,6 +68,7 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   tree->Branch("detID",&eve.detID,"detID/I");
   tree->Branch("channel",&eve.channel,"channel/I");
   tree->Branch("energy_ori",&eve.energy_ori,"energy_ori/D");
+  tree->Branch("energy_shift",&eve.energy_shift,"energy_shift/D");
   tree->Branch("energy",&eve.energy,"energy/D"); //8192,0.26001500,205.06002
   TH1F * h1 = new TH1F ("Channel","Channel",nch,0,nch);
   TH1F * h2 =  new TH1F ("Energy","Energy",int(200/b_base),0,200);//1keV/20 = 50 eV per bin
@@ -106,21 +109,24 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
          eve.count = stod(str);//number of event in each channel   
          eve.channel = init_channel;//find channel
          eve.energy_ori = a[idet]*pow(eve.channel,2)+b[idet]*eve.channel+c[idet];
-         eve.energy = eve.energy_ori-e_shift;
+         eve.energy_shift = eve.energy_ori-e_shift;
          //energy correction
-         double channel_base=(eve.energy-c_base)/b_base;
+         double channel_base=(eve.energy_shift-c_base)/b_base;
          double E_down=a_base*pow(floor(channel_base),2)+b_base*floor(channel_base)+c_base;
          double E_up=a_base*pow(ceil(channel_base),2)+b_base*ceil(channel_base)+c_base;
-         double Rcentral=(eve.energy-E_down)/(E_up-E_down);
-         if(eve.energy > 160 && idet != 0)std::cout << "ID : " << idet  << " channel : " << channel_base << " ch up : " << ceil(channel_base) << " ch down : " << floor(channel_base)  << " main : " << eve.energy << " up : " << E_up << " down : " << E_down << " ratio down : " << Rcentral << std::endl;
+         double Rcentral=(eve.energy_shift-E_down)/(E_up-E_down);
+
+         if(eve.energy == 0)std::cout << "ID : " << idet  << " channel : " << channel_base << " ch up : " << ceil(channel_base) << " ch down : " << floor(channel_base)  << " main : " << eve.energy_shift << " up : " << E_up << " down : " << E_down << " ratio down : " << Rcentral << std::endl;
 
          if(idet == 0){
          cout << eve.channel << "|" << eve.count << " ";}
          for (int ie=0; ie < eve.count; ie++){
             //count distribution
-            if(idet != 0){
-               if (r3->Rndm(ie)<Rcentral){ eve.energy = E_down;
+            if(idet+1 != base_CH){
+               if (r3->Rndm(ie)>Rcentral){ eve.energy = E_down;
                }else{ eve.energy = E_up;}
+            }else{
+               eve.energy = eve.energy_shift;
             }
 
             //make histograms

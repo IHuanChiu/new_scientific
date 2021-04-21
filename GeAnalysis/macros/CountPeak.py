@@ -11,6 +11,10 @@ def get3sigma(_e):
     _s_e24k=0.152#keV
     _s_e134k=0.268#keV
     return 3*(0.152+((_s_e134k-_s_e24k)/(134-24))*_e)
+#    p0=0.0311232
+#    p1=0.00459369
+#    p2=-1.27339e-05
+#    return 3*p2*pow(_e,2)+p1*_e+p0
 
 def neighbor_exit(_h,_e,_3sigma):
     bin_down6sigma=_h.FindBin(_e-2*_3sigma)
@@ -75,12 +79,12 @@ def main(args):
                       error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_up),2))
 
                    if final_count < 0: 
-                      print(" Atom : {0},  Energy : \033[1;36m {1} \033[0m, Count : \033[1;35m {2} \033[0m ".format(_atom,e_central, "No Peak"))
+                      print(" Atom : {0},  Energy : \033[1;36m {1:.2f} \033[0m, Count : \033[1;35m {2} \033[0m ".format(_atom,e_central, "No Peak"))
                    else:
                       if Type != "None":
-                         print(" Atom : {0},  Energy : \033[1;36m {1} \033[0m, Count : \033[1;32m {2} \033[0m ({4}) , Type : \033[1;33m {3} \033[0m".format(_atom,e_central, final_count, Type, int(error)))
+                         print(" Atom : {0},  Energy : \033[1;36m {1:.2f} \033[0m, Count : \033[1;32m {2} \033[0m ({4}) , Type : \033[1;33m {3} \033[0m".format(_atom,e_central, int(final_count), Type, int(error)))
                       else:
-                         print(" Atom : {0},  Energy : \033[1;36m {1} \033[0m, Count : \033[1;32m {2} \033[0m ({4}), Type : {3}".format(_atom,e_central, final_count, Type, int(error)))
+                         print(" Atom : {0},  Energy : \033[1;36m {1:.2f} \033[0m, Count : \033[1;32m {2} \033[0m ({4}), Type : {3}".format(_atom,e_central, int(final_count), Type, int(error)))
 
        print(" ============================================== ")
 
