@@ -78,7 +78,7 @@ def main(args):
                       final_count = n_signal-2*n_bkg_up
                       error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_up),2))
 
-                   if final_count < 0: 
+                   if final_count < 0 or final_count < error*2: 
                       print(" Atom : {0},  Energy : \033[1;36m {1:.2f} \033[0m, Count : \033[1;35m {2} \033[0m ".format(_atom,e_central, "No Peak"))
                    else:
                       if Type != "None":

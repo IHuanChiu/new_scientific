@@ -1,10 +1,10 @@
 Input:
  - path : ["/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/"]
 # - file : ["DEW12007/203079_beam.root"]
- - file : ["Ti/203080_beam.root"]
- - file : ["Al/203081_beam.root"]
- - file : ["Fe/203082_beam.root"]
-# - file : ["White/203084_beam.root"]
+# - file : ["Ti/203080_beam.root"]
+# - file : ["Al/203081_beam.root"]
+# - file : ["Fe/203082_beam.root"]
+ - file : ["White/203084_beam.root"]
 # - file : ["Black/203086_beam.root"]
 # - file : ["NWA4734/203088_beam.root"]
 # - file : ["DEW12007_bar/203089_beam.root"]
@@ -15,13 +15,13 @@ Input:
 # - file : ["DEW12007_bar_35MeV/203095_beam.root"]
 
 Atom:
- - O : [33.5848, 133.445]
+ - O : [24.8444, 33.5848, 37.5245, 133.445, 158.327, 167.076, 171.092]
  - Be : [33.3729]
- - Mg : [56.09]
+ - Mg : [56.2303]
  - Al : [23.0743, 33.7455, 66.0625, 89.1923, 99.7744]
- - Si : [76.42]
- - Ca : [54.65, 156.29]
+ - Si : [26.7014, 76.42, 103.427, 115.570]
+ - Ca : [54.65, 156.772]
  - Fe : [42.78, 66.0339, 80.0756, 92.49, 125.936, 135.593, 158.802]
- - Cu : [115.61]
+ - Cu : [53.3110, 82.2328, 115.61, 125.876]
  - Ti : [30.6524, 47.1945, 66.2919, 96.9189, 113.562 ,189.999]
 
