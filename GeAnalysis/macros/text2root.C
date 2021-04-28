@@ -6,6 +6,8 @@
 #include <TH1F.h>
 #include <TRandom3.h>
 
+//#define DEBUG 1
+
 using namespace std;
 
 int usage(void)
@@ -79,7 +81,6 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
 
 
   for(int idet=0; idet < total_dets; idet++){
-     std::cout << " =================================   Current detector : " << idet+1  << " ================================ "<< std::endl;
      eve.detID=idet+1;
 
      int init_channel = 1;
@@ -97,7 +98,11 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
      getline(fin,str_temp);
      str_temp.erase(str_temp.begin(), str_temp.begin()+2); 
      nch = stod(str_temp); 
+#ifdef DEBUG
+     std::cout << " =================================   number of channels for detector : " << idet+1  << " ================================ "<< std::endl;
      cout << "number of channels : " << nch << endl;
+#endif
+
 
      //energy shift
      e_shift=0;
@@ -108,7 +113,9 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
          str.erase(str.end()-1, str.end()); //remove "," from string
          eve.count = stod(str);//number of event in each channel   
          eve.channel = init_channel;//find channel
+#ifdef DEBUG
          if(idet == 0) cout << eve.channel << "|" << eve.count << " ";
+#endif
 
          eve.energy_ori = a[idet]*pow(eve.channel,2)+b[idet]*eve.channel+c[idet];
          eve.energy_shift = eve.energy_ori-e_shift;
@@ -176,8 +183,13 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
          }
          init_channel++;
      }
+#ifdef DEBUG
          cout << endl;
+#endif
    
+#ifndef DEBUG
+     std::cout << " =================================   Finished proceese for CH" << idet+1 <<" detector  " << " ================================ "<< std::endl;
+#endif
      fin.close();
   }//loop all detector
 
