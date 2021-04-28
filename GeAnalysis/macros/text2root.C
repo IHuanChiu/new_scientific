@@ -46,7 +46,7 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   int nch=8192;
   string str, str_temp;
   static const int total_dets=std::stoi( nDets );
-  //calibration
+  //calibration, change argv[2] in the bottom
   Double_t a[6]={0.,0.,0.,0.,0.,0.};
   Double_t b[6]={0.025,0.024995,0.024995,0.025053,0.025006,0.024983};
   Double_t c[6]={0.260015,0.372299,0.447283,0.098903,0.297717,0.271931};
@@ -188,7 +188,7 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
 #endif
    
 #ifndef DEBUG
-     std::cout << " =================================   Finished proceese for CH" << idet+1 <<" detector  " << " ================================ "<< std::endl;
+     std::cout << " =================================   Finished process for CH" << idet+1 <<" detector  " << " ================================ "<< std::endl;
 #endif
      fin.close();
   }//loop all detector
@@ -227,6 +227,7 @@ int main(int argc, char const *argv[]){
   }
   if(argc < 3){
     argv[2] = "6";//you should not chagne constant char
+    // change calibration in upper
   }
   TString inputlist;
   if(argc < 2){

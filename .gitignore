@@ -3,6 +3,7 @@ GeAnalysis/data/*
 *.pdf
 *.pyc
 *.npy
+*.swp
 .DS_Store
 CdTe123/*.xlsx
 CdTe123/*.pdf
