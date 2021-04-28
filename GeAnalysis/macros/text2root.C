@@ -108,44 +108,43 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
          str.erase(str.end()-1, str.end()); //remove "," from string
          eve.count = stod(str);//number of event in each channel   
          eve.channel = init_channel;//find channel
+         if(idet == 0) cout << eve.channel << "|" << eve.count << " ";
+
          eve.energy_ori = a[idet]*pow(eve.channel,2)+b[idet]*eve.channel+c[idet];
          eve.energy_shift = eve.energy_ori-e_shift;
          //energy correction (WRONG way)
          double channel_base=(eve.energy_shift-c_base)/b_base;
          double E_down_find=a_base*pow(floor(channel_base),2)+b_base*floor(channel_base)+c_base;
-         double E_up_find=a_base*pow(ceil(channel_base),2)+b_base*ceil(channel_base)+c_base;
-         double Rcentral=(eve.energy_shift-E_down_find)/(E_up_find-E_down_find);
+//         double E_up_find=a_base*pow(ceil(channel_base),2)+b_base*ceil(channel_base)+c_base;
+//         double Rcentral=(eve.energy_shift-E_down_find)/(E_up_find-E_down_find);
+//         std::cout << "ID : " << idet  << " channel : " << channel_base << " ch up : " << ceil(channel_base) << " ch down : " << floor(channel_base)  << " main : " << eve.energy_shift << " up : " << E_up_find << " down : " << E_down_find << std::endl;
 
          //energy correction (FIX)
+         double E_flag=0;
          double E_ori=0;
          double E_ori_pre=0;
          double E_down = eve.energy_shift;
          double E_up = eve.energy_shift+b[idet];
          std::vector<Float_t> vEList;
          std::vector<Float_t> vRatioList;
-         int n_ch=0;
          for (int j = 1; j < 8192+1; j++){
-           E_ori=a_base*pow(j,2)+b_base*j+c_base;
-           E_ori_pre=a_base*pow(j-1,2)+b_base*(j-1)+c_base;
-           if(E_ori > E_down && E_ori < E_up){
-             vRatioList.push_back((E_ori-E_down)/(E_up-E_down));
+           E_flag=a_base*pow(j,2)+b_base*j+c_base;
+           if(E_flag > E_down && E_flag < E_up){
+             E_ori=a_base*pow(j,2)+b_base*(j)+c_base;
+             E_ori_pre=a_base*pow(j-1,2)+b_base*(j-1)+c_base;
+             vRatioList.push_back((E_flag-E_down)/(E_up-E_down));
              vEList.push_back(E_ori_pre);
-             n_ch++;
            }
          }
-         vRatioList.push_back(1);
-         if (n_ch != 0){  
+         vRatioList.push_back((E_up-E_down)/(E_up-E_down));// 1, final is E_up
+         if (E_ori != 0){  
             vEList.push_back(E_ori);
-         }else{
+         }else{// no "E_ori" found in loop => all counts into "E_down_find"
             vEList.push_back(E_down_find);
          }
-         
-
-         if(eve.energy_shift ==0 ) std::cout << "ID : " << idet  << " channel : " << channel_base << " ch up : " << ceil(channel_base) << " ch down : " << floor(channel_base)  << " main : " << eve.energy_shift << " up : " << E_up << " down : " << E_down << " ratio down : " << Rcentral << std::endl;
-
-         if(idet == 0){
-         cout << eve.channel << "|" << eve.count << " ";}
+         double random_seed=-1.;
          for (int ie=0; ie < eve.count; ie++){
+            random_seed=r3->Rndm(ie);
             //count distribution (WRONG way)
 //            if(idet+1 != base_CH){
 //               if (r3->Rndm(ie)>Rcentral){ eve.energy = E_down_find;
@@ -156,24 +155,11 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
 
             //count distribution (FIX)
             if(idet+1 != base_CH){
-               if(n_ch == 0) eve.energy = vEList[0];
-               if(n_ch == 1){
-                  if(r3->Rndm(ie) < vRatioList[0]){ eve.energy = vEList[0];
-                  }else if(r3->Rndm(ie) < vRatioList[1]){ eve.energy = vEList[1];
-                  }
-               }
-               if(n_ch == 2){ 
-                 if(r3->Rndm(ie) < vRatioList[0]){ eve.energy = vEList[0];
-                 }else if(r3->Rndm(ie) < vRatioList[1]){ eve.energy = vEList[1];
-                 }else if(r3->Rndm(ie) < vRatioList[2]){ eve.energy = vEList[2];
-                 }
-               }
-               if(n_ch == 3){ 
-                 if(r3->Rndm(ie) < vRatioList[0]){ eve.energy = vEList[0];
-                 }else if(r3->Rndm(ie) < vRatioList[1]){ eve.energy = vEList[1];
-                 }else if(r3->Rndm(ie) < vRatioList[2]){ eve.energy = vEList[2];
-                 }else if(r3->Rndm(ie) < vRatioList[3]){ eve.energy = vEList[3];
-                 }
+//               if(ie < vRatioList[0]*eve.count) { eve.energy = vEList[0];
+               if(random_seed < vRatioList[0]) { eve.energy = vEList[0];
+               }else if (random_seed < vRatioList[1]){eve.energy = vEList[1];
+               }else if (random_seed < vRatioList[2]){eve.energy = vEList[2]; 
+               }else if (random_seed < vRatioList[3]){eve.energy = vEList[3]; // set maximum is 3 => find three E_flags in the range of E_down~E_up
                }
             }else{
                eve.energy = eve.energy_shift;
