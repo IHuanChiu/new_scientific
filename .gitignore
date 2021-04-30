@@ -13,6 +13,7 @@ DSDAnalysisTools
 other
 GeAnalysis/data
 GeAnalysis/*/data
+GeAnalysis/scripts/outputs
 imageAna/data/*
 imageAna/run/root
 imageAna/run/log

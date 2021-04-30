@@ -57,36 +57,36 @@ def main(args):
    
        for prop, propv in conf.items():
           if prop == "Input": continue
-          for _item in conf[prop]:
-             for _prop, _propv in _item.items():
-                _atom=_prop
-#                for _ienergy in _item[_prop]:
-                e_central=_item[_prop][0]
-                _3sigma=_item[_prop][1]*3
-                #_3sigma=get3sigma(e_central)
-                Type=neighbor_exit(_h, e_central,_3sigma)
-                n_signal=_h.Integral(_h.FindBin(e_central-_3sigma),_h.FindBin(e_central+_3sigma))
-                if Type == "None":
-                   n_bkg_down=_h.Integral(_h.FindBin(e_central-_3sigma*2),_h.FindBin(e_central-_3sigma))
-                   n_bkg_up=_h.Integral(_h.FindBin(e_central+_3sigma),_h.FindBin(e_central+_3sigma*2))
-                   final_count = n_signal-n_bkg_down-n_bkg_up
-                   error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(n_bkg_down+n_bkg_up),2))
-                if Type == "Up":
-                   n_bkg_down=_h.Integral(_h.FindBin(e_central-_3sigma*2),_h.FindBin(e_central-_3sigma))
-                   final_count = n_signal-2*n_bkg_down
-                   error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_down),2))
-                if Type == "Down":
-                   n_bkg_up=_h.Integral(_h.FindBin(e_central+_3sigma),_h.FindBin(e_central+_3sigma*2))
-                   final_count = n_signal-2*n_bkg_up
-                   error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_up),2))
-
-                if final_count < 0 or final_count < error*2: 
-                   print(" Atom : {0},  Energy : \033[1;36m {1:.2f} \033[0m, Count : \033[1;35m {2} \033[0m ".format(_atom,e_central, "No Peak"))
-                else:
-                   if Type != "None":
-                      print(" Atom : {0},  Energy : \033[1;36m {1:.2f} \033[0m, Count : \033[1;32m {2} \033[0m ({4}) , Type : \033[1;33m {3} \033[0m".format(_atom,e_central, int(final_count), Type, int(error)))
+          for _nameconf in conf[prop]:
+             print("\033[1m Atom : {0}\033[0m".format(_nameconf))
+             for _item in conf[prop][_nameconf]:
+                for _prop, _propv in _item.items():
+                   _line=_prop
+                   e_central=_item[_prop][0]
+                   _3sigma=_item[_prop][1]*3
+                   Type=neighbor_exit(_h, e_central,_3sigma)
+                   n_signal=_h.Integral(_h.FindBin(e_central-_3sigma),_h.FindBin(e_central+_3sigma))
+                   if Type == "None":
+                      n_bkg_down=_h.Integral(_h.FindBin(e_central-_3sigma*2),_h.FindBin(e_central-_3sigma))
+                      n_bkg_up=_h.Integral(_h.FindBin(e_central+_3sigma),_h.FindBin(e_central+_3sigma*2))
+                      final_count = n_signal-n_bkg_down-n_bkg_up
+                      error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(n_bkg_down+n_bkg_up),2))
+                   if Type == "Up":
+                      n_bkg_down=_h.Integral(_h.FindBin(e_central-_3sigma*2),_h.FindBin(e_central-_3sigma))
+                      final_count = n_signal-2*n_bkg_down
+                      error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_down),2))
+                   if Type == "Down":
+                      n_bkg_up=_h.Integral(_h.FindBin(e_central+_3sigma),_h.FindBin(e_central+_3sigma*2))
+                      final_count = n_signal-2*n_bkg_up
+                      error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_up),2))
+       
+                   if final_count < 0 or final_count < error*2: 
+                      print("          Energy : \033[1;36m {0:.2f} \033[0m, Count : \033[1;35m {1} \033[0m ".format(e_central, "No Peak"))
                    else:
-                      print(" Atom : {0},  Energy : \033[1;36m {1:.2f} \033[0m, Count : \033[1;32m {2} \033[0m ({4}), Type : {3}".format(_atom,e_central, int(final_count), Type, int(error)))
+                      if Type != "None":
+                         print("          Energy : \033[1;36m {0:.2f} \033[0m, Count : \033[1;32m {1} \033[0m ({3}) , Type : \033[1;33m {2} \033[0m".format(e_central, int(final_count), Type, int(error)))
+                      else:
+                         print("          Energy : \033[1;36m {0:.2f} \033[0m, Count : \033[1;32m {1} \033[0m ({3}), Type : {2}".format(e_central, int(final_count), Type, int(error)))
 
        print(" ============================================== ")
 

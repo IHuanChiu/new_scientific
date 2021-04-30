@@ -102,7 +102,7 @@ void peaks() {
    h->Draw();
    TH1F *h2 = (TH1F*)h->Clone("h2");
    //Use TSpectrum to find the peak candidates
-   TSpectrum *s = new TSpectrum(2*npeaks);
+   TSpectrum *s = new TSpectrum(npeaks);
    s->SetResolution(1);//determines resolution of the neighbouring peaks default value is 1 correspond to 3 sigma distance between peaks.
    Int_t nfound = s->Search(h,0.01,"",0.005);
    printf("Found %d candidate peaks to fit\n",nfound);
