@@ -48,7 +48,12 @@
 //
 //#define __PEAKS_C_FIT_AREAS__ 1 /* fit peaks' areas */
 
-Int_t npeaks = 50;
+Int_t np=50;
+Int_t myEnergy_min=20;//20
+const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
+const char *h_name = "eh"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
+
+Int_t npeaks;//maximum
 Double_t fpeaks(Double_t *x, Double_t *par) {
    Double_t result = par[0] + par[1]*x[0];
    for (Int_t p=0;p<npeaks;p++) {
@@ -62,14 +67,18 @@ Double_t fpeaks(Double_t *x, Double_t *par) {
    }
    return result;
 }
-void peaks(Int_t np=50) {
+void peaks() {
    npeaks = TMath::Abs(np);
 
-   const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
-   const char *h_name = "Energy"; // must be a "fix bin size" TH1F
    delete gROOT->FindObject(h_name); // prevent "memory leak"
    TFile *ff = new TFile(f_name,"read");
    TH1F *h = (TH1F*)ff->Get(h_name);
+   Int_t Energy_max=h->GetXaxis()->GetXmax();
+   Int_t Energy_min=h->GetXaxis()->GetXmin();
+   if (Energy_min < myEnergy_min){
+      Energy_min = myEnergy_min;
+      h->GetXaxis()->SetRangeUser(Energy_min,Energy_max);
+   }
 
    //generate n peaks at random
    Double_t par[3000];
@@ -78,13 +87,13 @@ void peaks(Int_t np=50) {
    Int_t p;
    for (p=0;p<npeaks;p++) {
       par[3*p+2] = 50; // "height"
-      par[3*p+3] = 5+gRandom->Rndm()*195; // "mean", gRandom->Rndm(): 0~1
+      par[3*p+3] = Energy_min+gRandom->Rndm()*Energy_max; // "mean", gRandom->Rndm(): 0~1
       par[3*p+4] = 0.1+0.5*gRandom->Rndm(); // "sigma"
 #if defined(__PEAKS_C_FIT_AREAS__)
       par[3*p+2] *= par[3*p+4] * (TMath::Sqrt(TMath::TwoPi())); // "area"
 #endif /* defined(__PEAKS_C_FIT_AREAS__) */
    }
-   TF1 *f = new TF1("f",fpeaks,0,200,2+3*npeaks);//name, fcn, xmin, xmax, npar
+   TF1 *f = new TF1("f",fpeaks,Energy_min,Energy_max,2+3*npeaks);//name, fcn, xmin, xmax, npar (three par. for each peak)
    f->SetNpx(10000);
    f->SetParameters(par);
    TCanvas *c1 = new TCanvas("c1","c1",10,10,1000,900);
@@ -95,22 +104,18 @@ void peaks(Int_t np=50) {
    //Use TSpectrum to find the peak candidates
    TSpectrum *s = new TSpectrum(2*npeaks);
    s->SetResolution(1);//determines resolution of the neighbouring peaks default value is 1 correspond to 3 sigma distance between peaks.
-   Int_t nfound = s->Search(h,0.162809,"",0.005);
+   Int_t nfound = s->Search(h,0.01,"",0.005);
    printf("Found %d candidate peaks to fit\n",nfound);
    
-   //Print peak position from TSpectrum
-   Double_t *xpeaks_ichiu;
-   xpeaks_ichiu = s->GetPositionX();
-   for (p=0;p<nfound;p++) std::cout << " Found peak at : " << xpeaks_ichiu[p] << std::endl;
-
    //Estimate background using TSpectrum::Background
-   TH1 *hb = s->Background(h,20,"same");
+   TH1 *hb = s->Background(h,50,"same");
    if (hb) c1->Update();
    if (np <0) return;
 
+   // ***********************************************************************************************************************************
    //estimate linear background using a fitting method
    c1->cd(2);
-   TF1 *fline = new TF1("fline","pol1",0,200);
+   TF1 *fline = new TF1("fline","pol1",0,Energy_max);
    h->Fit("fline","qn");
    //Loop on all found peaks. Eliminate peaks at the background level
    par[0] = fline->GetParameter(0);
@@ -128,9 +133,10 @@ void peaks(Int_t np=50) {
       Int_t bin = h->GetXaxis()->FindBin(xp);
       Double_t yp = h->GetBinContent(bin);
       if (yp-TMath::Sqrt(yp) < fline->Eval(xp)) continue;
+      //Set initial range
       par[3*npeaks+2] = yp; // "height"
       par[3*npeaks+3] = xp; // "mean"
-      par[3*npeaks+4] = 1; // "sigma"
+      par[3*npeaks+4] = 0.2; // "sigma"
 #if defined(__PEAKS_C_FIT_AREAS__)
       par[3*npeaks+2] *= par[3*npeaks+4] * (TMath::Sqrt(TMath::TwoPi())); // "area"
 #endif /* defined(__PEAKS_C_FIT_AREAS__) */
@@ -138,17 +144,41 @@ void peaks(Int_t np=50) {
    }
    printf("Found %d useful peaks to fit\n",npeaks);
    printf("Now fitting: Be patient\n");
-   TF1 *fit = new TF1("fit",fpeaks,0,200,2+3*npeaks);
+   TF1 *fit = new TF1("fit",fpeaks,Energy_min,Energy_max,2+3*npeaks);
    //we may have more than the default 25 parameters
    TVirtualFitter::Fitter(h2,10+3*npeaks);
    fit->SetParameters(par);
    for (p=0;p<nfound;p++) { 
      Double_t xp = xpeaks[p];
-     fit->FixParameter(3*npeaks+3,xp);
+      //Fix fitting range
+//     fit->FixParameter(3*p+3,xp);
+     fit->SetParLimits(3*p+3,xp-2,xp+2);
+     fit->SetParLimits(3*p+4,0,0.5);
    }
    fit->SetNpx(10000);
-   h2->Fit("fit");
-   c1->SaveAs("test_findpeak.pdf");
+   h2->Fit("fit","q");
+   c1->SaveAs(Form("./outputs/findpeak_%s.pdf",h_name));
+   std::cout << " Chisquare : " << f->GetChisquare() << std::endl;
+   for (p=0;p<nfound;p++) {
+#if defined(__PEAKS_C_FIT_AREAS__)
+      std::cout << " Index : " << p+1 << fixed << setprecision(3)
+                << "  Energy : "<< fit->GetParameter(3*p+3) << " \u00b1 " << fit->GetParError(3*p+3) 
+                << "  Sigma : " << fit->GetParameter(3*p+4) << " \u00b1 " << fit->GetParError(3*p+4)
+                << "  Area : "  << fit->GetParameter(3*p+2) << " \u00b1 " << fit->GetParError(3*p+2)
+                << std::endl;
+#else
+      std::cout << " Index : " << p+1 << fixed << setprecision(3)
+                << "  Energy : " << fit->GetParameter(3*p+3) << " \u00b1 "   << fit->GetParError(3*p+3) 
+                << "  Sigma : "  << fit->GetParameter(3*p+4) << " \u00b1 "   << fit->GetParError(3*p+4)
+                << "  Height : " << fit->GetParameter(3*p+2) << " \u00b1 " << fit->GetParError(3*p+2)
+                << std::endl;
+#endif /* defined(__PEAKS_C_FIT_AREAS__) */
+   }
+   TFile* fout = new TFile(Form("./outputs/findpeak_%s.root",h_name),"recreate");
+   fout->cd();
+   h->Write();hb->Write();fline->Write();fit->Write();
+   fout->Write();
+
 }
 
 #if !defined(__CINT__) && defined(__PEAKS_C_FIT_AREAS__)
