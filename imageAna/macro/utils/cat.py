@@ -219,14 +219,16 @@ class EventCategory():
           return _dic
 
       def energy_correction(self, _hitp, _hitn):
+          if _hitp.nstrips > 4: _hitp.nstrips = 4
+          if _hitn.nstrips > 4: _hitn.nstrips = 4
           _name="p"+str(_hitp.nstrips)+"n"+str(_hitn.nstrips)
           if not self.response_dic.get(_name): _name="p"+str(4)+"n"+str(3)
           _response=self.response_dic[_name]
           epi1=(_hitp.energy+_hitn.energy)/2 # === epi1 is (e_pt+e_al)/2 ===
           epi2=(_hitp.energy-_hitn.energy)/2 # === epi2 is (e_pt-e_al)/2 ===
           _e_corr=_response.Interpolate(epi1,epi2)
-          if _e_corr == 0:
-             _e_corr = (_hitp.energy+_hitn.energy)*0.5
+#          if _e_corr == 0:
+#             _e_corr = (_hitp.energy+_hitn.energy)*0.5
 #             print("epi1 : ", epi1 , " epi2 : ", epi2 , " n,p = ", _hitp.nstrips," ", _hitn.nstrips)
 #             print("p : ", _hitp.energy)
 #             print("n : ", _hitn.energy)

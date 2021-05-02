@@ -81,12 +81,12 @@ def main(args):
                       error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_up),2))
        
                    if final_count < 0 or final_count < error*2: 
-                      print("          Energy : \033[1;36m {0:.2f} \033[0m, Count : \033[1;35m {1} \033[0m ".format(e_central, "No Peak"))
+                      print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;35m {2}\033[0m ".format(_prop,e_central, "No Peak"))
                    else:
                       if Type != "None":
-                         print("          Energy : \033[1;36m {0:.2f} \033[0m, Count : \033[1;32m {1} \033[0m ({3}) , Type : \033[1;33m {2} \033[0m".format(e_central, int(final_count), Type, int(error)))
+                         print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;32m {2}\033[0m ({4}), Type : \033[1;33m {3} \033[0m".format(_prop,e_central, int(final_count), Type, int(error)))
                       else:
-                         print("          Energy : \033[1;36m {0:.2f} \033[0m, Count : \033[1;32m {1} \033[0m ({3}), Type : {2}".format(e_central, int(final_count), Type, int(error)))
+                         print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;32m {2}\033[0m ({4}), Type : {3}".format(_prop,e_central, int(final_count), Type, int(error)))
 
        print(" ============================================== ")
 
