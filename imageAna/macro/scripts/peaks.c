@@ -49,10 +49,10 @@
 
 //#define __PEAKS_C_FIT_AREAS__ 1 /* fit peaks' areas */
 
-Int_t np=50;
-Int_t myEnergy_min=20;//20
-const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
-const char *h_name = "em"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
+Int_t np=5;
+Int_t myEnergy_min=10;//20
+const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20200225a_si_calibration_Am241_5_9_10.root";
+const char *h_name = "energy"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
 
 Int_t npeaks;//maximum
 Double_t fpeaks(Double_t *x, Double_t *par) {
@@ -73,7 +73,9 @@ void peaks() {
 
    delete gROOT->FindObject(h_name); // prevent "memory leak"
    TFile *ff = new TFile(f_name,"read");
-   TH1F *h = (TH1F*)ff->Get(h_name);
+   TTree* tt = (TTree*)ff->Get("tree");
+   tt->Draw(Form("%s >> h(1600,0,80)",h_name));
+   TH1F *h     = (TH1F*)gDirectory->Get("h");
 
    Int_t Energy_max=h->GetXaxis()->GetXmax();
    Int_t Energy_min=h->GetXaxis()->GetXmin();
@@ -110,7 +112,7 @@ void peaks() {
    printf("Found %d candidate peaks to fit\n",nfound);
    
    //Estimate background using TSpectrum::Background
-   TH1 *hb = s->Background(h,50,"same");
+   TH1 *hb = s->Background(h,100,"same");
    if (hb) c1->Update();
    if (np <0) return;
 
@@ -155,7 +157,7 @@ void peaks() {
       //Fix fitting range
 //     fit->FixParameter(3*p+3,xp);
      fit->SetParLimits(3*p+3,xp-2,xp+2);
-     fit->SetParLimits(3*p+4,0,0.5);
+     fit->SetParLimits(3*p+4,0,1.5);
    }
    fit->SetNpx(10000);
    h2->Fit("fit","q");
@@ -176,7 +178,7 @@ void peaks() {
                 << std::endl;
 #endif /* defined(__PEAKS_C_FIT_AREAS__) */
    }
-   TFile* fout = new TFile(Form("./outputs/findpeak_%s.root",h_name),"recreate");
+   TFile* fout = new TFile(Form("/Users/chiu.i-huan/Desktop/findpeak_%s.root",h_name),"recreate");
    fout->cd();
    h->Write();hb->Write();fline->Write();fit->Write();
    fout->Write();

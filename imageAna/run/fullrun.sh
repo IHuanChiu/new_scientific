@@ -17,7 +17,7 @@ OUTNAME="test1020"
 #python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/STD27MeV/ -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV
 
-python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/watanabe_sample/cdtedsd_inseki2_tmp1.root -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV_fix
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/watanabe_sample/cdtedsd_inseki2_tmp1.root -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV_fix
 #parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/Co57/cdtedsd_0402a_0000{1}_001.root -d CdTe_Lab -o Co57_{1} -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root ::: 5 6 7 8 9 
 #parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/Co57/cdtedsd_0403a_0000{1}_001.root -d CdTe_Lab -o Co57_{1} -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root ::: 3 4 5 6 7 8 9
 #python3 sum_plots.py ../../../2020.12.09/sumrootblank2.root -d CdTe_JPARCDec -o blank2
@@ -52,6 +52,8 @@ python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/watanabe
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRCDTE}_merge/20200307a_{1}.root -o merge ::: 55to73 77to95 95to111
    # *** Si ***
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRSI}/test_f_000{1}_001.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root ::: 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 
+#parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/calibration_data/20200225a_000{1}_001.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root ::: 02 03 04 05 06 07 08 09 10
+python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/calibration_data/20200225a_image.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root 
    # *** Scan cut ***
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRCDTE}/20200307a_00057_001.root -o cut{1}_delta{2} -cut {1} -m {2} ::: 5 10 20 40 ::: 10 5 3 2
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRSI}/test_f_00007_001.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root -o cut{1}_delta{2} -cut {1} -m {2} ::: 2 3 8 12 ::: 10 5 3 2

@@ -3,7 +3,7 @@ Input:
 # - file : ["Ti/203080_beam.root"]
 # - file : ["Al/203081_beam.root"]
 # - file : ["Fe/203082_beam.root"]
-# - file : ["White/203084_beam.root"]
+ - file : ["White/203084_beam.root"]
  - file : ["Black/203086_beam.root"]
 # - file : ["NWA4734/203088_beam.root"]
 # - file : ["DEW12007/203079_beam.root"]
