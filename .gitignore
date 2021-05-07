@@ -1,9 +1,11 @@
 imageAna/data/*
 GeAnalysis/data/*
+GeAnalysis/*/data
 *.pdf
 *.pyc
 *.npy
 *.swp
+*.dSYM
 .DS_Store
 CdTe123/*.xlsx
 CdTe123/*.pdf
@@ -11,10 +13,7 @@ TRIM_simulation
 ANLNext
 DSDAnalysisTools
 other
-GeAnalysis/data
-GeAnalysis/*/data
 GeAnalysis/scripts/outputs
-imageAna/data/*
 imageAna/run/root
 imageAna/run/log
 imageAna/run/*.py

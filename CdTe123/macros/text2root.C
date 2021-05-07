@@ -63,7 +63,7 @@ void tran(std::string input_name, std::string output_name){
 
       eve.channel = inti_channel;//find channel
       eve.energy = 0.264337+eve.channel*0.0447607;
-      cout << eve.channel << "|" << eve.count << " ";
+//      cout << eve.channel << "|" << eve.count << " ";
       if(inti_channel%10 == 0) cout << " \n";
       for (int ie=0; ie < eve.count; ie++){
          tree->Fill();
@@ -73,15 +73,6 @@ void tran(std::string input_name, std::string output_name){
       inti_channel++;
   }
       cout << endl;
-
-//  while(!fin.eof())
-//  { 
-//      eve.channel = inti_channel;
-//      fin >> eve.count;
-//      cout << "  " << eve.count << " ";
-//      tree->Fill();
-//      inti_channel++;
-//  }
 
   fin.close();
   tree->Print();

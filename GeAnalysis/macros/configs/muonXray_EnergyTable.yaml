@@ -11,7 +11,7 @@ Input:
 # - file : ["DEW12007_bar_35MeV/203095_beam.root"]
 # - file : ["Blank_dsl9/203090_beam.root"]
 # - file : ["Blank_dsl13/203091_beam.root"]
-# - file : ["Blank_dsl20/203092_beam.root"]
+ - file : ["Blank_dsl20/203092_beam.root"]
 # - file : ["Blank_35MeV/203094_beam.root"]
 
 SourceTable:

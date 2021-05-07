@@ -1,4 +1,4 @@
-import sys,os,argparse,random,math,ROOT,yaml
+import sys,os,argparse,random,math,ROOT,yaml,ctypes
 
 def get_yaml_conf(yamlfile):
     if not os.path.isfile(yamlfile):
@@ -65,28 +65,30 @@ def main(args):
                    e_central=_item[_prop][0]
                    _3sigma=_item[_prop][1]*3
                    Type=neighbor_exit(_h, e_central,_3sigma)
-                   n_signal=_h.Integral(_h.FindBin(e_central-_3sigma),_h.FindBin(e_central+_3sigma))
+                   error_main, error_up, error_down=ctypes.c_double(0),ctypes.c_double(0),ctypes.c_double(0)
+                   #n_signal=_h.Integral(_h.FindBin(e_central-_3sigma),_h.FindBin(e_central+_3sigma))
+                   n_signal=_h.IntegralAndError(_h.FindBin(e_central-_3sigma),_h.FindBin(e_central+_3sigma),error_main)
                    if Type == "None":
-                      n_bkg_down=_h.Integral(_h.FindBin(e_central-_3sigma*2),_h.FindBin(e_central-_3sigma))
-                      n_bkg_up=_h.Integral(_h.FindBin(e_central+_3sigma),_h.FindBin(e_central+_3sigma*2))
+                      n_bkg_down=_h.IntegralAndError(_h.FindBin(e_central-_3sigma*2),_h.FindBin(e_central-_3sigma),error_down)
+                      n_bkg_up=_h.IntegralAndError(_h.FindBin(e_central+_3sigma),_h.FindBin(e_central+_3sigma*2),error_up)
                       final_count = n_signal-n_bkg_down-n_bkg_up
-                      error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(n_bkg_down+n_bkg_up),2))
+                      error=math.sqrt(math.pow(error_main.value,2)+math.pow(error_down.value,2)+math.pow(error_up.value,2))
                    if Type == "Up":
-                      n_bkg_down=_h.Integral(_h.FindBin(e_central-_3sigma*2),_h.FindBin(e_central-_3sigma))
+                      n_bkg_down=_h.IntegralAndError(_h.FindBin(e_central-_3sigma*2),_h.FindBin(e_central-_3sigma),error_down)
                       final_count = n_signal-2*n_bkg_down
-                      error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_down),2))
+                      error=math.sqrt(math.pow(error_main.value,2)+math.pow(error_down.value,2)*math.pow(2,2))
                    if Type == "Down":
-                      n_bkg_up=_h.Integral(_h.FindBin(e_central+_3sigma),_h.FindBin(e_central+_3sigma*2))
+                      n_bkg_up=_h.IntegralAndError(_h.FindBin(e_central+_3sigma),_h.FindBin(e_central+_3sigma*2),error_up)
                       final_count = n_signal-2*n_bkg_up
-                      error=math.sqrt(math.pow(math.sqrt(n_signal),2)+math.pow(math.sqrt(2*n_bkg_up),2))
+                      error=math.sqrt(math.pow(error_main.value,2)+math.pow(error_up.value,2)*math.pow(2,2))
        
                    if final_count < 0 or final_count < error*2: 
                       print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;35m {2}\033[0m ".format(_prop,e_central, "No Peak"))
                    else:
                       if Type != "None":
-                         print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;32m {2}\033[0m ({4}), Type : \033[1;33m {3} \033[0m".format(_prop,e_central, int(final_count), Type, int(error)))
+                         print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;32m {2} \u00B1 {4}\033[0m, Type : \033[1;33m {3} \033[0m".format(_prop,e_central, int(final_count), Type, int(error)))
                       else:
-                         print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;32m {2}\033[0m ({4}), Type : {3}".format(_prop,e_central, int(final_count), Type, int(error)))
+                         print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;32m {2} \u00B1 {4}\033[0m, Type : {3}".format(_prop,e_central, int(final_count), Type, int(error)))
 
        print(" ============================================== ")
 
