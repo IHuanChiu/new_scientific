@@ -115,9 +115,7 @@ void mk_Comparison(){
         h0_b->SetStats(0);
         h0_b->SetLineWidth(1);
         h0_b->SetLineColorAlpha(kBlue,0.65);
-      
-        h0_s->GetXaxis()->SetTitle("Energy [keV]");
-        h0_s->GetYaxis()->SetTitle("Counts/25eV");
+        h0_s->SetTitle("Comparison;Energy [keV];Counts/25eV"); 
       
         if(do_scale){
           h0_s->Scale(f1_scale);
@@ -155,8 +153,7 @@ void mk_Comparison(){
         h1_b->SetStats(0);
         h1_b->SetLineWidth(1);
         h1_b->SetLineColorAlpha(kBlue,0.65);
-        h1_s->GetXaxis()->SetTitle("Energy [keV]");
-        h1_s->GetYaxis()->SetTitle("Counts/25eV");
+        h1_s->SetTitle("Comparison;Energy [keV];Counts/25eV"); 
         if(do_scale){
           h1_s->Scale(f1_scale);
           h1_b->Scale(f2_scale);
@@ -182,8 +179,7 @@ void mk_Comparison(){
         h2_b->SetStats(0);
         h2_b->SetLineWidth(1);
         h2_b->SetLineColorAlpha(kBlue,0.65);
-        h2_s->GetXaxis()->SetTitle("Energy [keV]");
-        h2_s->GetYaxis()->SetTitle("Counts");
+        h2_s->SetTitle("Comparison;Energy [keV];Counts/25eV"); 
         if(do_scale){
           h2_s->Scale(f1_scale);
           h2_b->Scale(f2_scale);
@@ -209,8 +205,7 @@ void mk_Comparison(){
         h3_b->SetStats(0);
         h3_b->SetLineWidth(1);
         h3_b->SetLineColorAlpha(kBlue,0.65);
-        h3_s->GetXaxis()->SetTitle("Energy [keV]");
-        h3_s->GetYaxis()->SetTitle("Counts");
+        h3_s->SetTitle("Comparison;Energy [keV];Counts/25eV");
         if(do_scale){
           h3_s->Scale(f1_scale);
           h3_b->Scale(f2_scale);

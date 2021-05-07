@@ -175,9 +175,9 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
             //make histograms
             h1->Fill(eve.channel);
             h2->Fill(eve.energy);//hist. is for corrected energy
-            if(eve.energy < 70){ h2_l->Fill(eve.energy);
-            }else if(eve.energy < 140){ h2_m->Fill(eve.energy);
-            }else if(eve.energy < 210) {h2_h->Fill(eve.energy);}
+            if(eve.energy < h2_l->GetXaxis()->GetXmax()){ h2_l->Fill(eve.energy);
+            }else if(eve.energy < h2_m->GetXaxis()->GetXmax()){ h2_m->Fill(eve.energy);
+            }else if(eve.energy < h2_h->GetXaxis()->GetXmax()) {h2_h->Fill(eve.energy);}
 
             tree->Fill();
          }

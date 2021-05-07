@@ -240,9 +240,9 @@ class EventCategory():
           if _type is None: _t = 1
           else: _t = _type
           _d, _n={}, 0
-          _e_corr=self.energy_correction(_x0,_y0)
-          #_p = setphoton((_x0.energy+_y0.energy)*0.5, _x0.energy,_y0.energy,_x0.adc,_y0.adc,_x0.position,_y0.position,_t)
-          _p = setphoton(_e_corr, _x0.energy,_y0.energy,_x0.adc,_y0.adc,_x0.position,_y0.position,_t)
+          #_e_corr=self.energy_correction(_x0,_y0)
+          #_p = setphoton(_e_corr, _x0.energy,_y0.energy,_x0.adc,_y0.adc,_x0.position,_y0.position,_t)
+          _p = setphoton((_x0.energy+_y0.energy)*0.5, _x0.energy,_y0.energy,_x0.adc,_y0.adc,_x0.position,_y0.position,_t)
           _n+=1
           _d.update({_n:_p})
           return _d

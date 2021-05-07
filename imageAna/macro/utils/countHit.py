@@ -257,7 +257,7 @@ def Level1Hit(tree, coef_R, dblist, efname, eline, dtype):
              if istrip%2 != 0 : continue #FEC-1 with "readoutall" setting -> only loop even channel
              ChannelID=int(istrip/2+iasic*32) #scale to 0~255
           else: 
-             if iasic == 6 and (istrip==13 or istrip==16 or istrip==20): continue #TODO : Si bad channels for 2020 March
+             #if iasic == 6 and (istrip==13 or istrip==16 or istrip==20): continue #TODO : Si bad channels for 2020 March
              ChannelID=int(istrip+iasic*32) #0~255
 
           taa2=time.time()
