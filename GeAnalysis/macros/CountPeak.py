@@ -16,6 +16,11 @@ def get3sigma(_e):
 #    p2=-1.27339e-05
 #    return 3*p2*pow(_e,2)+p1*_e+p0
 
+def dofit(_h,_e,_sig):
+    #TODO dofit to find sigma and energy ???
+    f1 = ROOT.TF1("f1","gaus",_h.GetXaxis().GetXmin(),_h.GetXaxis())
+    return e,sig
+
 def neighbor_exit(_h,_e,_3sigma):
     bin_down6sigma=_h.FindBin(_e-2*_3sigma)
     bin_down3sigma=_h.FindBin(_e-1*_3sigma)
@@ -83,12 +88,12 @@ def main(args):
                       error=math.sqrt(math.pow(error_main.value,2)+math.pow(error_up.value,2)*math.pow(2,2))
        
                    if final_count < 0 or final_count < error*2: 
-                      print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;35m {2}\033[0m ".format(_prop,e_central, "No Peak"))
+                      print("          {0}, Energy : \033[1;36m {1:.2f} \u00B1 {2:.2f}\033[0m, Count : \033[1;35m {3}\033[0m ".format(_prop,e_central,_item[_prop][1], "No Peak"))
                    else:
                       if Type != "None":
-                         print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;32m {2} \u00B1 {4}\033[0m, Type : \033[1;33m {3} \033[0m".format(_prop,e_central, int(final_count), Type, int(error)))
+                         print("          {0}, Energy : \033[1;36m {1:.2f} \u00B1 {2:.2f}\033[0m, Count : \033[1;32m {3} \u00B1 {5}\033[0m, Type : \033[1;33m {4} \033[0m".format(_prop,e_central,_item[_prop][1], int(final_count), Type, int(error)))
                       else:
-                         print("          {0}, Energy : \033[1;36m {1:.2f}\033[0m, Count : \033[1;32m {2} \u00B1 {4}\033[0m, Type : {3}".format(_prop,e_central, int(final_count), Type, int(error)))
+                         print("          {0}, Energy : \033[1;36m {1:.2f} \u00B1 {2:.2f}\033[0m, Count : \033[1;32m {3} \u00B1 {5}\033[0m, Type : {4}".format(_prop,e_central,_item[_prop][1], int(final_count), Type, int(error)))
 
        print(" ============================================== ")
 

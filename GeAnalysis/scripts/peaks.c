@@ -52,7 +52,7 @@
 Int_t np=50;
 Int_t myEnergy_min=20;//20
 const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
-const char *h_name = "em"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
+const char *h_name = "Energy"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
 
 Int_t npeaks;//maximum
 Double_t fpeaks(Double_t *x, Double_t *par) {
@@ -110,7 +110,7 @@ void peaks() {
    printf("Found %d candidate peaks to fit\n",nfound);
    
    //Estimate background using TSpectrum::Background
-   TH1 *hb = s->Background(h,50,"same");
+   TH1 *hb = s->Background(h,100,"same");
    if (hb) c1->Update();
    if (np <0) return;
 
@@ -169,10 +169,17 @@ void peaks() {
                 << "  Area : "  << fit->GetParameter(3*p+2) << " \u00b1 " << fit->GetParError(3*p+2)
                 << std::endl;
 #else
+//      ROOT::Math::IntegratorOneDimOptions::SetDefaultRelTolerance(1.E-6);
+      Double_t error;
+      Double_t error_bkg;
+      Int_t bin_up = h2->FindBin(fit->GetParameter(3*p+3)+3*fit->GetParameter(3*p+4));
+      Int_t bin_down = h2->FindBin(fit->GetParameter(3*p+3)-3*fit->GetParameter(3*p+4));
       std::cout << " Index : " << p+1 << fixed << setprecision(3)
                 << "  Energy : " << fit->GetParameter(3*p+3) << " \u00b1 "   << fit->GetParError(3*p+3) 
                 << "  Sigma : "  << fit->GetParameter(3*p+4) << " \u00b1 "   << fit->GetParError(3*p+4)
                 << "  Height : " << fit->GetParameter(3*p+2) << " \u00b1 " << fit->GetParError(3*p+2)
+//                << "  Area : "  << h2->IntegralAndError(bin_down,bin_up,error)-fline->Integral(fit->GetParameter(3*p+3)-3*fit->GetParameter(3*p+4), fit->GetParameter(3*p+3)+3*fit->GetParameter(3*p+4)) << " \u00b1 " << error
+                << "  Area : "  << h2->IntegralAndError(bin_down,bin_up,error)-hb->IntegralAndError(bin_down,bin_up,error_bkg) << " \u00b1 " << sqrt(error*error+error_bkg*error_bkg)
                 << std::endl;
 #endif /* defined(__PEAKS_C_FIT_AREAS__) */
    }
