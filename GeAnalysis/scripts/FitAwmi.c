@@ -87,8 +87,8 @@
     for (i = 0; i < nbins; i++) source[i] = h->GetBinContent(i + 1);
     TSpectrum *s = new TSpectrum(); // note: default maxpositions = 100
     // searching for candidate peaks positions
-    //nfound = s->SearchHighRes(source, dest, nbins, 2., 2., kFALSE, 10000, kFALSE, 0);
-    nfound = s->Search(h,0.01,"",0.005);
+    nfound = s->SearchHighRes(source, dest, nbins, 1, 1, kFALSE, 10000, kFALSE, 0);
+    //nfound = s->Search(h,0.01,"",0.5);
     // filling in the initial estimates of the input parameters
     Bool_t *FixPos = new Bool_t[nfound];
     Bool_t *FixAmp = new Bool_t[nfound];

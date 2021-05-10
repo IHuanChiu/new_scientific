@@ -52,7 +52,7 @@
 Int_t np=50;
 Int_t myEnergy_min=20;//20
 const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
-const char *h_name = "el"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
+const char *h_name = "em"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
 
 Int_t npeaks;//maximum
 Double_t fpeaks(Double_t *x, Double_t *par) {
@@ -110,7 +110,7 @@ void peaks() {
    printf("Found %d candidate peaks to fit\n",nfound);
    
    //Estimate background using TSpectrum::Background
-   TH1 *hb = s->Background(h,20,"same");
+   TH1 *hb = s->Background(h,30,"same");
    if (hb) c1->Update();
    if (np <0) return;
 
