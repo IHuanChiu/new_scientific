@@ -150,6 +150,7 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
             vEList.push_back(E_down_find);
          }
          double random_seed=-1.;
+
          for (int ie=0; ie < eve.count; ie++){
             random_seed=r3->Rndm(ie);
             //count distribution (WRONG way)

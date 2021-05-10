@@ -3,7 +3,7 @@ Input:
 # - file : ["Ti/203080_beam.root"]
 # - file : ["Al/203081_beam.root"]
 # - file : ["Fe/203082_beam.root"]
- - file : ["White/203084_beam.root"]
+# - file : ["White/203084_beam.root"]
  - file : ["Black/203086_beam.root"]
 # - file : ["NWA4734/203088_beam.root"]
 # - file : ["DEW12007/203079_beam.root"]
@@ -11,7 +11,7 @@ Input:
 # - file : ["DEW12007_bar_35MeV/203095_beam.root"]
 # - file : ["Blank_dsl9/203090_beam.root"]
 # - file : ["Blank_dsl13/203091_beam.root"]
- - file : ["Blank_dsl20/203092_beam.root"]
+# - file : ["Blank_dsl20/203092_beam.root"]
 # - file : ["Blank_35MeV/203094_beam.root"]
 
 SourceTable:
@@ -40,7 +40,7 @@ SourceTable:
  Si:
    - (4-3) : [26.7014, 0.191244]
    - (3-2) : [76.42, 0.300447]
-   - (4-2) : [103.427, 0.602385]
+   - (4-2) : [103.427, 0.473689]
    - (5-2) : [115.570, 0.453923]
  Ca:
    - (4-3) : [54.65, 0.217937]
