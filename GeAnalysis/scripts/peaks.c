@@ -51,14 +51,14 @@
 
 Int_t np=50;
 Int_t myEnergy_min=20;//20
-//const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
+const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/White/203084_beam.root";
 
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007/203079_beam.root";
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar/203089_beam.root";
-const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar_35MeV/203095_beam.root";
+//const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar_35MeV/203095_beam.root";
 
-const char *h_name = "em"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
+const char *h_name = "eh"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
 
 Int_t npeaks;//maximum
 Double_t fpeaks(Double_t *x, Double_t *par) {
@@ -137,7 +137,7 @@ void peaks() {
    xpeaks = s->GetPositionX();
    for (p=0;p<nfound;p++) {
       Double_t xp = xpeaks[p];
-      std::cout << " Found peak at : " << xp << std::endl;
+      std::cout << " Found peak at : " << xp << " (Index "<<p+1<< ")" << std::endl;
       Int_t bin = h->GetXaxis()->FindBin(xp);
       Double_t yp = h->GetBinContent(bin);
       if (yp-TMath::Sqrt(yp) < fline->Eval(xp)) continue;
@@ -175,19 +175,28 @@ void peaks() {
                 << "  Area : "  << fit->GetParameter(3*p+2) << " \u00b1 " << fit->GetParError(3*p+2)
                 << std::endl;
 #else
-//      ROOT::Math::IntegratorOneDimOptions::SetDefaultRelTolerance(1.E-6);
+      ROOT::Math::IntegratorOneDimOptions::SetDefaultRelTolerance(1.E-12);
       Double_t error;
       Double_t error_bkg;
       Int_t bin_up = h2->FindBin(fit->GetParameter(3*p+3)+3*fit->GetParameter(3*p+4));
       Int_t bin_down = h2->FindBin(fit->GetParameter(3*p+3)-3*fit->GetParameter(3*p+4));
+      TF1 *f_temp = new TF1("f_temp","gaus",Energy_min,Energy_max);
+      f_temp->FixParameter(0,fit->GetParameter(3*p+2));//height
+      f_temp->FixParameter(1,fit->GetParameter(3*p+3));//mean
+      f_temp->FixParameter(2,fit->GetParameter(3*p+4));//sigma
+      if (fit->GetParameter(3*p+2) == 0 || fit->GetParameter(3*p+3) == 0 || fit->GetParameter(3*p+4) == 0) continue;
       std::cout << " Index : " << p+1 << fixed << setprecision(3)
                 << "  Energy : " << fit->GetParameter(3*p+3) << " \u00b1 "   << fit->GetParError(3*p+3) 
                 << "  Sigma : "  << fit->GetParameter(3*p+4) << " \u00b1 "   << fit->GetParError(3*p+4)
                 << "  Height : " << fit->GetParameter(3*p+2) << " \u00b1 " << fit->GetParError(3*p+2)
-//                << "  Area : "  << h2->IntegralAndError(bin_down,bin_up,error)-fline->Integral(fit->GetParameter(3*p+3)-3*fit->GetParameter(3*p+4), fit->GetParameter(3*p+3)+3*fit->GetParameter(3*p+4)) << " \u00b1 " << error
+//                << "  Area : "  << f_temp->Integral(Energy_min,Energy_max) 
+//                << "  bin up : "  << bin_up << " bin down : " << bin_down
+//                << "  Area peak : "  << h2->IntegralAndError(bin_down,bin_up,error) << " Area bkg : " << hb->IntegralAndError(bin_down,bin_up,error_bkg)
                 << "  Area : "  << h2->IntegralAndError(bin_down,bin_up,error)-hb->IntegralAndError(bin_down,bin_up,error_bkg) << " \u00b1 " << sqrt(error*error+error_bkg*error_bkg)
                 << std::endl;
 #endif /* defined(__PEAKS_C_FIT_AREAS__) */
+      f_temp->SetLineColor(3);
+      f_temp->Draw("same C");
    }
    TFile* fout = new TFile(Form("./outputs/findpeak_%s.root",h_name),"recreate");
    fout->cd();
