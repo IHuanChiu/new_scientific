@@ -43,7 +43,7 @@ def neighbor_exit(_h,_e,_3sigma):
     for i in range(bin_up3sigma, bin_up6sigma):
        if _h.GetBinContent(i) > maxbin_up: maxbin_up = _h.GetBinContent(i)
 
-    if math.fabs(1-(maxbin_up/maxbin_down)) < 0.5: 
+    if math.fabs(1-(maxbin_up/maxbin_down)) < 0.2: 
        # no neighbor peak
        return "None"
     elif maxbin_up/maxbin_down > 1:
@@ -70,7 +70,7 @@ def main(args):
        print(" Current file : {}".format(inputfile))
        print(" Total Events: {}".format(int(_h.GetEntries())))
    
-   
+       draw_flag=False
        for prop, propv in conf.items():
           if prop == "Input": continue
           for _nameconf in conf[prop]:
@@ -78,7 +78,7 @@ def main(args):
              for _item in conf[prop][_nameconf]:
                 for _prop, _propv in _item.items():
                    if _prop=="Plot":
-                      if _propv:_plotflag=True
+                      if _propv:_plotflag=True;draw_flag=True
                       else:_plotflag=False
                       continue
                    e_central=_item[_prop][0]
@@ -126,7 +126,7 @@ def main(args):
 
        print(" ============================================== ")
 
-       drawplots(_h,line_list)
+       if draw_flag: drawplots(_h,line_list)
 
 if __name__ == "__main__":
 
