@@ -66,7 +66,6 @@ def main(args):
        _h = _inf.Get("Energy")
        line_list=[]
        _plotflag=False
-       print(" ============================================== ")
        print(" Current file : {}".format(inputfile))
        print(" Total Events: {}".format(int(_h.GetEntries())))
    
@@ -74,9 +73,11 @@ def main(args):
        for prop, propv in conf.items():
           if prop == "Input": continue
           for _nameconf in conf[prop]:
+             if not conf[prop][_nameconf][0]["Print"]: continue
              print("\033[1m Atom : {0}\033[0m".format(_nameconf))
              for _item in conf[prop][_nameconf]:
                 for _prop, _propv in _item.items():
+                   if _prop=="Print": continue
                    if _prop=="Plot":
                       if _propv:_plotflag=True;draw_flag=True
                       else:_plotflag=False
