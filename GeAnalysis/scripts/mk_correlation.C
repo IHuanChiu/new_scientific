@@ -157,6 +157,8 @@ void mk_correlation(){
    double dewbar35_fesi_ref_error = 0.;
 
 
+   TF1 *fline = new TF1("fline","pol1",0,1);
+   fline->FixParameter(0,0);
    Double_t x[100],y[100],xe[100],ye[100];
    int np=6;
    x[0]=0;y[0]=0;xe[0]=0;ye[0]=0;
@@ -188,8 +190,13 @@ void mk_correlation(){
    y[3]=dewbar_alsi_ref;
    y[4]=dewbar35_alsi_ref;
    y[5]=white_alsi_ref;
+   ye[1]=black_alsi_ref_error;
+   ye[2]=dew_alsi_ref_error;
+   ye[3]=dewbar_alsi_ref_error;
+   ye[4]=dewbar35_alsi_ref_error;
+   ye[5]=white_alsi_ref_error;
 #endif
-   TGraph* gr = new TGraph(np,x,y);
+   auto gr = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
    gr->SetMarkerStyle(8);
    gr->SetMarkerSize(2);
    gr->SetMarkerColor(4);
@@ -200,7 +207,10 @@ void mk_correlation(){
    gr->SetTitle(";Al(4-2)/Si(3-2);Al/Si ref.");
    gr->GetXaxis()->CenterTitle("Al(4-2)/Si(3-2)"); gr->GetYaxis()->CenterTitle("Al/Si ref.");
 #endif
-   gr->Draw("");
+   gr->Draw("AP");
+   auto grfit = new TGraph(np,x,y);
+   grfit->Fit("fline","qn");
+   fline->Draw("same");
    c1->SaveAs("/Users/chiu.i-huan/Desktop/integ_al.pdf");
 
    TCanvas *c2 = new TCanvas("c2","c2",0,0,3200,3200);
@@ -230,8 +240,13 @@ void mk_correlation(){
    x[3]=dewbar_fesi_ref;
    x[2]=dewbar35_fesi_ref;
    x[1]=white_fesi_ref;
+   xe[5]=black_fesi_ref_error;
+   xe[4]=dew_fesi_ref_error;
+   xe[3]=dewbar_fesi_ref_error;
+   xe[2]=dewbar35_fesi_ref_error;
+   xe[1]=white_fesi_ref_error;
 #endif
-   TGraph* gr2 = new TGraph(np,x,y);
+   auto gr2 = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
    gr2->SetMarkerStyle(8);
    gr2->SetMarkerSize(2);
    gr2->SetMarkerColor(4);
@@ -242,7 +257,10 @@ void mk_correlation(){
    gr2->SetTitle(";Fe/Si ref.;Fe(5-4)/Si(3-2)");
    gr2->GetXaxis()->CenterTitle("Fe/Si ref."); gr2->GetYaxis()->CenterTitle("Fe(5-4)/Si(3-2)");
 #endif
-   gr2->Draw("");
+   gr2->Draw("AP");
+   auto grfit2 = new TGraph(np,x,y);
+   grfit2->Fit("fline","qn");
+   fline->Draw("same");
    c2->SaveAs("/Users/chiu.i-huan/Desktop/integ_fe.pdf");
 
    TCanvas *c3 = new TCanvas("c3","c3",0,0,3200,3200);
@@ -272,8 +290,13 @@ void mk_correlation(){
    y[2]=dewbar_alsi_ref;
    y[4]=dewbar35_alsi_ref;
    y[5]=white_alsi_ref;
+   ye[1]=black_alsi_ref_error;
+   ye[3]=dew_alsi_ref_error;
+   ye[2]=dewbar_alsi_ref_error;
+   ye[4]=dewbar35_alsi_ref_error;
+   ye[5]=white_alsi_ref_error;
 #endif
-   TGraph* gr3 = new TGraph(np,x,y);
+   auto gr3 = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
    gr3->SetMarkerStyle(8);
    gr3->SetMarkerSize(2);
    gr3->SetMarkerColor(4);
@@ -282,9 +305,12 @@ void mk_correlation(){
    gr3->GetXaxis()->CenterTitle("Al(4-2)/Si(3-2)"); gr3->GetYaxis()->CenterTitle("Al(4-3)/Si(3-2)");
 #else
    gr3->SetTitle(";Al(4-2)/Si(3-2);Al/Si ref.");
-   gr3->GetXaxis()->CenterTitle("Al(4-2)/Si(3-2)"); gr->GetYaxis()->CenterTitle("Al/Si ref.");
+   gr3->GetXaxis()->CenterTitle("Al(4-2)/Si(3-2)"); gr3->GetYaxis()->CenterTitle("Al/Si ref.");
 #endif
-   gr3->Draw("");
+   gr3->Draw("AP");
+   auto grfit3 = new TGraph(np,x,y);
+   grfit3->Fit("fline","qn");
+   fline->Draw("same");
    c3->SaveAs("/Users/chiu.i-huan/Desktop/snip_al.pdf");
 
    TCanvas *c4 = new TCanvas("c4","c4",0,0,3200,3200);
@@ -314,8 +340,13 @@ void mk_correlation(){
    x[4]=dewbar_fesi_ref;
    x[2]=dewbar35_fesi_ref;
    x[1]=white_fesi_ref;
+   xe[5]=black_fesi_ref_error;
+   xe[3]=dew_fesi_ref_error;
+   xe[4]=dewbar_fesi_ref_error;
+   xe[2]=dewbar35_fesi_ref_error;
+   xe[1]=white_fesi_ref_error;
 #endif
-   TGraph* gr4 = new TGraph(np,x,y);
+   auto gr4 = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
    gr4->SetMarkerStyle(8);
    gr4->SetMarkerSize(2);
    gr4->SetMarkerColor(4);
@@ -326,7 +357,10 @@ void mk_correlation(){
    gr4->SetTitle(";Fe/Si ref.;Fe(5-4)/Si(3-2)");
    gr4->GetXaxis()->CenterTitle("Fe/Si ref."); gr4->GetYaxis()->CenterTitle("Fe(5-4)/Si(3-2)");
 #endif
-   gr4->Draw("");
+   gr4->Draw("AP");
+   auto grfit4 = new TGraph(np,x,y);
+   grfit4->Fit("fline","qn");
+   fline->Draw("same");
    c4->SaveAs("/Users/chiu.i-huan/Desktop/snip_fe.pdf");
 
 } 
