@@ -52,11 +52,11 @@
 Int_t np=50;
 Int_t myEnergy_min=20;//20
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/White/203084_beam.root";
-//const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
+const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
 
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007/203079_beam.root";
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar/203089_beam.root";
-const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar_35MeV/203095_beam.root";
+//const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar_35MeV/203095_beam.root";
 
 const char *h_name = "em"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
 

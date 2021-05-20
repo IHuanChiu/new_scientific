@@ -8,10 +8,19 @@ __copyright__ = "Copyright 2021 I-Huan CHIU"
 __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 // */
 
-#define __reference__ 1 
+#include "ATLASStyle/AtlasStyle.C"
+#include "ATLASStyle/AtlasLabels.C"
+#include "ATLASStyle/AtlasUtils.C"
+
+//#define __reference__ 1 
 
 void mk_correlation(){
 
+  #ifdef __CINT__
+    gROOT->LoadMacro("AtlasLabels.C");
+    gROOT->LoadMacro("AtlasUtils.C");
+  #endif
+  SetAtlasStyle();
    // si32 : 76keV
    // al43 : 23keV
    // al42 : 89keV
@@ -159,11 +168,17 @@ void mk_correlation(){
 
    TF1 *fline = new TF1("fline","pol1",0,1);
    fline->FixParameter(0,0);
+   fline->SetLineColor(2);
    Double_t x[100],y[100],xe[100],ye[100];
    int np=6;
    x[0]=0;y[0]=0;xe[0]=0;ye[0]=0;
+#if defined(__reference__)
+   const char *h_addname="_ref";
+#else
+   const char *h_addname="";
+#endif
    
-   TCanvas *c1 = new TCanvas("c1","c1",0,0,3200,3200);
+   TCanvas *c1 = new TCanvas("c1","c1",0,0,1000,800);
    x[1]=black_al42/black_si32;
    y[1]=black_al43/black_si32;
    xe[1]=black_al42/black_si32*(sqrt(pow(black_al42_error/black_al42,2)+pow(black_si32_error/black_si32,2)));
@@ -198,7 +213,7 @@ void mk_correlation(){
 #endif
    auto gr = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
    gr->SetMarkerStyle(8);
-   gr->SetMarkerSize(2);
+   gr->SetMarkerSize(1);
    gr->SetMarkerColor(4);
 #if not defined(__reference__)
    gr->SetTitle(";Al(4-2)/Si(3-2);Al(4-3)/Si(3-2)");
@@ -211,9 +226,9 @@ void mk_correlation(){
    auto grfit = new TGraph(np,x,y);
    grfit->Fit("fline","qn");
    fline->Draw("same");
-   c1->SaveAs("/Users/chiu.i-huan/Desktop/integ_al.pdf");
+   c1->SaveAs(Form("/Users/chiu.i-huan/Desktop/integ_al%s.pdf",h_addname));
 
-   TCanvas *c2 = new TCanvas("c2","c2",0,0,3200,3200);
+   TCanvas *c2 = new TCanvas("c2","c2",0,0,1000,800);
    x[5]=black_fe43/black_si32;
    y[5]=black_fe54/black_si32;
    xe[5]=black_fe43/black_si32*(sqrt(pow(black_fe43_error/black_fe43,2)+pow(black_si32_error/black_si32,2)));
@@ -248,7 +263,7 @@ void mk_correlation(){
 #endif
    auto gr2 = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
    gr2->SetMarkerStyle(8);
-   gr2->SetMarkerSize(2);
+   gr2->SetMarkerSize(1);
    gr2->SetMarkerColor(4);
 #if not defined(__reference__)
    gr2->SetTitle(";Fe(4-3)/Si(3-2);Fe(5-4)/Si(3-2)");
@@ -261,9 +276,9 @@ void mk_correlation(){
    auto grfit2 = new TGraph(np,x,y);
    grfit2->Fit("fline","qn");
    fline->Draw("same");
-   c2->SaveAs("/Users/chiu.i-huan/Desktop/integ_fe.pdf");
+   c2->SaveAs(Form("/Users/chiu.i-huan/Desktop/integ_fe%s.pdf",h_addname));
 
-   TCanvas *c3 = new TCanvas("c3","c3",0,0,3200,3200);
+   TCanvas *c3 = new TCanvas("c3","c3",0,0,1000,800);
    x[1]=black_al42_snip/black_si32_snip;
    y[1]=black_al43_snip/black_si32_snip;
    xe[1]=black_al42_snip/black_si32_snip*(sqrt(pow(black_al42_snip_error/black_al42_snip,2)+pow(black_si32_snip_error/black_si32_snip,2)));
@@ -298,7 +313,7 @@ void mk_correlation(){
 #endif
    auto gr3 = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
    gr3->SetMarkerStyle(8);
-   gr3->SetMarkerSize(2);
+   gr3->SetMarkerSize(1);
    gr3->SetMarkerColor(4);
 #if not defined(__reference__)
    gr3->SetTitle(";Al(4-2)/Si(3-2);Al(4-3)/Si(3-2)");
@@ -311,9 +326,9 @@ void mk_correlation(){
    auto grfit3 = new TGraph(np,x,y);
    grfit3->Fit("fline","qn");
    fline->Draw("same");
-   c3->SaveAs("/Users/chiu.i-huan/Desktop/snip_al.pdf");
+   c3->SaveAs(Form("/Users/chiu.i-huan/Desktop/snip_al%s.pdf",h_addname));
 
-   TCanvas *c4 = new TCanvas("c4","c4",0,0,3200,3200);
+   TCanvas *c4 = new TCanvas("c4","c4",0,0,1000,800);
    x[5]=black_fe43_snip/black_si32_snip;
    y[5]=black_fe54_snip/black_si32_snip;
    xe[5]=black_fe43_snip/black_si32_snip*(sqrt(pow(black_fe43_snip_error/black_fe43_snip,2)+pow(black_si32_snip_error/black_si32_snip,2)));
@@ -348,7 +363,7 @@ void mk_correlation(){
 #endif
    auto gr4 = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
    gr4->SetMarkerStyle(8);
-   gr4->SetMarkerSize(2);
+   gr4->SetMarkerSize(1);
    gr4->SetMarkerColor(4);
 #if not defined(__reference__)
    gr4->SetTitle(";Fe(4-3)/Si(3-2);Fe(5-4)/Si(3-2)");
@@ -361,6 +376,66 @@ void mk_correlation(){
    auto grfit4 = new TGraph(np,x,y);
    grfit4->Fit("fline","qn");
    fline->Draw("same");
-   c4->SaveAs("/Users/chiu.i-huan/Desktop/snip_fe.pdf");
+   c4->SaveAs(Form("/Users/chiu.i-huan/Desktop/snip_fe%s.pdf",h_addname));
 
+
+   TCanvas *c5 = new TCanvas("c5","c5",0,0,1000,800);
+   x[5]=black_fe54/black_si32;
+   y[5]=black_al42/black_si32;
+   xe[5]=black_fe54/black_si32*(sqrt(pow(black_fe54_error/black_fe54,2)+pow(black_si32_error/black_si32,2)));
+   ye[5]=black_al42/black_si32*(sqrt(pow(black_al42_error/black_al42,2)+pow(black_si32_error/black_si32,2)));
+   x[4] =dew_fe54/dew_si32;
+   y[4] =dew_al42/dew_si32;
+   xe[4]=dew_fe54/dew_si32*(sqrt(pow(dew_fe54_error/dew_fe54,2)+pow(dew_si32_error/dew_si32,2)));
+   ye[4]=dew_al42/dew_si32*(sqrt(pow(dew_al42_error/dew_al42,2)+pow(dew_si32_error/dew_si32,2)));
+   x[3] =dewbar_fe54/dewbar_si32;
+   y[3] =dewbar_al42/dewbar_si32;
+   xe[3]=dewbar_fe54/dewbar_si32*(sqrt(pow(dewbar_fe54_error/dewbar_fe54,2)+pow(dewbar_si32_error/dewbar_si32,2)));
+   ye[3]=dewbar_al42/dewbar_si32*(sqrt(pow(dewbar_al42_error/dewbar_al42,2)+pow(dewbar_si32_error/dewbar_si32,2)));
+   x[2] =dewbar35_fe54/dewbar35_si32;
+   y[2] =dewbar35_al42/dewbar35_si32;
+   xe[2]=dewbar35_fe54/dewbar35_si32*(sqrt(pow(dewbar35_fe54_error/dewbar35_fe54,2)+pow(dewbar35_si32_error/dewbar35_si32,2)));
+   ye[2]=dewbar35_al42/dewbar35_si32*(sqrt(pow(dewbar35_al42_error/dewbar35_al42,2)+pow(dewbar35_si32_error/dewbar35_si32,2)));
+   x[1] =white_fe54/white_si32;
+   y[1] =white_al42/white_si32;
+   xe[1]=white_fe54/white_si32*(sqrt(pow(white_fe54_error/white_fe54,2)+pow(white_si32_error/white_si32,2)));
+   ye[1]=white_al42/white_si32*(sqrt(pow(white_al42_error/white_al42,2)+pow(white_si32_error/white_si32,2)));   
+   auto gr5_iter = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
+   gr5_iter->SetTitle(";Fe(5-4)/Si(3-2);Al(4-2)/Si(3-2)");
+   gr5_iter->GetXaxis()->CenterTitle("Fe(5-4)/Si(3-2)"); gr5_iter->GetYaxis()->CenterTitle("Al(4-2)/Si(3-2)");
+   gr5_iter->SetMarkerStyle(8);
+   gr5_iter->SetMarkerSize(1);
+   gr5_iter->SetMarkerColor(4);
+   gr5_iter->Draw("AP");
+   c5->SaveAs("/Users/chiu.i-huan/Desktop/comparison_feal_iter.pdf");
+
+   TCanvas *c6 = new TCanvas("c6","c6",0,0,1000,800);
+   x[5]=black_fe54_snip/black_si32_snip;
+   y[5]=black_al42_snip/black_si32_snip;
+   xe[5]=black_fe54_snip/black_si32_snip*(sqrt(pow(black_fe54_snip_error/black_fe54_snip,2)+pow(black_si32_snip_error/black_si32_snip,2)));
+   ye[5]=black_al42_snip/black_si32_snip*(sqrt(pow(black_al42_snip_error/black_al42_snip,2)+pow(black_si32_snip_error/black_si32_snip,2)));
+   x[4] =dew_fe54_snip/dew_si32_snip;
+   y[4] =dew_al42_snip/dew_si32_snip;
+   xe[4]=dew_fe54_snip/dew_si32_snip*(sqrt(pow(dew_fe54_snip_error/dew_fe54_snip,2)+pow(dew_si32_snip_error/dew_si32_snip,2)));
+   ye[4]=dew_al42_snip/dew_si32_snip*(sqrt(pow(dew_al42_snip_error/dew_al42_snip,2)+pow(dew_si32_snip_error/dew_si32_snip,2)));
+   x[3] =dewbar_fe54_snip/dewbar_si32_snip;
+   y[3] =dewbar_al42_snip/dewbar_si32_snip;
+   xe[3]=dewbar_fe54_snip/dewbar_si32_snip*(sqrt(pow(dewbar_fe54_snip_error/dewbar_fe54_snip,2)+pow(dewbar_si32_snip_error/dewbar_si32_snip,2)));
+   ye[3]=dewbar_al42_snip/dewbar_si32_snip*(sqrt(pow(dewbar_al42_snip_error/dewbar_al42_snip,2)+pow(dewbar_si32_snip_error/dewbar_si32_snip,2)));
+   x[2] =dewbar35_fe54_snip/dewbar35_si32_snip;
+   y[2] =dewbar35_al42_snip/dewbar35_si32_snip;
+   xe[2]=dewbar35_fe54_snip/dewbar35_si32_snip*(sqrt(pow(dewbar35_fe54_snip_error/dewbar35_fe54_snip,2)+pow(dewbar35_si32_snip_error/dewbar35_si32_snip,2)));
+   ye[2]=dewbar35_al42_snip/dewbar35_si32_snip*(sqrt(pow(dewbar35_al42_snip_error/dewbar35_al42_snip,2)+pow(dewbar35_si32_snip_error/dewbar35_si32_snip,2)));
+   x[1] =white_fe54_snip/white_si32_snip;
+   y[1] =white_al42_snip/white_si32_snip;
+   xe[1]=white_fe54_snip/white_si32_snip*(sqrt(pow(white_fe54_snip_error/white_fe54_snip,2)+pow(white_si32_snip_error/white_si32_snip,2)));
+   ye[1]=white_al42_snip/white_si32_snip*(sqrt(pow(white_al42_snip_error/white_al42_snip,2)+pow(white_si32_snip_error/white_si32_snip,2)));   
+   auto gr5_snip = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
+   gr5_snip->SetMarkerStyle(8);
+   gr5_snip->SetMarkerSize(1);
+   gr5_snip->SetMarkerColor(2);
+   gr5_snip->Draw("AP");
+   gr5_snip->SetTitle(";Fe(5-4)/Si(3-2);Al(4-2)/Si(3-2)");
+   gr5_snip->GetXaxis()->CenterTitle("Fe(5-4)/Si(3-2)"); gr5_snip->GetYaxis()->CenterTitle("Al(4-2)/Si(3-2)");
+   c6->SaveAs("/Users/chiu.i-huan/Desktop/comparison_feal_snip.pdf");
 } 
