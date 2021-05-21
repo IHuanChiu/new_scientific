@@ -51,14 +51,14 @@
 
 Int_t np=50;
 Int_t myEnergy_min=20;//20
-//const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/White/203084_beam.root";
-const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
+const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/White/203084_beam.root";
+//const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
 
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007/203079_beam.root";
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar/203089_beam.root";
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar_35MeV/203095_beam.root";
 
-const char *h_name = "em"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
+const char *h_name = "el"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
 
 Int_t npeaks;//maximum
 Double_t fpeaks(Double_t *x, Double_t *par) {
@@ -185,6 +185,8 @@ void peaks() {
       f_temp->FixParameter(1,fit->GetParameter(3*p+3));//mean
       f_temp->FixParameter(2,fit->GetParameter(3*p+4));//sigma
       if (fit->GetParameter(3*p+2) == 0 || fit->GetParameter(3*p+3) == 0 || fit->GetParameter(3*p+4) == 0) continue;
+      TLine* lup = new TLine(fit->GetParameter(3*p+3)+3*fit->GetParameter(3*p+4),0,fit->GetParameter(3*p+3)+3*fit->GetParameter(3*p+4),1000);
+      TLine* ldown = new TLine(fit->GetParameter(3*p+3)-3*fit->GetParameter(3*p+4),0,fit->GetParameter(3*p+3)-3*fit->GetParameter(3*p+4),1000);
       std::cout << " Index : " << p+1 << fixed << setprecision(1)
                 << "  Energy : " << fit->GetParameter(3*p+3) << " \u00b1 "   << fit->GetParError(3*p+3) 
                 << "  Sigma : "  << fit->GetParameter(3*p+4) << " \u00b1 "   << fit->GetParError(3*p+4)
@@ -196,8 +198,12 @@ void peaks() {
 //                << "  Signal : "  << h2->IntegralAndError(bin_down,bin_up,error) << " \u00b1 " << error << " BKG : " << hb->IntegralAndError(bin_down,bin_up,error_bkg) << " \u00b1 " << error_bkg
                 << std::endl;
 #endif /* defined(__PEAKS_C_FIT_AREAS__) */
+      lup->SetLineColor(9);
+      ldown->SetLineColor(5);
       f_temp->SetLineColor(3);
       f_temp->Draw("same C");
+      lup->Draw("same");
+      ldown->Draw("same");
    }
    TFile* fout = new TFile(Form("./outputs/findpeak_%s.root",h_name),"recreate");
    fout->cd();
