@@ -51,14 +51,15 @@
 
 Int_t np=50;
 Int_t myEnergy_min=20;//20
-const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/White/203084_beam.root";
+//const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/White/203084_beam.root";
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/Black/203086_beam.root";
 
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007/203079_beam.root";
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar/203089_beam.root";
-//const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar_35MeV/203095_beam.root";
+const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar_35MeV/203095_beam.root";
 
-const char *h_name = "el"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
+
+const char *h_name = "em"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
 
 Int_t npeaks;//maximum
 Double_t fpeaks(Double_t *x, Double_t *par) {
@@ -120,7 +121,7 @@ void peaks() {
    if (hb) c1->Update();
    if (np <0) return;
 
-   // ***********************************************************************************************************************************
+    // ***********************************************************************************************************************************
    //estimate linear background using a fitting method
    c1->cd(2);
    TF1 *fline = new TF1("fline","pol1",0,Energy_max);
@@ -195,7 +196,7 @@ void peaks() {
 //                << "  bin up : "  << bin_up << " bin down : " << bin_down
 //                << "  Area peak : "  << h2->IntegralAndError(bin_down,bin_up,error) << " Area bkg : " << hb->IntegralAndError(bin_down,bin_up,error_bkg)
                 << "  Area : "  << h2->IntegralAndError(bin_down,bin_up,error)-hb->IntegralAndError(bin_down,bin_up,error_bkg) << " \u00b1 " << sqrt(error*error+error_bkg*error_bkg)
-//                << "  Signal : "  << h2->IntegralAndError(bin_down,bin_up,error) << " \u00b1 " << error << " BKG : " << hb->IntegralAndError(bin_down,bin_up,error_bkg) << " \u00b1 " << error_bkg
+                << "  Signal : "  << h2->IntegralAndError(bin_down,bin_up,error) << " \u00b1 " << error << " BKG : " << hb->IntegralAndError(bin_down,bin_up,error_bkg) << " \u00b1 " << error_bkg
                 << std::endl;
 #endif /* defined(__PEAKS_C_FIT_AREAS__) */
       lup->SetLineColor(9);

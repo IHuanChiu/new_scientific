@@ -84,55 +84,65 @@ void mk_correlation(){
    double dewbar35_fe43_error = 152;
 
    //SNIP
+   double black_o21_snip = 59801.9;//o21
    double black_si32_snip = 22124.6;
    double black_al43_snip = 1488.9;
    double black_al42_snip = 1957.7;
    double black_fe54_snip = 9523.4;
    double black_fe43_snip = 18106.9;
+   double black_o21_snip_error = 265.2;//o21
    double black_si32_snip_error = 181;
    double black_al43_snip_error = 110.2;
    double black_al42_snip_error = 131.3;
    double black_fe54_snip_error = 129.3;
    double black_fe43_snip_error = 176.4;
 
+   double white_o21_snip = 39607.4;//o21
    double white_si32_snip = 13154.4;
    double white_al43_snip = 3177.2;
    double white_al42_snip = 2188.3;
    double white_fe54_snip = 1306.8;
    double white_fe43_snip = 1895.1;
+   double white_o21_snip_error = 220.6;//o21
    double white_si32_snip_error = 149.0;
    double white_al43_snip_error = 106.0;
    double white_al42_snip_error = 117.7;
    double white_fe54_snip_error = 82.7;
    double white_fe43_snip_error = 120.0;
 
+   double dew_o21_snip = 33168.3;
    double dew_si32_snip = 11191.6;
    double dew_al43_snip = 1012.4;
    double dew_al42_snip = 1436.9;
    double dew_fe54_snip = 2249.3;
    double dew_fe43_snip = 4626.2;
+   double dew_o21_snip_error = 197.3;
    double dew_si32_snip_error = 130.2;
    double dew_al43_snip_error = 70.0;
    double dew_al42_snip_error = 96.8;
    double dew_fe54_snip_error = 75.0;
    double dew_fe43_snip_error = 110.5;
 
+   double dewbar_o21_snip = 85873.1;
    double dewbar_si32_snip = 29332.6;
    double dewbar_al43_snip = 2509.8;
    double dewbar_al42_snip = 3571.8;
    double dewbar_fe54_snip = 5960.3;
    double dewbar_fe43_snip = 12039.2;
+   double dewbar_o21_snip_error = 317.5;
    double dewbar_si32_snip_error = 210.5;
    double dewbar_al43_snip_error = 114.3;
    double dewbar_al42_snip_error = 168.2;
    double dewbar_fe54_snip_error = 122.8;
    double dewbar_fe43_snip_error = 178.4;
 
+   double dewbar35_o21_snip = 61162.2;
    double dewbar35_si32_snip = 20070.3;
    double dewbar35_al43_snip = 744.7;
    double dewbar35_al42_snip = 2850.6;
    double dewbar35_fe54_snip = 3407.3;
    double dewbar35_fe43_snip = 8599.1;
+   double dewbar35_o21_snip_error = 266.5;
    double dewbar35_si32_snip_error = 173.8;
    double dewbar35_al43_snip_error = 83.7;
    double dewbar35_al42_snip_error = 144.1;
@@ -431,32 +441,110 @@ void mk_correlation(){
    c5->SaveAs("/Users/chiu.i-huan/Desktop/comparison_feal_iter.pdf");
 
    TCanvas *c6 = new TCanvas("c6","c6",0,0,1000,800);
-   x[5]=black_fe54_snip/black_si32_snip;
-   y[5]=black_al43_snip/black_si32_snip;
-   xe[5]=black_fe54_snip/black_si32_snip*(sqrt(pow(black_fe54_snip_error/black_fe54_snip,2)+pow(black_si32_snip_error/black_si32_snip,2)));
-   ye[5]=black_al43_snip/black_si32_snip*(sqrt(pow(black_al43_snip_error/black_al43_snip,2)+pow(black_si32_snip_error/black_si32_snip,2)));
-   x[4] =dew_fe54_snip/dew_si32_snip;
-   y[4] =dew_al43_snip/dew_si32_snip;
-   xe[4]=dew_fe54_snip/dew_si32_snip*(sqrt(pow(dew_fe54_snip_error/dew_fe54_snip,2)+pow(dew_si32_snip_error/dew_si32_snip,2)));
-   ye[4]=dew_al43_snip/dew_si32_snip*(sqrt(pow(dew_al43_snip_error/dew_al43_snip,2)+pow(dew_si32_snip_error/dew_si32_snip,2)));
-   x[3] =dewbar_fe54_snip/dewbar_si32_snip;
-   y[3] =dewbar_al43_snip/dewbar_si32_snip;
-   xe[3]=dewbar_fe54_snip/dewbar_si32_snip*(sqrt(pow(dewbar_fe54_snip_error/dewbar_fe54_snip,2)+pow(dewbar_si32_snip_error/dewbar_si32_snip,2)));
-   ye[3]=dewbar_al43_snip/dewbar_si32_snip*(sqrt(pow(dewbar_al43_snip_error/dewbar_al43_snip,2)+pow(dewbar_si32_snip_error/dewbar_si32_snip,2)));
-   x[2] =dewbar35_fe54_snip/dewbar35_si32_snip;
-   y[2] =dewbar35_al43_snip/dewbar35_si32_snip;
-   xe[2]=dewbar35_fe54_snip/dewbar35_si32_snip*(sqrt(pow(dewbar35_fe54_snip_error/dewbar35_fe54_snip,2)+pow(dewbar35_si32_snip_error/dewbar35_si32_snip,2)));
-   ye[2]=dewbar35_al43_snip/dewbar35_si32_snip*(sqrt(pow(dewbar35_al43_snip_error/dewbar35_al43_snip,2)+pow(dewbar35_si32_snip_error/dewbar35_si32_snip,2)));
-   x[1] =white_fe54_snip/white_si32_snip;
-   y[1] =white_al43_snip/white_si32_snip;
-   xe[1]=white_fe54_snip/white_si32_snip*(sqrt(pow(white_fe54_snip_error/white_fe54_snip,2)+pow(white_si32_snip_error/white_si32_snip,2)));
-   ye[1]=white_al43_snip/white_si32_snip*(sqrt(pow(white_al43_snip_error/white_al43_snip,2)+pow(white_si32_snip_error/white_si32_snip,2)));   
+   x[5]=black_fe43_snip/black_si32_snip;
+   y[5]=black_al42_snip/black_si32_snip;
+   xe[5]=black_fe43_snip/black_si32_snip*(sqrt(pow(black_fe43_snip_error/black_fe43_snip,2)+pow(black_si32_snip_error/black_si32_snip,2)));
+   ye[5]=black_al42_snip/black_si32_snip*(sqrt(pow(black_al42_snip_error/black_al42_snip,2)+pow(black_si32_snip_error/black_si32_snip,2)));
+   x[4] =dew_fe43_snip/dew_si32_snip;
+   y[4] =dew_al42_snip/dew_si32_snip;
+   xe[4]=dew_fe43_snip/dew_si32_snip*(sqrt(pow(dew_fe43_snip_error/dew_fe43_snip,2)+pow(dew_si32_snip_error/dew_si32_snip,2)));
+   ye[4]=dew_al42_snip/dew_si32_snip*(sqrt(pow(dew_al42_snip_error/dew_al42_snip,2)+pow(dew_si32_snip_error/dew_si32_snip,2)));
+   x[3] =dewbar_fe43_snip/dewbar_si32_snip;
+   y[3] =dewbar_al42_snip/dewbar_si32_snip;
+   xe[3]=dewbar_fe43_snip/dewbar_si32_snip*(sqrt(pow(dewbar_fe43_snip_error/dewbar_fe43_snip,2)+pow(dewbar_si32_snip_error/dewbar_si32_snip,2)));
+   ye[3]=dewbar_al42_snip/dewbar_si32_snip*(sqrt(pow(dewbar_al42_snip_error/dewbar_al42_snip,2)+pow(dewbar_si32_snip_error/dewbar_si32_snip,2)));
+   x[2] =dewbar35_fe43_snip/dewbar35_si32_snip;
+   y[2] =dewbar35_al42_snip/dewbar35_si32_snip;
+   xe[2]=dewbar35_fe43_snip/dewbar35_si32_snip*(sqrt(pow(dewbar35_fe43_snip_error/dewbar35_fe43_snip,2)+pow(dewbar35_si32_snip_error/dewbar35_si32_snip,2)));
+   ye[2]=dewbar35_al42_snip/dewbar35_si32_snip*(sqrt(pow(dewbar35_al42_snip_error/dewbar35_al42_snip,2)+pow(dewbar35_si32_snip_error/dewbar35_si32_snip,2)));
+   x[1] =white_fe43_snip/white_si32_snip;
+   y[1] =white_al42_snip/white_si32_snip;
+   xe[1]=white_fe43_snip/white_si32_snip*(sqrt(pow(white_fe43_snip_error/white_fe43_snip,2)+pow(white_si32_snip_error/white_si32_snip,2)));
+   ye[1]=white_al42_snip/white_si32_snip*(sqrt(pow(white_al42_snip_error/white_al42_snip,2)+pow(white_si32_snip_error/white_si32_snip,2)));   
    auto gr5_snip = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
    gr5_snip->SetMarkerStyle(8);
    gr5_snip->SetMarkerSize(1);
    gr5_snip->SetMarkerColor(2);
+   Double_t x_color,y_color;
+   TMarker *m;
+   /*
+   gr5_snip->GetPoint(4,x_color,y_color);//dewbar
+   m = new TMarker(x_color,y_color,20);
+   m->SetMarkerColor(3);
+   m->Paint();
+   gr5_snip->GetPoint(3,x_color,y_color);//dewbar35
+   m = new TMarker(x_color,y_color,20);
+   m->SetMarkerColor(4);
+   m->Paint();// */
    gr5_snip->Draw("AP");
-   gr5_snip->SetTitle(";Fe(5-4)/Si(3-2);Al(4-3)/Si(3-2)");
+   gr5_snip->SetTitle(";Fe(4-3)/Si(3-2);Al(4-2)/Si(3-2)");
    gr5_snip->GetXaxis()->CenterTitle(); gr5_snip->GetYaxis()->CenterTitle();
-   c6->SaveAs("/Users/chiu.i-huan/Desktop/comparison_feal43_snip.pdf");
+   c6->SaveAs("/Users/chiu.i-huan/Desktop/comparison_fe43al_snip.pdf");
+
+
+   TCanvas *c7 = new TCanvas("c7","c7",0,0,2000,800);
+   c7->Divide(2,1);
+   c7->cd(1);
+   x[1]=black_al42_snip/black_si32_snip;
+   y[1]=black_al42_snip/black_o21_snip;
+   xe[1]=black_al42_snip/black_si32_snip*(sqrt(pow(black_al42_snip_error/black_al42_snip,2)+pow(black_si32_snip_error/black_si32_snip,2)));
+   ye[1]=black_al42_snip/black_o21_snip*(sqrt(pow(black_al42_snip_error/black_al42_snip,2)+pow(black_o21_snip_error/black_o21_snip,2)));
+   x[3] =dew_al42_snip/dew_si32_snip;
+   y[3] =dew_al42_snip/dew_o21_snip;
+   xe[3]=dew_al42_snip/dew_si32_snip*(sqrt(pow(dew_al42_snip_error/dew_al42_snip,2)+pow(dew_si32_snip_error/dew_si32_snip,2)));
+   ye[3]=dew_al42_snip/dew_o21_snip*(sqrt(pow(dew_al42_snip_error/dew_al42_snip,2)+pow(dew_o21_snip_error/dew_o21_snip,2)));
+   x[2] =dewbar_al42_snip/dewbar_si32_snip;
+   y[2] =dewbar_al42_snip/dewbar_o21_snip;
+   xe[2]=dewbar_al42_snip/dewbar_si32_snip*(sqrt(pow(dewbar_al42_snip_error/dewbar_al42_snip,2)+pow(dewbar_si32_snip_error/dewbar_si32_snip,2)));
+   ye[2]=dewbar_al42_snip/dewbar_o21_snip*(sqrt(pow(dewbar_al42_snip_error/dewbar_al42_snip,2)+pow(dewbar_o21_snip_error/dewbar_o21_snip,2)));
+   x[4] =dewbar35_al42_snip/dewbar35_si32_snip;
+   y[4] =dewbar35_al42_snip/dewbar35_o21_snip;
+   xe[4]=dewbar35_al42_snip/dewbar35_si32_snip*(sqrt(pow(dewbar35_al42_snip_error/dewbar35_al42_snip,2)+pow(dewbar35_si32_snip_error/dewbar35_si32_snip,2)));
+   ye[4]=dewbar35_al42_snip/dewbar35_o21_snip*(sqrt(pow(dewbar35_al42_snip_error/dewbar35_al42_snip,2)+pow(dewbar35_o21_snip_error/dewbar35_o21_snip,2)));
+   x[5] =white_al42_snip/white_si32_snip;
+   y[5] =white_al42_snip/white_o21_snip;
+   xe[5]=white_al42_snip/white_si32_snip*(sqrt(pow(white_al42_snip_error/white_al42_snip,2)+pow(white_si32_snip_error/white_si32_snip,2)));
+   ye[5]=white_al42_snip/white_o21_snip*(sqrt(pow(white_al42_snip_error/white_al42_snip,2)+pow(white_o21_snip_error/white_o21_snip,2)));
+   auto gr7_iter = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
+   gr7_iter->SetTitle(";Al(4-2)/Si(3-2);Al(4-2)/O(2-1)");
+   gr7_iter->GetXaxis()->CenterTitle(); gr7_iter->GetYaxis()->CenterTitle();
+   gr7_iter->SetMarkerStyle(8);
+   gr7_iter->SetMarkerSize(1);
+   gr7_iter->SetMarkerColor(4);
+   gr7_iter->Draw("AP");
+   auto grfit7 = new TGraph(np,x,y);
+   grfit7->Fit("fline","qn");
+   fline->Draw("same");
+   c7->cd(2);
+   x[5]=black_fe43_snip/black_si32_snip;
+   y[5]=black_fe43_snip/black_o21_snip;
+   xe[5]=black_fe43_snip/black_si32_snip*(sqrt(pow(black_fe43_snip_error/black_fe43_snip,2)+pow(black_si32_snip_error/black_si32_snip,2)));
+   ye[5]=black_fe43_snip/black_o21_snip*(sqrt(pow(black_fe43_snip_error/black_fe43_snip,2)+pow(black_o21_snip_error/black_o21_snip,2)));
+   x[3] =dew_fe43_snip/dew_si32_snip;
+   y[3] =dew_fe43_snip/dew_o21_snip;
+   xe[3]=dew_fe43_snip/dew_si32_snip*(sqrt(pow(dew_fe43_snip_error/dew_fe43_snip,2)+pow(dew_si32_snip_error/dew_si32_snip,2)));
+   ye[3]=dew_fe43_snip/dew_o21_snip*(sqrt(pow(dew_fe43_snip_error/dew_fe43_snip,2)+pow(dew_o21_snip_error/dew_o21_snip,2)));
+   x[4] =dewbar_fe43_snip/dewbar_si32_snip;
+   y[4] =dewbar_fe43_snip/dewbar_o21_snip;
+   xe[4]=dewbar_fe43_snip/dewbar_si32_snip*(sqrt(pow(dewbar_fe43_snip_error/dewbar_fe43_snip,2)+pow(dewbar_si32_snip_error/dewbar_si32_snip,2)));
+   ye[4]=dewbar_fe43_snip/dewbar_o21_snip*(sqrt(pow(dewbar_fe43_snip_error/dewbar_fe43_snip,2)+pow(dewbar_o21_snip_error/dewbar_o21_snip,2)));
+   x[2] =dewbar35_fe43_snip/dewbar35_si32_snip;
+   y[2] =dewbar35_fe43_snip/dewbar35_o21_snip;
+   xe[2]=dewbar35_fe43_snip/dewbar35_si32_snip*(sqrt(pow(dewbar35_fe43_snip_error/dewbar35_fe43_snip,2)+pow(dewbar35_si32_snip_error/dewbar35_si32_snip,2)));
+   ye[2]=dewbar35_fe43_snip/dewbar35_o21_snip*(sqrt(pow(dewbar35_fe43_snip_error/dewbar35_fe43_snip,2)+pow(dewbar35_o21_snip_error/dewbar35_o21_snip,2)));
+   x[1] =white_fe43_snip/white_si32_snip;
+   y[1] =white_fe43_snip/white_o21_snip;
+   xe[1]=white_fe43_snip/white_si32_snip*(sqrt(pow(white_fe43_snip_error/white_fe43_snip,2)+pow(white_si32_snip_error/white_si32_snip,2)));
+   ye[1]=white_fe43_snip/white_o21_snip*(sqrt(pow(white_fe43_snip_error/white_fe43_snip,2)+pow(white_o21_snip_error/white_o21_snip,2)));
+   auto gr8_iter = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
+   gr8_iter->SetTitle(";Fe(4-3)/Si(3-2);Fe(4-3)/O(2-1)");
+   gr8_iter->GetXaxis()->CenterTitle(); gr8_iter->GetYaxis()->CenterTitle();
+   gr8_iter->SetMarkerStyle(8);
+   gr8_iter->SetMarkerSize(1);
+   gr8_iter->SetMarkerColor(4);
+   gr8_iter->Draw("AP");
+   auto grfit8 = new TGraph(np,x,y);
+   grfit8->Fit("fline","qn");
+   fline->Draw("same");
+   c7->SaveAs("/Users/chiu.i-huan/Desktop/comparison_siVS.O_snip.pdf");
 } 
