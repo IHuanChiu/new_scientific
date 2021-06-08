@@ -206,7 +206,7 @@ class Calibration():
                   os.path.join(os.getcwd(), os.path.dirname(__file__)))
           ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
           ROOT.SetAtlasStyle()
-          plots_path="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/cali_plots/"+self.voltage
+          plots_path="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/cali_plots/"+args.output+"_"+self.voltage
           if not os.path.isdir(plots_path):
              os.system("mkdir {}".format(plots_path))
           c0name=plots_path+"/hist_"+self.source+"_all.pdf"
@@ -412,5 +412,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 #    main( args , True)# for Si-detector
-    run( args)# for CdTe
+    run(args)# for CdTe
 

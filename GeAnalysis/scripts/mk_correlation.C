@@ -513,7 +513,7 @@ void mk_correlation(){
    gr7_iter->SetMarkerColor(4);
    gr7_iter->Draw("AP");
    auto grfit7 = new TGraph(np,x,y);
-   grfit7->Fit("fline","qn");
+   grfit7->Fit("fline","n");
    fline->Draw("same");
    c7->cd(2);
    x[5]=black_fe43_snip/black_si32_snip;
@@ -544,7 +544,7 @@ void mk_correlation(){
    gr8_iter->SetMarkerColor(4);
    gr8_iter->Draw("AP");
    auto grfit8 = new TGraph(np,x,y);
-   grfit8->Fit("fline","qn");
+   grfit8->Fit("fline","n");
    fline->Draw("same");
    c7->SaveAs("/Users/chiu.i-huan/Desktop/comparison_siVS.O_snip.pdf");
 } 

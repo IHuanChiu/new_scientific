@@ -10,16 +10,11 @@ __copyright__ = "Copyright 2019 I-Huan CHIU"
 __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 
 
-import sys,os,random,math,ROOT
+import sys,os,random,math,ROOT,argparse
 from ROOT import TFile, TTree, gPad, TGraphAsymmErrors, TSpline, TSpline3, TSpline5, gStyle, gErrorIgnoreLevel, gROOT
 ROOT.gROOT.SetBatch(1)
-#TODO change here =>
-outname="machine2"
-voltage="400n5"
-
-fa=ROOT.TFile("files_cali/spline_calibration_"+outname+"_"+voltage+"_Am.root","read")
-fb=ROOT.TFile("files_cali/spline_calibration_"+outname+"_"+voltage+"_Ba.root","read")
-fc=ROOT.TFile("files_cali/spline_calibration_"+outname+"_"+voltage+"_Co.root","read")
+ROOT.gErrorIgnoreLevel = ROOT.kWarning
+#kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 
 def getLatex(ch, x = 0.85, y = 0.85):
     _t = ROOT.TLatex()
@@ -30,12 +25,12 @@ def getLatex(ch, x = 0.85, y = 0.85):
     _t.SetTextAlign( 12 )
     return _t
 
-def compare(spline):   
+def compare(_outputname, _voltage, fa, fb, fc, spline):   
     __location__ = os.path.realpath(
             os.path.join(os.getcwd(), os.path.dirname(__file__)))
     ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
     ROOT.SetAtlasStyle()
-    c0name="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/cali_plots/"+voltage+"/comparison_all.pdf" 
+    c0name="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/cali_plots/"+_outputname+"_"+_voltage+"/comparison_all.pdf" 
     c0 = ROOT.TCanvas(c0name,"",0,0,1600,800)
     c0.Divide(2,1)
     c0.Print(c0name + "[", "pdf")
@@ -73,10 +68,13 @@ def compare(spline):
        c0.Print(c0name, "pdf")
     c0.Print(c0name + "]", "pdf")
 
-def merge():
+def merge(args):
     spline_list=[]
     useCoHight = True
-    fout=ROOT.TFile("./files_cali/spline_calibration_"+outname+"_"+voltage+"_merge.root","recreate")
+    fout=ROOT.TFile("./files_cali/spline_calibration_"+args.outname+"_"+args.voltage+"_merge.root","recreate")
+    fa=ROOT.TFile("files_cali/spline_calibration_"+args.outname+"_"+args.voltage+"_Am.root","read")
+    fb=ROOT.TFile("files_cali/spline_calibration_"+args.outname+"_"+args.voltage+"_Ba.root","read")
+    fc=ROOT.TFile("files_cali/spline_calibration_"+args.outname+"_"+args.voltage+"_Co.root","read")
     fout.cd()
     for i in range(256):
        _g = ROOT.TGraph()
@@ -155,7 +153,11 @@ def merge():
        del _g,_s    
     fout.Write()
     fout.Close()
-    compare(spline_list)
+    compare(args.outname,args.voltage,fa,fb,fc,spline_list)
 
 if __name__ == "__main__":
-   merge()
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument("-o","--outname", dest="outname", type=str, default="machine2", help="Name of Output File from Calibration")
+    parser.add_argument("-v","--voltage", dest="voltage", type=str, default="500n20", help="500n20, 400n20, 300n20...")
+    args = parser.parse_args()
+    merge(args)
