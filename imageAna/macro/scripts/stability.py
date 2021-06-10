@@ -134,9 +134,11 @@ def mkcv(_hp_list,_hn_list,_tr):
           _hp_list[_ip].SetTitle("P-side")
           _hp_list[_ip].GetXaxis().SetTitle("ADC")
           _hp_list[_ip].GetYaxis().SetTitle("Counts")
-          _hp_list[_ip].Draw()
+#          _hp_list[_ip].Draw()
+          _hp_list[_ip].DrawNormalized()
        else:
-          _hp_list[_ip].Draw("same")
+#          _hp_list[_ip].Draw("same")
+          _hp_list[_ip].DrawNormalized("same")
     
     _cv.cd(2)
     #gPad.SetLogy()
@@ -157,9 +159,11 @@ def mkcv(_hp_list,_hn_list,_tr):
           _hn_list[_in].GetXaxis().SetTitle("ADC")
           _hn_list[_in].GetYaxis().SetTitle("Counts")
           _hn_list[_in].GetListOfFunctions().Add(leg)
-          _hn_list[_in].Draw()
+#          _hn_list[_in].Draw()
+          _hn_list[_in].DrawNormalized()
        else:
-          _hn_list[_in].Draw("same")
+#          _hn_list[_in].Draw("same")
+          _hn_list[_in].DrawNormalized("same")
     leg.Draw("same")
 
     return _cv           

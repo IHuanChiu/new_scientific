@@ -36,7 +36,7 @@ class Calibration():
           self.voltage=voltage
           self.source=source
           self.hist_list,self.name_list=self.gethist()
-          self.element_list_pside, self.element_list_nside,self.element_list_1,self.element_list_2,self.element_list_3,self.element_list_4,self.element_list_5,self.element_list_6,self.element_list_7,self.element_list_8=self.getrange()
+          self.element_list_1,self.element_list_2,self.element_list_3,self.element_list_4,self.element_list_5,self.element_list_6,self.element_list_7,self.element_list_8=self.getrange()
           self.hist_fitpoints=[]
           self.fit_result=self.fit("weight")
           self.graph_list,self.spline_list=self.mkTSpline()
@@ -71,12 +71,8 @@ class Calibration():
           # get element for fit =>
           # element_list[i] is for the ith line
           # element_list[i][1], [2], [3] is source energy, ADC fit center, ADC fit range 
-          element_list_pside, element_list_nside = [],[]
           element_list_1, element_list_2, element_list_3, element_list_4,element_list_5,element_list_6,element_list_7,element_list_8=[],[],[],[],[],[],[],[]
-          table_pside, table_nside=self.Etable.replace(".txt","_pside.txt"), self.Etable.replace(".txt","_nside.txt")
           table_1,table_2,table_3,table_4,table_5,table_6,table_7,table_8=self.Etable.replace(".txt","_asic1.txt"),self.Etable.replace(".txt","_asic2.txt"),self.Etable.replace(".txt","_asic3.txt"),self.Etable.replace(".txt","_asic4.txt"),self.Etable.replace(".txt","_asic5.txt"),self.Etable.replace(".txt","_asic6.txt"),self.Etable.replace(".txt","_asic7.txt"),self.Etable.replace(".txt","_asic8.txt")
-          _lp=linecache.getlines(table_pside) 
-          _ln=linecache.getlines(table_nside) 
           _l1=linecache.getlines(table_1) 
           _l2=linecache.getlines(table_2) 
           _l3=linecache.getlines(table_3) 
@@ -85,14 +81,6 @@ class Calibration():
           _l6=linecache.getlines(table_6) 
           _l7=linecache.getlines(table_7) 
           _l8=linecache.getlines(table_8) 
-          for _il in range(len(_lp)):
-             _e=_lp[_il].strip().split(' ')
-             if "#" in _e[0]: continue
-             if _e[0] == self.source: element_list_pside.append(_e)  
-          for _il in range(len(_ln)):
-             _e=_ln[_il].strip().split(' ')
-             if "#" in _e[0]: continue
-             if _e[0] == self.source: element_list_nside.append(_e)  
           for _il in range(len(_l1)):
              _e=_l1[_il].strip().split(' ')
              if "#" in _e[0]: continue
@@ -125,14 +113,12 @@ class Calibration():
              _e=_l8[_il].strip().split(' ')
              if "#" in _e[0]: continue
              if _e[0] == self.source: element_list_8.append(_e)  
-          return element_list_pside, element_list_nside, element_list_1, element_list_2, element_list_3, element_list_4, element_list_5, element_list_6, element_list_7, element_list_8
+          return element_list_1, element_list_2, element_list_3, element_list_4, element_list_5, element_list_6, element_list_7, element_list_8
 
       def fit(self,fittype):
           fit_result=[]
           ich=0
           for ih in self.hist_list:
-#             if ich < 128: element_list = self.element_list_pside
-#             else: element_list = self.element_list_nside
              if ich < 32: element_list=self.element_list_1
              elif ich < 64: element_list=self.element_list_2
              elif ich < 96: element_list=self.element_list_3
@@ -167,7 +153,7 @@ class Calibration():
              fit_result.append(dic)
              self.hist_fitpoints.append(hfp)
              ich+=1
-          return fit_result
+          return fit_result # includes list of dic[energy, adc]
 
       def mkTSpline(self):
           graph_list,spline_list=[],[]
@@ -198,6 +184,7 @@ class Calibration():
              _s = ROOT.TSpline3("spline_"+str(i), _g)
              spline_list.append(_s)
              graph_list.append(_g)
+             del _g,_s
           return graph_list,spline_list
 
       def plot(self):

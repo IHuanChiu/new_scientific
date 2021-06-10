@@ -304,8 +304,8 @@ class tran_process():
 #          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
 #          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
 #          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
-#          self.tout.Branch( 'Stripid_x_lv1', AddressOf( struct, 'Stripid_x_lv1' ),'Stripid_x_lv1[nsignalx_lv1]/D' )
-#          self.tout.Branch( 'Stripid_y_lv1', AddressOf( struct, 'Stripid_y_lv1' ),'Stripid_y_lv1[nsignaly_lv1]/D' )
+          self.tout.Branch( 'Stripid_x_lv1', AddressOf( struct, 'Stripid_x_lv1' ),'Stripid_x_lv1[nsignalx_lv1]/D' )
+          self.tout.Branch( 'Stripid_y_lv1', AddressOf( struct, 'Stripid_y_lv1' ),'Stripid_y_lv1[nsignaly_lv1]/D' )
 
            # === Cluster ===
 #          self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[ncluster]/D' )
@@ -367,7 +367,7 @@ class tran_process():
 
           tti5=time.time()
           if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 
-          if len(hit_signal) == 0: return 0 # skip 0 hit events
+          #if len(hit_signal) == 0: return 0 # skip 0 hit events, need those event to check lv1 hit
 
           # varaibles of ntuple 
           struct.nsignalx_lv1 = len(hitx_lv1)
@@ -378,7 +378,7 @@ class tran_process():
           struct.nhit = len(hit_signal)
           struct.trigger  = self.tree.integral_livetime
           struct.livetime  = self.tree.livetime
-          if struct.trigger > 2147482648: print(struct.trigger)
+          # if struct.trigger > 2147482648: print(struct.trigger)
           struct.unixtime = self.tree.unixtime
           makentuple(hit_signal,cluster,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
           tti6=time.time()

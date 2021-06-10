@@ -50,19 +50,22 @@ void make_pnES_base(){
   TString name;
   TH1D *ha_p,*ha_n, *ha;
   
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/cdtedsd2_0607a_Ba.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_particle_collimator_201215_2.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_particle_201215_2.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_blank_201215_2.root","READ");
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_blank_collimator_201215_2.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_blank_collimator_201215_2.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1130d_00005_001_cali_ba3.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00022_001_cali_co3.root","READ");
 
-  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_blank_colli_tricut_2.pdf");
+  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_cdtedsd2_ba.pdf");
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
-  tree_a->Draw("energy >> ha(300,0,150)",    "(trigger > 1632 && trigger < 1648) || (trigger > 1665 && trigger < 1680)","");
-  tree_a->Draw("energy_p >> ha_p(300,0,150)","(trigger > 1632 && trigger < 1648) || (trigger > 1665 && trigger < 1680)","");
-  tree_a->Draw("energy_n >> ha_n(300,0,150)","(trigger > 1632 && trigger < 1648) || (trigger > 1665 && trigger < 1680)","");
+  tree_a->Draw("energy >> ha(3000,0,150)",    "","");
+  //tree_a->Draw("energy_p >> ha_p(3000,0,150)","","");
+  //tree_a->Draw("energy_n >> ha_n(3000,0,150)","","");
+  tree_a->Draw("E_p_lv1 >> ha_p(3000,0,150)","","");
+  tree_a->Draw("E_n_lv1 >> ha_n(3000,0,150)","","");
   ha = (TH1D*)gDirectory->Get("ha");
   ha_p = (TH1D*)gDirectory->Get("ha_p");
   ha_n = (TH1D*)gDirectory->Get("ha_n");
@@ -88,19 +91,27 @@ void make_pnES_base(){
   leg->AddEntry(ha_p,  "Pt side (Cathode)", "l");
   leg->AddEntry(ha_n,   "Al side (Anode)",   "l");
 
-  TLine *line0 = new TLine(14.41,0,14.41,ha_n->GetMaximum());//Co
-  TLine *line1 = new TLine(31,0,31,ha_n->GetMaximum());//Ba
-  TLine *line2 = new TLine(59.5,0,59.5,ha_n->GetMaximum());//Am
-  TLine *line3 = new TLine(81,0,81,ha_n->GetMaximum());//Ba
-  TLine *line4 = new TLine(122.06,0,122.06,ha_n->GetMaximum());//Co
+  TLine *lineCo1 = new TLine(14.41,0,14.41,ha_n->GetMaximum());//Co
+  TLine *lineCo2 = new TLine(122.06,0,122.06,ha_n->GetMaximum());//Co
+  TLine *lineAm1 = new TLine(13.94,0,13.94,ha_n->GetMaximum());//Am
+  TLine *lineAm2 = new TLine(20.8,0,20.8,ha_n->GetMaximum());//Am
+  TLine *lineAm3 = new TLine(59.5,0,59.5,ha_n->GetMaximum());//Am
+  TLine *lineBa1 = new TLine(31,0,31,ha_n->GetMaximum());//Ba
+  TLine *lineBa2 = new TLine(35,0,35,ha_n->GetMaximum());//Ba
+  TLine *lineBa3 = new TLine(81,0,81,ha_n->GetMaximum());//Ba
   TLine *line5 = new TLine(75.22,0,75.22,ha_n->GetMaximum());//C 75.22
   TLine *line6 = new TLine(134.35,0,134.35,ha_n->GetMaximum());//O 134.35
   TLine *line7 = new TLine(24.86,0,24.86,ha_n->GetMaximum());//O 24.86
-  line0->SetLineColorAlpha(1, 0.9);
-  line1->SetLineColorAlpha(1, 0.9);
-  line2->SetLineColorAlpha(1, 0.9);
-  line3->SetLineColorAlpha(1, 0.9);
-  line4->SetLineColorAlpha(1, 0.9);
+
+  lineCo1->SetLineColorAlpha(1, 0.9);
+  lineCo2->SetLineColorAlpha(1, 0.9);
+  lineAm1->SetLineColorAlpha(2, 0.7);
+  lineAm2->SetLineColorAlpha(2, 0.7);
+  lineAm3->SetLineColorAlpha(2, 0.7);
+  lineBa1->SetLineColorAlpha(4, 0.7);
+  lineBa2->SetLineColorAlpha(4, 0.7);
+  lineBa3->SetLineColorAlpha(4, 0.7);
+
   line5->SetLineColorAlpha(1, 0.9);
   line6->SetLineColorAlpha(1, 0.9);
   line7->SetLineColorAlpha(1, 0.9);
@@ -109,17 +120,20 @@ void make_pnES_base(){
   //gPad->SetLeftMargin(0.2);
   ha_n->Draw();
   ha_p->Draw("same");
-  ha->Draw("same");
+//  ha->Draw("same");
 
   leg->Draw("same");
-//  line0->Draw("same");
-//  line1->Draw("same");
-//  line2->Draw("same");
-//  line3->Draw("same");
-//  line4->Draw("same");
-  line5->Draw("same");
-  line6->Draw("same");
-  line7->Draw("same");
+  lineCo1->Draw("same");
+  lineCo2->Draw("same");
+  lineAm1->Draw("same");
+  lineAm2->Draw("same");
+  lineAm3->Draw("same");
+  lineBa1->Draw("same");
+  lineBa2->Draw("same");
+  lineBa3->Draw("same");
+//  line5->Draw("same");
+//  line6->Draw("same");
+//  line7->Draw("same");
 
   c1->SaveAs(name.Data());
 

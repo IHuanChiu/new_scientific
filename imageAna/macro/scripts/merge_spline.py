@@ -85,38 +85,39 @@ def merge(args):
        _ga=fa.Get(graph_name)
        _gb=fb.Get(graph_name)
        _gc=fc.Get(graph_name)
-       # === check fitting plots & adc range (adc, energy) ===       
-#       _index=_index+1
-#       if i == 0 and _ga.GetPointY(1) != 13.94: print("should be 13.94 : ", _ga.GetPointY(1))
-#       _g.SetPoint(_index, _ga.GetPointX(1), _ga.GetPointY(1))#Am 13.94
-
-       _index=_index+1
-       if i == 0 and _gc.GetPointY(1) != 14.41: print("should be 14.41 : ", _gc.GetPointY(1))
-       _g.SetPoint(_index, _gc.GetPointX(1), _gc.GetPointY(1))#Co 14.41
-
-       _index=_index+1
-       if i == 0 and _ga.GetPointY(2) != 17.75: print("should be 17.75 : ", _ga.GetPointY(2))
-       _g.SetPoint(_index, _ga.GetPointX(2), _ga.GetPointY(2))#Am 17.75
-
-       _index=_index+1
-       if i == 0 and _ga.GetPointY(3) != 20.8: print("should be 20.8 : ", _ga.GetPointY(3))
-       _g.SetPoint(_index, _ga.GetPointX(3), _ga.GetPointY(3))#Am 20.8
-
-       _index=_index+1
-       if i == 0 and _ga.GetPointY(4) != 26.3: print("should be 26.3 : ", _ga.GetPointY(4))
-       _g.SetPoint(_index, _ga.GetPointX(4), _ga.GetPointY(4))#Am 26.3
-
-       _index=_index+1
-       if i == 0 and _gb.GetPointY(1) != 31.0: print("should be 31 : ", _gb.GetPointY(1))
-       _g.SetPoint(_index, _gb.GetPointX(1), _gb.GetPointY(1))#Ba 31
-
-       _index=_index+1
-       if i == 0 and _ga.GetPointY(5) != 59.5: print("should be 59.5 : ", _ga.GetPointY(5))
-       _g.SetPoint(_index, _ga.GetPointX(5), _ga.GetPointY(5))#Am 59.5
-
-       _index=_index+1
-       if i == 0 and _gb.GetPointY(3) != 81.0: print("should be 81 : ", _gb.GetPointY(3))
-       _g.SetPoint(_index, _gb.GetPointX(3), _gb.GetPointY(3))#Ba 81
+       # === check fitting plots & adc range (adc, energy) ===     
+       # === NOTE check if the energy peaks are exist in energy table or not === 
+       # === NOTE please focus on the number of peaks you used. (Am,Ba,Co)=(5,3,2) for p-side, (3,2,3) for n-side === 
+       if i < 128:#p-side
+          _index=_index+1
+          _g.SetPoint(_index, _ga.GetPointX(1), _ga.GetPointY(1))#Am 13.94
+#          _index=_index+1
+#          _g.SetPoint(_index, _gc.GetPointX(1), _gc.GetPointY(1))#Co 14.41
+          _index=_index+1
+          _g.SetPoint(_index, _ga.GetPointX(2), _ga.GetPointY(2))#Am 17.75
+          _index=_index+1
+          _g.SetPoint(_index, _ga.GetPointX(3), _ga.GetPointY(3))#Am 20.8
+          _index=_index+1
+          _g.SetPoint(_index, _ga.GetPointX(4), _ga.GetPointY(4))#Am 26.3
+          _index=_index+1
+          _g.SetPoint(_index, _gb.GetPointX(1), _gb.GetPointY(1))#Ba 31
+          _index=_index+1
+          _g.SetPoint(_index, _ga.GetPointX(5), _ga.GetPointY(5))#Am 59.5
+          _index=_index+1
+          _g.SetPoint(_index, _gb.GetPointX(3), _gb.GetPointY(3))#Ba 81
+       else:#n-side
+          _index=_index+1
+          _g.SetPoint(_index, _ga.GetPointX(1), _ga.GetPointY(1))#Am 13.94
+#          _index=_index+1
+#          _g.SetPoint(_index, _gc.GetPointX(1), _gc.GetPointY(1))#Co 14.41
+          _index=_index+1
+          _g.SetPoint(_index, _ga.GetPointX(2), _ga.GetPointY(2))#Am 17.75
+          _index=_index+1
+          _g.SetPoint(_index, _gb.GetPointX(1), _gb.GetPointY(1))#Ba 31
+          _index=_index+1
+          _g.SetPoint(_index, _ga.GetPointX(3), _ga.GetPointY(3))#Am 59.5
+          _index=_index+1
+          _g.SetPoint(_index, _gb.GetPointX(2), _gb.GetPointY(2))#Ba 81
 
        if useCoHight:
           _index=_index+1
@@ -142,17 +143,19 @@ def merge(args):
           _index=_index+1
           _g.SetPoint(_index, 1024, (1024-f_x)*slope + f_y)
        _s = ROOT.TSpline3("spline_"+str(i), _g)
-#       _s.SetName("spline_"+str(i))
-#       _s.Write()
+       _g.SetName(graph_name)
+       _s.SetName("spline_"+str(i))
 
-#       _g.SetName(graph_name)
-       _g.SetName("spline_"+str(i))
+#       _g.SetName("spline_"+str(i))# if you want to used TGraph
+#       _s.SetName("spline_"+str(i)+"_ori")
+
+       _s.Write()
        _g.Write()
-
        spline_list.append(_s)
        del _g,_s    
     fout.Write()
     fout.Close()
+    print("./files_cali/spline_calibration_"+args.outname+"_"+args.voltage+"_merge.root")
     compare(args.outname,args.voltage,fa,fb,fc,spline_list)
 
 if __name__ == "__main__":
