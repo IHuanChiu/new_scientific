@@ -36,19 +36,23 @@ def mkADCplots(chain, initUT, finalUT, timerange):
        UTcut="unixtime > {0} && unixtime < {1}".format(initUT+timerange*i, initUT+timerange*(i+1))
        hp=ROOT.TH1D("hpside_{}".format(i),"hpside_{}".format(i),994,30,1024)
        for iasic in range(4):
-          adc_name, cmn_name = "adc"+str(iasic), "cmn"+str(iasic)
-          chain.Draw(adc_name +"-"+ cmn_name+">> h1(994,30,1024)",UTcut,"")
+          adc_name, cmn_name, index_name = "adc"+str(iasic), "cmn"+str(iasic), "index"+str(iasic)
+          chain.Draw(adc_name +"-"+ cmn_name+">> h1(994,30,1024)",UTcut+" && {}%2 == 0 ".format(index_name),"")
           h1=gDirectory.Get("h1")
-          hp.Add(h1)
-       hp_list.append(hp)
+          h1.SetDirectory(0)
+          hp_list.append(h1)
+#          hp.Add(h1)
+#       hp_list.append(hp)
    
        hn=ROOT.TH1D("hnside_{}".format(i),"hnside_{}".format(i),994,30,1024)
        for iasic in range(4,8):
-          adc_name, cmn_name = "adc"+str(iasic), "cmn"+str(iasic)
-          chain.Draw(adc_name +"-"+ cmn_name+">> h2(994,30,1024)",UTcut,"")
+          adc_name, cmn_name, index_name = "adc"+str(iasic), "cmn"+str(iasic), "index"+str(iasic)
+          chain.Draw(adc_name +"-"+ cmn_name+">> h2(994,30,1024)",UTcut+" && {}%2 == 0 ".format(index_name),"")
           h2=gDirectory.Get("h2")
-          hn.Add(h2)
-       hn_list.append(hn)
+          h2.SetDirectory(0)
+          hn_list.append(h2)
+#          hn.Add(h2)
+#       hn_list.append(hn)
     return hp_list, hn_list
 
 def readtree(chain, cutvalue):
@@ -119,61 +123,64 @@ def getADCplots(plotfilename):
     hn_list.append(hn3)
     return hp_list, hn_list
 
-def mkcv(_hp_list,_hn_list,_tr):
-    _cv  = createRatioCanvas("cv", 5000, 2500)
-    _cv.Divide(2,1)
-    _cv.cd(1)
+def mkcv(args,_hp_list,_hn_list,initUT,finalUT):
+    _tr=args.timerange
+    outcv_name="/Users/chiu.i-huan/Desktop/"+"cv_"+args.condition+"_"+args.source+"_"+str(args.timerange)+"h_"+args.output+".pdf"
+    _cv  = createRatioCanvas("cv", 3000, 2500)
+    _cv.Print(outcv_name + "[", "pdf")
+    nplots=int((finalUT-initUT)/(_tr*3600))+1
     #gPad.SetLogy()
-    for _ip in range(len(_hp_list)):
-       _hp_list[_ip].SetStats(0)
-       if((_ip+1) < 5): _hp_list[_ip].SetLineColor(_ip+1)
-       else: _hp_list[_ip].SetLineColor(_ip+2)
-       if _ip == 0 :
-#          _hp_list[_ip].SetMaximum(_hp_list[_ip].GetMaximum()*20)
-#          _hp_list[_ip].SetMaximum(1000)
-          _hp_list[_ip].SetTitle("P-side")
-          _hp_list[_ip].GetXaxis().SetTitle("ADC")
-          _hp_list[_ip].GetYaxis().SetTitle("Counts")
-#          _hp_list[_ip].Draw()
-          _hp_list[_ip].DrawNormalized()
-       else:
-#          _hp_list[_ip].Draw("same")
-          _hp_list[_ip].DrawNormalized("same")
+    for _iasic in range(4):
+       for _ip in range(nplots):
+          _hp_list[_ip+_iasic*4].SetStats(0)
+          _hp_list[_ip+_iasic*4].SetLineColor(_ip+1)
+          if _ip == 0 :
+   #          _hp_list[_ip+_iasic*4].SetMaximum(_hp_list[_ip+_iasic*4].GetMaximum()*20)
+   #          _hp_list[_ip+_iasic*4].SetMaximum(1000)
+             _hp_list[_ip+_iasic*4].SetTitle("P-side, ASIC:{}".format(_iasic))
+             _hp_list[_ip+_iasic*4].GetXaxis().SetTitle("ADC")
+             _hp_list[_ip+_iasic*4].GetYaxis().SetTitle("Counts")
+   #          _hp_list[_ip+_iasic*4].Draw()
+             _hp_list[_ip+_iasic*4].DrawNormalized()
+          else:
+   #          _hp_list[_ip+_iasic*4].Draw("same")
+             _hp_list[_ip+_iasic*4].DrawNormalized("same")
+       _cv.Print(outcv_name, "pdf")
     
-    _cv.cd(2)
-    #gPad.SetLogy()
-    leg = ROOT.TLegend(.70,.60,.88,.88)
-    leg.SetFillColor(0)
-    leg.SetLineColor(0)
-    leg.SetBorderSize(0)
-    for _in in range(len(_hn_list)):
-       leg.AddEntry(_hn_list[_in],"{0:.1f}-{1:.1f}hours".format(_in*_tr,(_in+1)*_tr))
-       _hn_list[_in].SetStats(0)
-       if((_in+1) < 5): _hn_list[_in].SetLineColor(_in+1)
-       else: _hn_list[_in].SetLineColor(_in+2)
-       if _in == 0 :
-#          _hn_list[_in].SetMaximum(_hn_list[_in].GetMaximum()*20)
-#          _hn_list[_in].SetMaximum(5000000)
-#          _hn_list[_in].SetMaximum(1000)
-          _hn_list[_in].SetTitle("N-side")
-          _hn_list[_in].GetXaxis().SetTitle("ADC")
-          _hn_list[_in].GetYaxis().SetTitle("Counts")
-          _hn_list[_in].GetListOfFunctions().Add(leg)
-#          _hn_list[_in].Draw()
-          _hn_list[_in].DrawNormalized()
-       else:
-#          _hn_list[_in].Draw("same")
-          _hn_list[_in].DrawNormalized("same")
-    leg.Draw("same")
-
-    return _cv           
+    for _iasic in range(4):
+       #gPad.SetLogy()
+       leg = ROOT.TLegend(.60,.60,.88,.88)
+       leg.SetFillColor(0)
+       leg.SetLineColor(0)
+       leg.SetBorderSize(0)
+       for _in in range(nplots):
+          leg.AddEntry(_hn_list[_in+_iasic*4],"{0:.1f}-{1:.1f}hours".format(_in*_tr,(_in+1)*_tr))
+          _hn_list[_in+_iasic*4].SetStats(0)
+          _hn_list[_in+_iasic*4].SetLineColor(_in+1)
+          if _in == 0 :
+   #          _hn_list[_in+_iasic*4].SetMaximum(_hn_list[_in+_iasic*4].GetMaximum()*20)
+   #          _hn_list[_in+_iasic*4].SetMaximum(5000000)
+   #          _hn_list[_in+_iasic*4].SetMaximum(1000)
+             _hn_list[_in+_iasic*4].SetTitle("N-side; ASIC:{}".format(_iasic))
+             _hn_list[_in+_iasic*4].GetXaxis().SetTitle("ADC")
+             _hn_list[_in+_iasic*4].GetYaxis().SetTitle("Counts")
+             _hn_list[_in+_iasic*4].GetListOfFunctions().Add(leg)
+   #          _hn_list[_in+_iasic*4].Draw()
+             _hn_list[_in+_iasic*4].DrawNormalized()
+          else:
+   #          _hn_list[_in+_iasic*4].Draw("same")
+             _hn_list[_in+_iasic*4].DrawNormalized("same")
+             leg.Draw("same")
+       _cv.Print(outcv_name, "pdf")
+    
+    _cv.Print(outcv_name + "]", "pdf")
 
 def run(args):
     foldername=args.inputFolder+"/"+args.condition+"/"+args.source
     mychain=GetTChain(foldername,"eventtree")
     initUT, finalUT=getUT(mychain)   
     timerange=args.timerange*3600
-    log().info("Total plots : {0} , Time range : {1} hours".format(int((finalUT-initUT)/timerange)+1, args.timerange))
+    log().info("Number of time ranges : {0} , Time range : {1} hours".format(int((finalUT-initUT)/timerange)+1, args.timerange))
     if(int((finalUT-initUT)/timerange)+1 > 10): 
        log().info("Many plots ! {}".format(int((finalUT-initUT)/timerange)+1))
 
@@ -191,16 +198,14 @@ def run(args):
     else:
        hp_list,hn_list=getADCplots(args.plots)
 
-    cv=mkcv(hp_list,hn_list,args.timerange)
-    outcv_name="/Users/chiu.i-huan/Desktop/"+"cv_"+args.condition+"_"+args.source+"_"+str(args.timerange)+"h_"+args.output+".pdf"
-    cv.SaveAs(outcv_name)
+    mkcv(args,hp_list,hn_list,initUT,finalUT)
 
 if __name__=="__main__":
 
    parser = argparse.ArgumentParser(description='Process some integers.')
    parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/minami_data", help="Input File Name")
    parser.add_argument("-p","--plots", type=str, default=None, help="Input File Name")
-   parser.add_argument("-c","--condition", type=str, default="300n20", help="Condition : 300n20 400n20 500n20")
+   parser.add_argument("-c","--condition", type=str, default="", help="Condition : 300n20 400n20 500n20")
    parser.add_argument("-s","--source", type=str, default="Am", help="Input Source : Am Ba Co")
    parser.add_argument("-o","--output",type=str, default="stability", help="Name of output file")
    parser.add_argument("-tr","--timerange",type=float, default=3, help="Time range (Hours)")

@@ -252,7 +252,7 @@ def Level1Hit(tree, coef_R, dblist, efname, eline, dtype):
           taa=time.time() # TODO : imporve processing time, check "taa" var.
           # === quick selection ===
           if tree_adc[ich] < tree_cmn+10 or tree_adc[ich] >= 1023: continue
-          istrip = tree_index[ich] # read ch of each ASIC -> 0~63 for FEC-1; 0~31 for FEC-2 (ie. Si detector)
+          istrip = tree_index[ich] # read ch of each ASIC -> 0~63 for FEC-1; 0~31 for FEC-2 (ex. Si detector)
           if "CdTe" in dtype: 
              if istrip%2 != 0 : continue #FEC-1 with "readoutall" setting -> only loop even channel
              ChannelID=int(istrip/2+iasic*32) #scale to 0~255

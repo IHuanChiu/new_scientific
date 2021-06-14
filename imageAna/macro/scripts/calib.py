@@ -215,7 +215,7 @@ class Calibration():
              gROOT.ProcessLine("gErrorIgnoreLevel = kWarning;")
              self.hist_list[i].SetLineColor(1)
              self.hist_fitpoints[i].SetLineColorAlpha(ROOT.kRed,0.7)
-             self.hist_fitpoints[i].SetLineWidth(2)
+             self.hist_fitpoints[i].SetLineWidth(1)
 
              if islog == 0:
                 _maxbincon = -1.
