@@ -124,6 +124,11 @@ def getADCplots(plotfilename):
     return hp_list, hn_list
 
 def mkcv(args,_hp_list,_hn_list,initUT,finalUT):
+    __location__ = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
+#    ROOT.SetAtlasStyle()
+
     _tr=args.timerange
     outcv_name="/Users/chiu.i-huan/Desktop/"+"cv_"+args.condition+"_"+args.source+"_"+str(args.timerange)+"h_"+args.output+".pdf"
     _cv  = createRatioCanvas("cv", 3000, 2500)
@@ -131,45 +136,46 @@ def mkcv(args,_hp_list,_hn_list,initUT,finalUT):
     nplots=int((finalUT-initUT)/(_tr*3600))+1
     #gPad.SetLogy()
     for _iasic in range(4):
-       for _ip in range(nplots):
-          _hp_list[_ip+_iasic*4].SetStats(0)
-          _hp_list[_ip+_iasic*4].SetLineColor(_ip+1)
-          if _ip == 0 :
-   #          _hp_list[_ip+_iasic*4].SetMaximum(_hp_list[_ip+_iasic*4].GetMaximum()*20)
-   #          _hp_list[_ip+_iasic*4].SetMaximum(1000)
-             _hp_list[_ip+_iasic*4].SetTitle("P-side, ASIC:{}".format(_iasic))
-             _hp_list[_ip+_iasic*4].GetXaxis().SetTitle("ADC")
-             _hp_list[_ip+_iasic*4].GetYaxis().SetTitle("Counts")
-   #          _hp_list[_ip+_iasic*4].Draw()
-             _hp_list[_ip+_iasic*4].DrawNormalized()
-          else:
-   #          _hp_list[_ip+_iasic*4].Draw("same")
-             _hp_list[_ip+_iasic*4].DrawNormalized("same")
-       _cv.Print(outcv_name, "pdf")
-    
-    for _iasic in range(4):
-       #gPad.SetLogy()
        leg = ROOT.TLegend(.60,.60,.88,.88)
        leg.SetFillColor(0)
        leg.SetLineColor(0)
        leg.SetBorderSize(0)
-       for _in in range(nplots):
-          leg.AddEntry(_hn_list[_in+_iasic*4],"{0:.1f}-{1:.1f}hours".format(_in*_tr,(_in+1)*_tr))
-          _hn_list[_in+_iasic*4].SetStats(0)
-          _hn_list[_in+_iasic*4].SetLineColor(_in+1)
-          if _in == 0 :
-   #          _hn_list[_in+_iasic*4].SetMaximum(_hn_list[_in+_iasic*4].GetMaximum()*20)
-   #          _hn_list[_in+_iasic*4].SetMaximum(5000000)
-   #          _hn_list[_in+_iasic*4].SetMaximum(1000)
-             _hn_list[_in+_iasic*4].SetTitle("N-side; ASIC:{}".format(_iasic))
-             _hn_list[_in+_iasic*4].GetXaxis().SetTitle("ADC")
-             _hn_list[_in+_iasic*4].GetYaxis().SetTitle("Counts")
-             _hn_list[_in+_iasic*4].GetListOfFunctions().Add(leg)
-   #          _hn_list[_in+_iasic*4].Draw()
-             _hn_list[_in+_iasic*4].DrawNormalized()
+       for _ip in range(nplots):
+          leg.AddEntry(_hp_list[_ip*4+_iasic],"{0:.1f}-{1:.1f}hours".format(_ip*_tr,(_ip+1)*_tr))
+          _hp_list[_ip*4+_iasic].SetStats(0)
+          _hp_list[_ip*4+_iasic].SetLineColor(_ip+1)
+          if _ip == 0 :
+   #          _hp_list[_ip*4+_iasic].SetMaximum(_hp_list[_ip*4+_iasic].GetMaximum()*20)
+   #          _hp_list[_ip*4+_iasic].SetMaximum(1000)
+             _hp_list[_ip*4+_iasic].SetTitle("Pt-side, ASIC:{}".format(_iasic))
+             _hp_list[_ip*4+_iasic].GetXaxis().SetTitle("ADC")
+             _hp_list[_ip*4+_iasic].GetYaxis().SetTitle("Counts")
+             _hp_list[_ip*4+_iasic].Draw()
+   #          _hp_list[_ip*4+_iasic].DrawNormalized()
           else:
-   #          _hn_list[_in+_iasic*4].Draw("same")
-             _hn_list[_in+_iasic*4].DrawNormalized("same")
+             _hp_list[_ip*4+_iasic].Draw("same")
+   #          _hp_list[_ip*4+_iasic].DrawNormalized("same")
+             leg.Draw("same")
+       _cv.Print(outcv_name, "pdf")
+    
+    for _iasic in range(4):
+       #gPad.SetLogy()
+       for _in in range(nplots):
+          _hn_list[_in*4+_iasic].SetStats(0)
+          _hn_list[_in*4+_iasic].SetLineColor(_in+1)
+          if _in == 0 :
+   #          _hn_list[_in*4+_iasic].SetMaximum(_hn_list[_in*4+_iasic].GetMaximum()*20)
+   #          _hn_list[_in*4+_iasic].SetMaximum(5000000)
+   #          _hn_list[_in*4+_iasic].SetMaximum(1000)
+             _hn_list[_in*4+_iasic].SetTitle("Al-side, ASIC:{}".format(_iasic))
+             _hn_list[_in*4+_iasic].GetXaxis().SetTitle("ADC")
+             _hn_list[_in*4+_iasic].GetYaxis().SetTitle("Counts")
+   #          _hn_list[_in*4+_iasic].GetListOfFunctions().Add(leg)
+             _hn_list[_in*4+_iasic].Draw()
+   #          _hn_list[_in*4+_iasic].DrawNormalized()
+          else:
+             _hn_list[_in*4+_iasic].Draw("same")
+   #          _hn_list[_in*4+_iasic].DrawNormalized("same")
              leg.Draw("same")
        _cv.Print(outcv_name, "pdf")
     
