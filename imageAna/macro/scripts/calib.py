@@ -39,6 +39,7 @@ class Calibration():
           self.element_list_1,self.element_list_2,self.element_list_3,self.element_list_4,self.element_list_5,self.element_list_6,self.element_list_7,self.element_list_8=self.getrange()
           self.hist_fitpoints=[]
           self.fit_result=self.fit("weight")
+          #self.fit_result=self.fit("gaus")
           self.graph_list,self.spline_list=self.mkTSpline()
 
       def gethist(self):
@@ -140,7 +141,7 @@ class Calibration():
                    dic.update({ifit[1]:g1.GetParameter(1)})                
                    n_fit+=1   
                 else:
-                   E_down, E_up=E_down+50, E_up+50 # Minimum bin is -50
+                   E_down, E_up=E_down+50, E_up+50 # Energy -> bin number (Minimum bin number 0 is energy = -50)
                    _poix, _sumw, _w, _maxbin = 0.,0.,0.,-1.
                    for ibin in range(int(E_down),int(E_up+1)):
                       _sumw+=ih.GetBinCenter(ibin)*ih.GetBinContent(ibin)
@@ -192,7 +193,7 @@ class Calibration():
           __location__ = os.path.realpath(
                   os.path.join(os.getcwd(), os.path.dirname(__file__)))
           ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
-          ROOT.SetAtlasStyle()
+          #ROOT.SetAtlasStyle()
           plots_path="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/cali_plots/"+args.output+"_"+self.voltage
           if not os.path.isdir(plots_path):
              os.system("mkdir {}".format(plots_path))

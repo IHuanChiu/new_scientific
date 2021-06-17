@@ -25,7 +25,7 @@ def getLatex(ch, x = 0.85, y = 0.85):
     _t.SetTextAlign( 12 )
     return _t
 
-def compare(_outputname, _voltage, fa, fb, fc, spline):   
+def compare(_outputname, _voltage, fa, fb, fc, graph, spline, fline):   
     __location__ = os.path.realpath(
             os.path.join(os.getcwd(), os.path.dirname(__file__)))
     ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
@@ -46,19 +46,26 @@ def compare(_outputname, _voltage, fa, fb, fc, spline):
           la.SetLineColor(2)
           lb.SetLineColor(3)
           lc.SetLineColor(4)
+          graph[i].SetLineColorAlpha(4,0.7) 
+          fline[i].SetLineColorAlpha(2,0.7) 
           spline[i].Draw()
-          la.Draw("same")
-          lb.Draw("same")
-          lc.Draw("same")
+          #la.Draw("same")
+          #lb.Draw("same")
+          #lc.Draw("same")
+          fline[i].Draw("same")
+          graph[i].Draw("same")
 
           leg = ROOT.TLegend(.55,.18,.75,.40)
           leg.SetFillColor(0)
           leg.SetLineColor(0)
           leg.SetBorderSize(0)
-          leg.AddEntry(spline[i],  "merge", "l")
-          leg.AddEntry(la,  "Am", "l")
-          leg.AddEntry(lb,  "Ba", "l")
-          leg.AddEntry(lc,  "Co", "l")
+          leg.AddEntry(spline[i],  "spline", "l")
+          leg.AddEntry(graph[i],  "graph", "l")
+          leg.AddEntry(fline[i],  "fline", "l")
+          #leg.AddEntry(spline[i],  "merge", "l")
+          #leg.AddEntry(la,  "Am", "l")
+          #leg.AddEntry(lb,  "Ba", "l")
+          #leg.AddEntry(lc,  "Co", "l")
           leg.Draw("same")
 
           latex = getLatex(i,400,8000) 
@@ -69,7 +76,7 @@ def compare(_outputname, _voltage, fa, fb, fc, spline):
     c0.Print(c0name + "]", "pdf")
 
 def merge(args):
-    spline_list=[]
+    graph_list, spline_list, fline_list=[],[],[]
     useCoHight = True
     fout=ROOT.TFile("./files_cali/spline_calibration_"+args.outname+"_"+args.voltage+"_merge.root","recreate")
     fa=ROOT.TFile("files_cali/spline_calibration_"+args.outname+"_"+args.voltage+"_Am.root","read")
@@ -77,6 +84,7 @@ def merge(args):
     fc=ROOT.TFile("files_cali/spline_calibration_"+args.outname+"_"+args.voltage+"_Co.root","read")
     fout.cd()
     for i in range(256):
+       _f = ROOT.TF1("fline","pol1",0,1024)
        _g = ROOT.TGraph()
        _s = ROOT.TSpline3()
        _index=0
@@ -142,21 +150,25 @@ def merge(args):
           f_x, f_y = _gb.GetPointX(3), _gb.GetPointY(3)
           _index=_index+1
           _g.SetPoint(_index, 1024, (1024-f_x)*slope + f_y)
-       _s = ROOT.TSpline3("spline_"+str(i), _g)
+       _s = ROOT.TSpline3("spline_"+str(i), _g)# get TSpline3
+       _g.Fit("fline","qn")# get pol1 function passed (0,0) point
+       _f.FixParameter(0,0)
        _g.SetName(graph_name)
        _s.SetName("spline_"+str(i))
+       _f.SetName("fline_"+str(i))
 
 #       _g.SetName("spline_"+str(i))# if you want to used TGraph
 #       _s.SetName("spline_"+str(i)+"_ori")
 
-       _s.Write()
-       _g.Write()
+       _g.Write();_s.Write();_f.Write()
+       graph_list.append(_g)
        spline_list.append(_s)
-       del _g,_s    
+       fline_list.append(_f)
+       del _g,_s,_f 
     fout.Write()
     fout.Close()
     print("./files_cali/spline_calibration_"+args.outname+"_"+args.voltage+"_merge.root")
-    compare(args.outname,args.voltage,fa,fb,fc,spline_list)
+    compare(args.outname,args.voltage,fa,fb,fc,graph_list,spline_list,fline_list)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')

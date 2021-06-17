@@ -88,7 +88,9 @@ def getlineEnergy(energyFile,channel):
        else : cal_name = "calfunc_" + str(channel)
        return energyFile.Get(cal_name)
     else: 
-       return energyFile.Get('spline_%s'%(channel))
+       return energyFile.Get('graph_%s'%(channel))
+       #return energyFile.Get('spline_%s'%(channel))
+       #return energyFile.Get('fline_%s'%(channel))
  
 def getTSpline(efname,dblist):
     line = list()

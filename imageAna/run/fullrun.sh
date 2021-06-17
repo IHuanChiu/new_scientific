@@ -23,9 +23,8 @@ OUTNAME="test1020"
 #python3 sum_plots.py ../../../2020.12.09/sumrootblank2.root -d CdTe_JPARCDec -o blank2
 
 
-
 # =====
-# ================== 2mm CdTe run ====================
+# ================== 2mm CdTe run (2020.07) ====================
 # =====
  # *** battery image sample ***
 #parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/battery_data/{1}/cdtedsd_2020b_0917a_000{2}_001.root -d CdTe_Lab -o battery_{1} -e ${MACRODIR}/auxfile/spline_calibration_2mmtest_merge_1008.root ::: Ba ::: 05 06 07 08 09 10 11 12 13 14 15 16 17
@@ -46,25 +45,27 @@ OUTNAME="test1020"
 
 
 # =====
-# ================== CdTeDSD2 2mm run (2021.06.09) ====================
+# ================== CdTeDSD2 2mm run (2021.06) ====================
 # =====
 #python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/Am/cdtedsd2_0602b_am_500v.root -d CdTe_Lab -o 500n30_Am -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root  
 #python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/Ba/cdtedsd2_0602b_ba_500v.root -d CdTe_Lab -o 500n30_Ba -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root  
 #python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/Co/cdtedsd2_0602b_co_500v.root -d CdTe_Lab -o 500n30_Co -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root  
  # *** calibration sample ***
-#parallel --eta -j ${NCORES} python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/{1}/cdtedsd2_0607a_000{2}_001.root -d CdTe_Lab -o 500n30_{1} -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root -n 500000 ::: Am ::: 25 26 27 28 29 
-#parallel --eta -j ${NCORES} python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/{1}/cdtedsd2_0607a_000{2}_001.root -d CdTe_Lab -o 500n30_{1} -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root -n 500000 ::: Ba ::: 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 
-#parallel --eta -j ${NCORES} python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/{1}/cdtedsd2_0607a_000{2}_001.root -d CdTe_Lab -o 500n30_{1} -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root -n 500000 ::: Co ::: 04 05 06 07 08 09
-parallel --eta -j ${NCORES} python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/{1}/cdtedsd2_0609a_000{2}_001.root -d CdTe_Lab -o 500n30_{1} -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root -n 500000 ::: stability ::: 06 07 08 09 10 18 19 20 21 22 23 24 25
+parallel --eta -j ${NCORES} python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/{1}/cdtedsd2_0607a_000{2}_001.root -d CdTe_Lab -o 500n30_{1} -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root ::: Am ::: 25 26 27 28 29 
+parallel --eta -j ${NCORES} python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/{1}/cdtedsd2_0609a_000{2}_001.root -d CdTe_Lab -o 500n30_{1} -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root ::: Am ::: 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 
+parallel --eta -j ${NCORES} python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/{1}/cdtedsd2_0607a_000{2}_001.root -d CdTe_Lab -o 500n30_{1} -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root ::: Ba ::: 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 
+parallel --eta -j ${NCORES} python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/{1}/cdtedsd2_0607a_000{2}_001.root -d CdTe_Lab -o 500n30_{1} -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root ::: Co ::: 04 05 06 07 08 09
+parallel --eta -j ${NCORES} python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/{1}/cdtedsd2_0609a_000{2}_001.root -d CdTe_Lab -o 500n30_{1} -e ${MACRODIR}/auxfile/spline_calibration_cdtedsd2_500n30_merge.root ::: Co ::: 06 07 08 09 10 18 19 20 21 22 23 24 25
+
 
 # =====
-# ================== make ntuplke & plots J-PARC 2020March ====================
+# ================== make ntuplke & plots J-PARC (2020.03) ====================
 # =====
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRCDTE}_merge/20200307a_{1}.root -o merge ::: 55to73 77to95 95to111
    # *** Si ***
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRSI}/test_f_000{1}_001.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root ::: 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 
-#parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/calibration_data/20200225a_000{1}_001.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root ::: 02 03 04 05 06 07 08 09 10
-#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/calibration_data/20200225a_image.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root 
+#parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/Sidata_calibration/20200225a_000{1}_001.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root ::: 02 03 04 05 06 07 08 09 10
+#python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/Sidata_calibration/20200225a_image.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root 
    # *** Scan cut ***
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRCDTE}/20200307a_00057_001.root -o cut{1}_delta{2} -cut {1} -m {2} ::: 5 10 20 40 ::: 10 5 3 2
 #parallel --eta -j ${NCORES} python3 main.py ${NTUPDIRSI}/test_f_00007_001.root -d Si -e ${MACRODIR}/auxfile/spline_calibration.root -o cut{1}_delta{2} -cut {1} -m {2} ::: 2 3 8 12 ::: 10 5 3 2
@@ -77,8 +78,6 @@ parallel --eta -j ${NCORES} python3 main.py ../data/CdTeDSD2_2mm_Cali/500n30/{1}
 #python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe -o LP_0909 
 #python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe -o 35MeV
 #python3 image.py -i ${OUTDIR}/Si_root_fix -d Si -o 1120
-
-
 
 
 # =====
