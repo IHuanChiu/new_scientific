@@ -50,7 +50,8 @@ void make_pnES_base(){
   TString name;
   TH1D *ha_p,*ha_n, *ha;
   
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/cdtedsd2_0607a_Ba.root","READ");
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/JPARC2020March_Si_sum.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/cdtedsd2_0607a_Ba.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_particle_collimator_201215_2.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_particle_201215_2.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_blank_201215_2.root","READ");
@@ -58,14 +59,15 @@ void make_pnES_base(){
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1130d_00005_001_cali_ba3.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00022_001_cali_co3.root","READ");
 
-  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_cdtedsd2_ba.pdf");
+  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_si.pdf");
+  TCut cut_basic = "((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))";
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
-  tree_a->Draw("energy >> ha(3000,0,150)",    "","");
-  //tree_a->Draw("energy_p >> ha_p(3000,0,150)","","");
-  //tree_a->Draw("energy_n >> ha_n(3000,0,150)","","");
-  tree_a->Draw("E_p_lv1 >> ha_p(3000,0,150)","","");
-  tree_a->Draw("E_n_lv1 >> ha_n(3000,0,150)","","");
+  tree_a->Draw("energy >> ha(3000,0,150)",    cut_basic,"");
+  tree_a->Draw("energy_p >> ha_p(3000,0,150)",cut_basic,"");
+  tree_a->Draw("energy_n >> ha_n(3000,0,150)",cut_basic,"");
+  //tree_a->Draw("E_p_lv1 >> ha_p(3000,0,150)",cut_basic,"");
+  //tree_a->Draw("E_n_lv1 >> ha_n(3000,0,150)",cut_basic,"");
   ha = (TH1D*)gDirectory->Get("ha");
   ha_p = (TH1D*)gDirectory->Get("ha_p");
   ha_n = (TH1D*)gDirectory->Get("ha_n");
@@ -120,17 +122,18 @@ void make_pnES_base(){
   //gPad->SetLeftMargin(0.2);
   ha_n->Draw();
   ha_p->Draw("same");
-//  ha->Draw("same");
+  ha->Draw("same");
 
-  leg->Draw("same");
-  lineCo1->Draw("same");
-  lineCo2->Draw("same");
-  lineAm1->Draw("same");
-  lineAm2->Draw("same");
-  lineAm3->Draw("same");
-  lineBa1->Draw("same");
-  lineBa2->Draw("same");
-  lineBa3->Draw("same");
+//  leg->Draw("same");
+//  lineCo1->Draw("same");
+//  lineCo2->Draw("same");
+//  lineAm1->Draw("same");
+//  lineAm2->Draw("same");
+//  lineAm3->Draw("same");
+//  lineBa1->Draw("same");
+//  lineBa2->Draw("same");
+//  lineBa3->Draw("same");
+
 //  line5->Draw("same");
 //  line6->Draw("same");
 //  line7->Draw("same");

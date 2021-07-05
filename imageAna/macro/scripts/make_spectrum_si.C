@@ -73,7 +73,8 @@ void make_spectrum_si(){
   double e_max = 15;
   double e_min = 10;
 
-  file = new TFile("/Users/chiu.i-huan/Desktop/Si_merge_fix.root","READ");
+  //file = new TFile("/Users/chiu.i-huan/Desktop/Si_merge_fix.root","READ");
+  file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/JPARC2020March_Si_sum.root","READ");
   mytree = (TTree*)file->Get("tree");
      
 //  mytree->SetBranchAddress("energy_p",e_p);

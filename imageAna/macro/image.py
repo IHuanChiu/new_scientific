@@ -128,7 +128,7 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/CdTe_root/", help="Input Ntuple Name")
     parser.add_argument("-o", "--output", type=str, default=None, help="Output file")
     parser.add_argument("-p", "--input3Dhist", type=str, default=None, help="Input 3D file")
-    parser.add_argument("-d", "--dtype", dest="dtype", type=str, default = "CdTe", help="Si or CdTe" )
+    parser.add_argument("-d", "--dtype", dest="dtype", type=str, default = "CdTe_30MeV", help="Si_ or CdTe_ + 30MeV or 35MeV or none" )
     parser.add_argument("-c", "--cut", type=int, default = 100, help="count cut for 3D image" )
     args = parser.parse_args()
     

@@ -3,16 +3,20 @@ TString name;
 TString filename;
 TString name2;
 
-TString place="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/cali_plots";
+//TString place="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/cali_plots";
+TString place="/Users/chiu.i-huan/Desktop/";
 TString sourcename="Am";//show Am, Ba, Co lines
-for (int isource = 0; isource < 3; isource++){
+//TString intputname="cdtedsd2";
+TString intputname="JPARC2020March_Si_calibration_5_9_10";
+
+for (int isource = 0; isource < 1; isource++){
 
 if (isource == 0)sourcename="Am";
 if (isource == 1)sourcename="Ba";
 if (isource == 2)sourcename="Co";
 
 // === calibration data ===
-filename.Form("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/cdtedsd2_0607a_%s.root",sourcename.Data());
+filename.Form("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/%s_%s.root",intputname.Data(),sourcename.Data());
 TFile* ff = new TFile(filename.Data(),"read");
 name.Form("%s/canv_%s_lv1.pdf",place.Data(),sourcename.Data());
 name2.Form("%s/canv_%s_gamma.pdf",place.Data(),sourcename.Data());
