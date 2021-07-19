@@ -78,7 +78,7 @@ OUTNAME="test1020"
 #python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe -o LP_0909 
 #python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe_35MeV -o 35MeV
 #python3 image.py -i ${OUTDIR}/Si_root_fix -d Si -o 1120
-#python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper -d Si_30MeV -c 12
+python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper -d Si_30MeV -c 0 -s 1
 #python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper -d Si_35MeV
 
 

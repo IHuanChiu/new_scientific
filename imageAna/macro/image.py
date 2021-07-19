@@ -95,13 +95,14 @@ def run3Dimage(args):
        h3d_t.Write()
        h3d.Write()
 
+       RebinSize = 2
        if len(ihlist) == 16:
           SetMyPalette("Bird",1)
           cv2  = createRatioCanvas("cv2", 3600, 3600)
           cv2.Divide(4,4)
           for _ih in range(len(ihlist)): 
              cv2.cd(_ih+1).SetRightMargin(0.18)
-             if (ihlist[_ih].GetNbinsX() >= 128): ihlist[_ih].Rebin2D(4,4)
+             ihlist[_ih].Rebin2D(RebinSize,RebinSize)
              ihlist[_ih].SetStats(0)
              ihlist[_ih].SetXTitle("x")
              ihlist[_ih].SetYTitle("y")
@@ -113,6 +114,21 @@ def run3Dimage(args):
           log.info("Cannot make 2D images, check angle range !")
        cv2.Write()
        f.Write()    
+
+    # check mk2dplots_forSipaper.py in script 
+#    if args.seperation:
+#       RebinSize = 2
+#       ROOT.gStyle.SetPalette(53)
+#       for _ih in range(len(ihlist)): 
+#          cv3  = createRatioCanvas("cv3_{}".format(_ih), 1400, 1200)
+#          cv3.SetRightMargin(0.18)
+#          ihlist[_ih].Rebin2D(RebinSize,RebinSize)
+#          ihlist[_ih].SetStats(0)
+#          ihlist[_ih].SetTitle(";X [mm];Y [mm]")
+#          ihlist[_ih].GetXaxis().CenterTitle(); ihlist[_ih].GetYaxis().CenterTitle();
+#          ihlist[_ih].Draw("colz")
+#          _outsepfig = _outfig.replace("hist_3D_image", "hist_2D_image_{}".format(_ih))
+#          cv3.Print(_outsepfig)
 
     else: 
        _out = "/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage"+"."+args.dtype
@@ -130,6 +146,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--input3Dhist", type=str, default=None, help="Input 3D file")
     parser.add_argument("-d", "--dtype", dest="dtype", type=str, default = "CdTe_30MeV", help="Si_ or CdTe_ + 30MeV or 35MeV or none" )
     parser.add_argument("-c", "--cut", type=int, default = 100, help="count cut for 3D image" )
+    parser.add_argument("-s", "--seperation", type=bool, default = False, help="separated 2D image" )
     args = parser.parse_args()
     
     run3Dimage( args )

@@ -47,9 +47,17 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   string str, str_temp;
   static const int total_dets=std::stoi( nDets );
   //calibration, change argv[2] in the bottom
+  //2021.04 terada exp.
+//  Double_t a[6]={0.,0.,0.,0.,0.,0.};
+//  Double_t b[6]={0.025,0.024995,0.024995,0.025053,0.025006,0.024983};
+//  Double_t c[6]={0.260015,0.372299,0.447283,0.098903,0.297717,0.271931};
+//  int ignore_CH=-1;
+  //2021.04 Ryugu exp.
   Double_t a[6]={0.,0.,0.,0.,0.,0.};
-  Double_t b[6]={0.025,0.024995,0.024995,0.025053,0.025006,0.024983};
-  Double_t c[6]={0.260015,0.372299,0.447283,0.098903,0.297717,0.271931};
+  Double_t b[6]={0.024981,0.024974,0.024981,0.025024,0.249961,0.024999};
+  Double_t c[6]={0.300472,0.035980,0.050147,0.338917,0.338917,0.334527};
+  int ignore_CH=2;
+
   int base_CH=1;
   double a_base=a[base_CH-1];//CH1
   double b_base=b[base_CH-1];//CH1
@@ -82,6 +90,7 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
 
   for(int idet=0; idet < total_dets; idet++){
      eve.detID=idet+1;
+     if(eve.detID == ignore_CH) continue;
 
      int init_channel = 1;
      std::string input_name=run_number+"_beam_CH"+std::to_string(idet+1)+".pha";

@@ -12,6 +12,8 @@ YOU need to use >python3.9
 pip install root_numpy
 pip install scipy
 pip install numpy
+pip install itkwidgets
+pip install vtk
 
 imageAna
 ==================

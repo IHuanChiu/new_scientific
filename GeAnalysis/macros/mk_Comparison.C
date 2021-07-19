@@ -145,7 +145,7 @@ void mk_Comparison(){
         h1_s = (TH1F*)f1->Get("el");
         h1_b = (TH1F*)f2->Get("el");
         h1_s->SetStats(0);
-        if(h1_s->GetMaximum() > h1_s->GetMaximum()){
+        if(h1_s->GetMaximum() > h1_b->GetMaximum()){
         h1_s->SetMaximum(h1_s->GetMaximum()*1.3);
         }else{h1_s->SetMaximum(h1_b->GetMaximum()*1.3);}
         h1_s->SetLineWidth(1);

@@ -84,10 +84,11 @@ void Comparplot(){
 // TFile *f2=new TFile("../data/J-PARC2021Apri/live_data0406_STD_27MeV_78ks.mca.root","READ");//recon
 // double f1_scale=1/95.;
 // double f2_scale=1/78.;
- TFile *f1=new TFile("../data/J-PARC2021Apri/live_data0404_bkg_25MeV_84ks.mca.root","READ");//bkg
- TFile *f2=new TFile("../data/J-PARC2021Apri/live_data0404_STD_25MeV_41ks.mca.root","READ");//signal
- double f1_scale=1/84.;
- double f2_scale=1/41.;
+ TFile *f1=new TFile("../data/J-PARC2021JuneCdTe123/live_data0703_Ryugu_27MeV.mca.root","READ");//bkg
+ TFile *f2=new TFile("../data/J-PARC2021JuneCdTe123/live_data0713_Orgueil_27MeV.mca.root","READ");//signal
+ int nbin = 700; //for 0~350 keV
+ double f1_scale=1/13724.024088;
+ double f2_scale=1/14255.398255;
  bool do_scale=true;
 
   TTree    *tree1 = (TTree*)f1->Get("tree");
@@ -107,8 +108,8 @@ void Comparplot(){
 
   int nentries1 = tree1->GetEntries(); // read the number of entries in the t3
   cs->cd(1);
-  tree1->Draw("energy >> h0_b(700,0,350)","(energy > 0 && energy < 350)","hist");
-  tree2->Draw("energy >> h0_s(700,0,350)","(energy > 0 && energy < 350)","hist");
+  tree1->Draw(Form("energy >> h0_b(%d,0,350)",nbin),"(energy > 0 && energy < 350)","hist");
+  tree2->Draw(Form("energy >> h0_s(%d,0,350)",nbin),"(energy > 0 && energy < 350)","hist");
   h0_b     = (TH1D*)gDirectory->Get("h0_b");
   h0_s     = (TH1D*)gDirectory->Get("h0_s");
   h0_s->SetStats(0);
@@ -136,14 +137,14 @@ void Comparplot(){
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize( 0);
-  leg->AddEntry(h0_s, "STD"  , "L");
-  leg->AddEntry(h0_b, "BGD"  , "L");
+  leg->AddEntry(h0_s, "Ryugu"  , "L");
+  leg->AddEntry(h0_b, "Orgueil"  , "L");
   leg->SetTextSize(0.038);
   leg->Draw("same");
 
   cs->cd(2);
-  tree1->Draw("energy >> h1_b(200,0,100)","(energy > 0 && energy < 100)","hist");
-  tree2->Draw("energy >> h1_s(200,0,100)","(energy > 0 && energy < 100)","hist");
+  tree1->Draw(Form("energy >> h1_b(%d,0,100)",nbin/2),"(energy > 0 && energy < 100)","hist");
+  tree2->Draw(Form("energy >> h1_s(%d,0,100)",nbin/2),"(energy > 0 && energy < 100)","hist");
   h1_b     = (TH1D*)gDirectory->Get("h1_b");
   h1_s     = (TH1D*)gDirectory->Get("h1_s");
   h1_s->SetStats(0);
@@ -166,8 +167,8 @@ void Comparplot(){
   leg->Draw("same");
 
   cs->cd(3);
-  tree1->Draw("energy >> h2_b(200,100,200)","(energy > 100 && energy < 200)","hist");
-  tree2->Draw("energy >> h2_s(200,100,200)","(energy > 100 && energy < 200)","hist");
+  tree1->Draw(Form("energy >> h2_b(%d,100,200)",nbin/2),"(energy > 100 && energy < 200)","hist");
+  tree2->Draw(Form("energy >> h2_s(%d,100,200)",nbin/2),"(energy > 100 && energy < 200)","hist");
   h2_b     = (TH1D*)gDirectory->Get("h2_b");
   h2_s     = (TH1D*)gDirectory->Get("h2_s");
   h2_s->SetStats(0);
@@ -190,8 +191,8 @@ void Comparplot(){
   leg->Draw("same");
 
   cs->cd(4);
-  tree1->Draw("energy >> h3_b(300,200,350)","(energy > 200 && energy < 350)","hist");
-  tree2->Draw("energy >> h3_s(300,200,350)","(energy > 200 && energy < 350)","hist");
+  tree1->Draw(Form("energy >> h3_b(%d,200,350)",nbin/2),"(energy > 200 && energy < 350)","hist");
+  tree2->Draw(Form("energy >> h3_s(%d,200,350)",nbin/2),"(energy > 200 && energy < 350)","hist");
   h3_b     = (TH1D*)gDirectory->Get("h3_b");
   h3_s     = (TH1D*)gDirectory->Get("h3_s");
   h3_s->SetStats(0);
