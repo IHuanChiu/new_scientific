@@ -1,7 +1,7 @@
 Input:
 # - path : ["/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/"]
- - path : ["/Users/chiu.i-huan/Desktop/"]
- - file : ["203081_Al_CH5_beam.root"]
+ - path : ["../data/JPARC_2021Apri_Murray/JbiletWinselwan_27/"]
+ - file : ["203066_beam.root"]
 # - file : ["Ti/203080_beam.root"]
 # - file : ["Al/203081_beam.root"]
 # - file : ["Fe/203082_beam.root"]
@@ -18,7 +18,7 @@ Input:
 
 SourceTable:
  O: 
-   - Print : False
+   - Print : True
    - Plot : False
    - (3-2) : [24.8444, 0.162809]
    - (4-2) : [33.5848, 0.213961]
@@ -28,12 +28,12 @@ SourceTable:
    - (4-1) : [167.076, 0.389773]
    - (5-1) : [171.092, 0.498320]
  Be:
-   - Print : False
+   - Print : True
    - Plot : False
    - (2-1) : [33.3729, 0.213961]
    - (4/5-1) : [42.8012, 0.306654]
  Mg:
-   - Print : False
+   - Print : True
    - Plot : False
    - (5-3) : [28.9018, 0.236263]
    - (3-2) : [56.2303, 0.339504]
@@ -55,7 +55,7 @@ SourceTable:
    - (4-2) : [103.427, 0.473689]
    - (5-2) : [115.570, 0.453923]
  Ca:
-   - Print : False
+   - Print : True
    - Plot : False
    - (4-3) : [54.65, 0.217937]
    - (5-3) : [80.0657, 0.406603]
@@ -72,7 +72,7 @@ SourceTable:
    - (5-3) : [135.593, 0.457524]
    - (6-3) : [158.802, 0.531808]
  Cu:
-   - Print : False
+   - Print : True
    - Plot : False
    - (6-5) : [28.9018, 0.236263]
    - (5-4) : [53.3110, 0.269089]
