@@ -173,19 +173,25 @@ def makentuple(signal, cluster, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
 
 def GetEventTree(tree, adccut, coef_R, dtype):
     m_rawdata_list = []
-    nasic = 4
-    if "CdTe" in dtype: nstrip = 64
-    else : nstrip = 32
+    if "FEC1" in dtype: 
+       nasic = 4 # nasic for one side
+       nstrip = 64 # nchannel for one ASIC
+    elif "FEC2" in dtype: 
+       nasic = 2
+       nstrip = 64
+    else:
+       nasic = 4
+       nstrip = 32
     index = 0
     for idet in range(2):
        for iasic in range(nasic):
           for istrip in range(nstrip):
-             if "CdTe" in dtype and not istrip%2: continue # skip even strips in shimafuji-1 data
+             if "FEC1" in dtype and not istrip%2: continue # skip even strips in shimafuji-1 data
              m_rawdata = rawdata_eventtree()
              m_rawdata.detid      = idet # 0 is p-side(x), 1 is n-side(y)
-             m_rawdata.asicid     = iasic+idet*4 # 0~3 is p-side, 4~7 is n-side
+             m_rawdata.asicid     = iasic+idet*nasic # p-side & n-side
              m_rawdata.stripid    = index # 0 ~ 255
-             m_rawdata.upperbound = 1000.
+             m_rawdata.upperbound = 1024 # limit for ADC
              m_rawdata.coef_R     = coef_R
              m_rawdata.adccut     = adccut[index]
 

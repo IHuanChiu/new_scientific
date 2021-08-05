@@ -26,6 +26,16 @@ __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
 ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
 
+# === normal ===
+triggercut="1"
+energycut="1"
+## === JPARC 2020March CdTe ===
+#triggercut="((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253))"
+#energycut="(energy > 72 && energy < 78)"
+## === JPARC 2020March Si ===
+#triggercut="((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))"
+#energycut="(energy > 12 && energy < 16)"
+
 def getBIN(h): 
     n = h.GetNbinsX()
     xlow = h.GetBinLowEdge(1)
@@ -91,10 +101,9 @@ def spectrum(tree, scut):
 
 class Baseplot():
 
-      def __init__(self,infile=None,outname=None,initUT=None,dtype=None): 
+      def __init__(self,infile=None,outname=None,initUT=None): 
           self.infile = infile
           self.outname = outname
-          self.dtype = dtype
 #          self.tri_cut1_d, self.tri_cut1_u, self.trig_cut2_d, self.trig_cut2_u = 1625, 1640, 1655, 1670
 
       def plots(self):
@@ -113,28 +122,15 @@ class Baseplot():
           cv.Divide(2,2)
 
           cv.cd(1)
-          if "Lab" in self.dtype or "lab" in self.dtype:
-             mytree.Draw("trigger >> h_trigger","","")
-          elif "JPARCDec" in self.dtype:
-             mytree.Draw("trigger >> h_trigger(300,1550,1850)","","")
-          elif "CdTe" in self.dtype:
-             mytree.Draw("trigger >> h_trigger(100,200,300)","","")
-          else:
-             mytree.Draw("trigger >> h_trigger(300,550,850)","","")
+          #mytree.Draw("trigger >> h_trigger(300,550,850)","","")
+          mytree.Draw("trigger >> h_trigger","","")
           h_tri = gDirectory.Get("h_trigger")
           h_tri.SetTitle("trigger time")
           h_tri.SetStats(0)
           h_tri.GetXaxis().SetTitle("trigger")
           h_tri.GetYaxis().SetTitle("count")
           h_tri.Write()         
-          if "Lab" in self.dtype or "lab" in self.dtype:
-             Cut = makecut(basecut="1")
-          elif "JPARCDec" in self.dtype:
-             Cut = makecut(basecut="((trigger > 1625 && trigger < 1640) || (trigger > 1655 && trigger < 1670))")
-          elif "CdTe" in self.dtype:
-             Cut = makecut(basecut="((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253))")
-          else:
-             Cut = makecut(basecut="((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))")
+          Cut = makecut(basecut=triggercut)
           cut = Cut.get()
           line1_d = ROOT.TLine(1625,0,1625,h_tri.GetMaximum())
           line1_u = ROOT.TLine(1640,0,1640,h_tri.GetMaximum())
@@ -186,14 +182,7 @@ class Baseplot():
           cv.cd(4)
           gPad.SetLeftMargin(0.15)
           gPad.SetBottomMargin(0.15)
-          if "Lab" in self.dtype or "lab" in self.dtype:
-             Cut.add("1")
-          elif "JPARCDec" in self.dtype:
-             Cut.add("1")
-          elif "CdTe" in self.dtype:
-             Cut.add("(energy > 72 && energy < 78)")
-          else:
-             Cut.add("(energy > 12 && energy < 16)")
+          Cut.add(energycut)
           cut = Cut.get()
           hist_image = image(mytree,cut,"all")
           hist_image.Write()

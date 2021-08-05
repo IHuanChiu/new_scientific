@@ -29,12 +29,13 @@ def getLatex(ch, x = 0.85, y = 0.85):
 
 
 class Calibration():
-      def __init__(self,filename=None,output=None,Etable=None,voltage=None,source=None):
+      def __init__(self,filename=None,output=None,Etable=None,voltage=None,source=None,fec=None):
           self.filename=filename
           self.output=output
           self.Etable=Etable
           self.voltage=voltage
           self.source=source
+          self.fec=fec
           self.hist_list,self.name_list=self.gethist()
           self.element_list_1,self.element_list_2,self.element_list_3,self.element_list_4,self.element_list_5,self.element_list_6,self.element_list_7,self.element_list_8=self.getrange()
           self.hist_fitpoints=[]
@@ -55,7 +56,9 @@ class Calibration():
           for _ifname in range(len(inputDict)):
              f = ROOT.TFile(inputDict[_ifname]) 
              for i in range(256):
-                ih=i*2 #for 2mm CdTe
+                ih=i
+                if self.fec != "FEC2":
+                   ih=i*2 #for 2mm CdTe
                 if ih < 10: hist_name = "hist_cmn" + "00" + str(ih) 
                 elif ih < 100:  hist_name = "hist_cmn" + "0" + str(ih) 
                 else : hist_name = "hist_cmn" + str(ih)
@@ -209,9 +212,14 @@ class Calibration():
           c2.Print(c2name + "[", "pdf")
           for i in range(256):
              latex = getLatex(i,400,8000)
-             if i*2 < 10: temp_name = "hist_cmn" + "00" + str(i*2) 
-             elif i*2 < 100:  temp_name = "hist_cmn" + "0" + str(i*2) 
-             else : temp_name = "hist_cmn" + str(i*2)
+             if self.fec == "FEC2":
+                if i < 10: temp_name = "hist_cmn" + "00" + str(i) 
+                elif i < 100:  temp_name = "hist_cmn" + "0" + str(i) 
+                else : temp_name = "hist_cmn" + str(i)
+             else:
+                if i*2 < 10: temp_name = "hist_cmn" + "00" + str(i*2) 
+                elif i*2 < 100:  temp_name = "hist_cmn" + "0" + str(i*2) 
+                else : temp_name = "hist_cmn" + str(i*2)
              new_name=self.name_list[i].replace(temp_name,"ch : {}".format(i))
              gROOT.ProcessLine("gErrorIgnoreLevel = kWarning;")
              self.hist_list[i].SetLineColor(1)
@@ -232,6 +240,7 @@ class Calibration():
              latex.DrawLatex(0.5,0.85,new_name)
              c1.cd()
              gPad.SetLogy(islog)
+             self.hist_list[i].GetXaxis().SetNdivisions(20, 10, 0, True)
              self.hist_list[i].Draw()
              self.hist_fitpoints[i].Draw("hist SAME")
              latex.DrawLatex(0.5,0.85,new_name)
@@ -381,7 +390,7 @@ def run(args):
        args.input=args.input+"/"+args.voltage+"/"+args.source+"/"
     _outputname="./files_cali/spline_calibration_"+args.output+".root"
     _table=args.table+"/energy_table.txt"
-    Cal=Calibration(filename=args.input, output=_outputname,Etable=_table,voltage=args.voltage,source=args.source)
+    Cal=Calibration(filename=args.input, output=_outputname,Etable=_table,voltage=args.voltage,source=args.source,fec=args.fec)
     Cal.plot()
     Cal.Printout()
     exit(0)
@@ -396,6 +405,7 @@ if __name__ == "__main__":
 
     parser.add_argument("-v","--voltage", dest="voltage", type=str, default="500n20", help="500n20, 400n20, 300n20...")
     parser.add_argument("-s","--source", dest="source", type=str, default="Am", help="Am or Co or Ba")
+    parser.add_argument("-f","--fec", dest="fec", type=str, default="FEC1", help="FEC1 for 512 channels, FEC2 for 256 channels")
 
     args = parser.parse_args()
 

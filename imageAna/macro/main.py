@@ -34,7 +34,7 @@ def main(args):
     p.mainprocess()
 
     if p.fout is not None:
-       b = Baseplot(infile=p.fout,outname=p.fout.GetName().split("/")[-1].split(".root")[0],dtype=args.dtype)
+       b = Baseplot(infile=p.fout,outname=p.fout.GetName().split("/")[-1].split(".root")[0])
        b.plots()
 
     if os.path.isfile(outname+"latest"):
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     parser.add_argument( "-e", "--efile", type=str, default=None, help="Calibration file Name")
     parser.add_argument( "-cpu", "--ncores", dest="ncores", type=int, default = 1, help="number of CPU")
     parser.add_argument( "-n", "--nevents", dest="nevents", type=int, default = None, help="Number of processing events." )
-    parser.add_argument( "-d", "--dtype", dest="dtype", type=str, default = "CdTe", help="Si or CdTe or CdTe_Lab or Si_Lab" )
+    parser.add_argument( "-d", "--dtype", dest="dtype", type=str, default = "FEC1", help="FEC1 for old CdTe; FEC2 for new CdTe; FECSi for DSSD" )
     parser.add_argument( "-m", "--delta", dest="delta", type=int, default = None, help="deltaE for p & nside" )
     parser.add_argument( "-cut", "--cut", dest="cut", type=int, default = None, help="energy cut for lv1 hits" )
     args = parser.parse_args()

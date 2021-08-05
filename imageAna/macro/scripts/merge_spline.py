@@ -152,7 +152,7 @@ def merge(args):
           _g.SetPoint(_index, 1024, (1024-f_x)*slope + f_y)
        _s = ROOT.TSpline3("spline_"+str(i), _g)# get TSpline3
        _g.Fit("fline","qn")# get pol1 function passed (0,0) point
-       _f.FixParameter(0,0)
+#       _f.FixParameter(0,0)# passed (0,0) ?
        _g.SetName(graph_name)
        _s.SetName("spline_"+str(i))
        _f.SetName("fline_"+str(i))

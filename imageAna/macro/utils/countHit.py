@@ -240,51 +240,57 @@ def Level1Hit(tree, coef_R, dblist, efname, eline, dtype):
     EnergyCut = enums.EnergyCut
     tree_adc, tree_cmn, tree_index, tree_hitnum = 0,0,0,0
     _hit = hitchannel()
-    if "CdTe" in dtype: 
-       ADCUpperBound = enums.ADCUpperBound*1000
-    else: 
-       ADCUpperBound = enums.ADCUpperBound
+    ADCUpperBound = 1024
+    if "FEC1" in dtype: 
+       nasic = 8 # nasic for one side
+       nstrip = 64 # nchannel for one ASIC
+    elif "FEC2" in dtype: 
+       nasic = 4
+       nstrip = 64
+    else:
+       nasic = 8
+       nstrip = 32
     # ========= find signal region (p-side and n-side) ============
-    for iasic in range(8): #number of ASIC
+    for iasic in range(nasic): #number of ASIC
        adc_name, cmn_name, index_name, hitnum_name = "adc"+str(iasic), "cmn"+str(iasic), "index"+str(iasic), "hitnum"+str(iasic)
        tree_adc, tree_cmn, tree_index, tree_hitnum = getattr(tree,adc_name), getattr(tree,cmn_name), getattr(tree,index_name), getattr(tree,hitnum_name)
        for ich in range(tree_hitnum): #number of hit channels in a ASIC
-          taa=time.time() # TODO : imporve processing time, check "taa" var.
           # === quick selection ===
           if tree_adc[ich] < tree_cmn+10 or tree_adc[ich] >= 1023: continue
           istrip = tree_index[ich] # read ch of each ASIC -> 0~63 for FEC-1; 0~31 for FEC-2 (ex. Si detector)
-          if "CdTe" in dtype: 
+          if "FEC1" in dtype: 
              if istrip%2 != 0 : continue #FEC-1 with "readoutall" setting -> only loop even channel
              ChannelID=int(istrip/2+iasic*32) #scale to 0~255
+          elif "FEC2" in dtype: 
+             ChannelID=int(istrip+iasic*64) #scale to 0~255
           else: 
              #if iasic == 6 and (istrip==13 or istrip==16 or istrip==20): continue #TODO : Si bad channels for 2020 March
              ChannelID=int(istrip+iasic*32) #0~255
 
-          taa2=time.time()
           # === pha to energy ===
           pha = tree_adc[ich]-tree_cmn+(coef_R*random.uniform(-0.5,0.5))
-          taa3=time.time()
           if efname: energy = eline[ChannelID].Eval(pha) # use tspline
           else: energy = dblist[ChannelID].calfunc.Eval(pha) #use database
 
-          taa4=time.time()         
           # === store Lv1 hit ===
-          if(energy > EnergyCut and tree_adc[ich] < ADCUpperBound and iasic < 4):
+          if(energy > EnergyCut and tree_adc[ich] < ADCUpperBound and iasic < nasic/2):
              n_hit_x += 1 #hit !
-             taa5=time.time()
              poi=dblist[ChannelID].posx
              stripid=dblist[ChannelID].stripid
-             taa6=time.time()
+             #TODO fix this
+             if "FEC2" in dtype:
+                poi=16-0.125-ChannelID*0.25
+                stripid=ChannelID
              signal_hitx = SetHitInfo(n_hit_x, pha, energy, poi, stripid, iasic)
-             taa7=time.time()
              signalx.update({n_hit_x:signal_hitx})
-             taa8=time.time()
-             taaf=taa8-taa
-#             print("1 : ", (taa2-taa)/taaf, "2 : ",(taa3-taa2)/taaf, "3: ", (taa4-taa3)/taaf, "4: ", (taa5-taa4)/taaf, " 5: ", (taa6-taa5)/taaf, "6 : ", (taa7-taa6)/taaf, " 7 : ", (taa8-taa7)/taaf)
-          if(energy > EnergyCut and tree_adc[ich] < ADCUpperBound and iasic >= 4):
+          if(energy > EnergyCut and tree_adc[ich] < ADCUpperBound and iasic >= nasic/2):
              n_hit_y += 1
              poi = dblist[ChannelID].posy
              stripid=dblist[ChannelID].stripid
+             #TODO fix this
+             if "FEC2" in dtype:
+                poi=16-0.125-(ChannelID-128)*0.25
+                stripid=ChannelID
              signal_hity = SetHitInfo(n_hit_y, pha, energy, poi, stripid, iasic)
              signaly.update({n_hit_y:signal_hity})               
     return signalx, signaly

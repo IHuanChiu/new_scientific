@@ -10,7 +10,7 @@
 #python merge_spline.py -o cdtedsd2 -v 500n30
 
 # === Osaka CdTeDSD7 ===
-python calib.py -i /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/IPMU2021Aug_OsakaNo7 -o osaka7 --table energy_table/osakacdte7_data -v 500n20 -s Am
-python calib.py -i /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/IPMU2021Aug_OsakaNo7 -o osaka7 --table energy_table/osakacdte7_data -v 500n20 -s Ba
-python calib.py -i /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/IPMU2021Aug_OsakaNo7 -o osaka7 --table energy_table/osakacdte7_data -v 500n20 -s Co
-python merge_spline.py -o osaka7 -v 500n30
+python calib.py -i /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/IPMU2021Aug_OsakaNo7 -o osaka7 --table energy_table/osakacdte7_data -f FEC2 -v 500n20 -s Am
+python calib.py -i /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/IPMU2021Aug_OsakaNo7 -o osaka7 --table energy_table/osakacdte7_data -f FEC2 -v 500n20 -s Ba
+python calib.py -i /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/IPMU2021Aug_OsakaNo7 -o osaka7 --table energy_table/osakacdte7_data -f FEC2 -v 500n20 -s Co
+python merge_spline.py -o osaka7 -v 500n20
