@@ -64,7 +64,7 @@ class Processor():
              self.ifile = ROOT.TFile(self.ifilename)
              self.tree = self.ifile.Get("eventtree")  
 
-             self.tree = DisableBranch(self.tree)
+             self.tree = DisableBranch(self.tree, self.dtype)
              if self.nevents:   self.Nevents = min(self.nevents, self.tree.GetEntries())
              else: self.Nevents = self.tree.GetEntries()
              self.skimmingtree, _cutname = PreEventSelection(self.ifilename, self.tree, self.Nevents) # this is ROOT.TEventList

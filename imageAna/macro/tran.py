@@ -171,67 +171,67 @@ def makentuple(signal, cluster, hitx_lv2, hity_lv2, hitx_lv1, hity_lv1):
        struct.Nstrips_n_lv2[n-1]  = hity_lv2[n].nstrips
        struct.Poi_y_lv2[n-1]      = hity_lv2[n].position
 
-def GetEventTree(tree, adccut, coef_R, dtype):
-    m_rawdata_list = []
-    if "FEC1" in dtype: 
-       nasic = 4 # nasic for one side
-       nstrip = 64 # nchannel for one ASIC
-    elif "FEC2" in dtype: 
-       nasic = 2
-       nstrip = 64
-    else:
-       nasic = 4
-       nstrip = 32
-    index = 0
-    for idet in range(2):
-       for iasic in range(nasic):
-          for istrip in range(nstrip):
-             if "FEC1" in dtype and not istrip%2: continue # skip even strips in shimafuji-1 data
-             m_rawdata = rawdata_eventtree()
-             m_rawdata.detid      = idet # 0 is p-side(x), 1 is n-side(y)
-             m_rawdata.asicid     = iasic+idet*nasic # p-side & n-side
-             m_rawdata.stripid    = index # 0 ~ 255
-             m_rawdata.upperbound = 1024 # limit for ADC
-             m_rawdata.coef_R     = coef_R
-             m_rawdata.adccut     = adccut[index]
-
-             if (idet*nasic+iasic) == 0: 
-                m_rawdata.adc    = tree.adc0[istrip]
-                m_rawdata.cmn    = tree.cmn0
-                m_rawdata.adcm   = tree.adc0[istrip] - tree.cmn0
-             elif (idet*nasic+iasic) == 1: 
-                m_rawdata.adc    = tree.adc1[istrip]
-                m_rawdata.cmn    = tree.cmn1
-                m_rawdata.adcm   = tree.adc1[istrip] - tree.cmn1
-             elif (idet*nasic+iasic) == 2: 
-                m_rawdata.adc    = tree.adc2[istrip]
-                m_rawdata.cmn    = tree.cmn2
-                m_rawdata.adcm   = tree.adc2[istrip] - tree.cmn2
-             elif (idet*nasic+iasic) == 3: 
-                m_rawdata.adc    = tree.adc3[istrip]
-                m_rawdata.cmn    = tree.cmn3
-                m_rawdata.adcm   = tree.adc3[istrip] - tree.cmn3
-             elif (idet*nasic+iasic) == 4: 
-                m_rawdata.adc    = tree.adc4[istrip]
-                m_rawdata.cmn    = tree.cmn4
-                m_rawdata.adcm   = tree.adc4[istrip] - tree.cmn4
-             elif (idet*nasic+iasic) == 5: 
-                m_rawdata.adc    = tree.adc5[istrip]
-                m_rawdata.cmn    = tree.cmn5
-                m_rawdata.adcm   = tree.adc5[istrip] - tree.cmn5
-             elif (idet*nasic+iasic) == 6:
-                m_rawdata.adc    = tree.adc6[istrip]
-                m_rawdata.cmn    = tree.cmn6
-                m_rawdata.adcm   = tree.adc6[istrip] - tree.cmn6
-             elif (idet*nasic+iasic) == 7: 
-                m_rawdata.adc    = tree.adc7[istrip]
-                m_rawdata.cmn    = tree.cmn7
-                m_rawdata.adcm   = tree.adc7[istrip] - tree.cmn7
-             
-             index += 1
-             if m_rawdata.adcm < m_rawdata.adccut : continue 
-             m_rawdata_list.append(m_rawdata)# info. for the selected strips
-    return m_rawdata_list
+#def GetEventTree(tree, adccut, coef_R, dtype):
+#    m_rawdata_list = []
+#    if "FEC1" in dtype: 
+#       nasic = 4 # nasic for one side
+#       nstrip = 64 # nchannel for one ASIC
+#    elif "FEC2" in dtype: 
+#       nasic = 2
+#       nstrip = 64
+#    else:
+#       nasic = 4
+#       nstrip = 32
+#    index = 0
+#    for idet in range(2):
+#       for iasic in range(nasic):
+#          for istrip in range(nstrip):
+#             if "FEC1" in dtype and not istrip%2: continue # skip even strips in shimafuji-1 data
+#             m_rawdata = rawdata_eventtree()
+#             m_rawdata.detid      = idet # 0 is p-side(x), 1 is n-side(y)
+#             m_rawdata.asicid     = iasic+idet*nasic # p-side & n-side
+#             m_rawdata.stripid    = index # 0 ~ 255
+#             m_rawdata.upperbound = 1024 # limit for ADC
+#             m_rawdata.coef_R     = coef_R
+#             m_rawdata.adccut     = adccut[index]
+#
+#             if (idet*nasic+iasic) == 0: 
+#                m_rawdata.adc    = tree.adc0[istrip]
+#                m_rawdata.cmn    = tree.cmn0
+#                m_rawdata.adcm   = tree.adc0[istrip] - tree.cmn0
+#             elif (idet*nasic+iasic) == 1: 
+#                m_rawdata.adc    = tree.adc1[istrip]
+#                m_rawdata.cmn    = tree.cmn1
+#                m_rawdata.adcm   = tree.adc1[istrip] - tree.cmn1
+#             elif (idet*nasic+iasic) == 2: 
+#                m_rawdata.adc    = tree.adc2[istrip]
+#                m_rawdata.cmn    = tree.cmn2
+#                m_rawdata.adcm   = tree.adc2[istrip] - tree.cmn2
+#             elif (idet*nasic+iasic) == 3: 
+#                m_rawdata.adc    = tree.adc3[istrip]
+#                m_rawdata.cmn    = tree.cmn3
+#                m_rawdata.adcm   = tree.adc3[istrip] - tree.cmn3
+#             elif (idet*nasic+iasic) == 4: 
+#                m_rawdata.adc    = tree.adc4[istrip]
+#                m_rawdata.cmn    = tree.cmn4
+#                m_rawdata.adcm   = tree.adc4[istrip] - tree.cmn4
+#             elif (idet*nasic+iasic) == 5: 
+#                m_rawdata.adc    = tree.adc5[istrip]
+#                m_rawdata.cmn    = tree.cmn5
+#                m_rawdata.adcm   = tree.adc5[istrip] - tree.cmn5
+#             elif (idet*nasic+iasic) == 6:
+#                m_rawdata.adc    = tree.adc6[istrip]
+#                m_rawdata.cmn    = tree.cmn6
+#                m_rawdata.adcm   = tree.adc6[istrip] - tree.cmn6
+#             elif (idet*nasic+iasic) == 7: 
+#                m_rawdata.adc    = tree.adc7[istrip]
+#                m_rawdata.cmn    = tree.cmn7
+#                m_rawdata.adcm   = tree.adc7[istrip] - tree.cmn7
+#             
+#             index += 1
+#             if m_rawdata.adcm < m_rawdata.adccut : continue 
+#             m_rawdata_list.append(m_rawdata)# info. for the selected strips
+#    return m_rawdata_list
 
 class tran_process():
       def __init__(self,

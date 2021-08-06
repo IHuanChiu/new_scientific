@@ -22,6 +22,18 @@ OUTNAME="test1020"
 #parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/Co57/cdtedsd_0403a_0000{1}_001.root -d CdTe_Lab -o Co57_{1} -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root ::: 3 4 5 6 7 8 9
 #python3 sum_plots.py ../../../2020.12.09/sumrootblank2.root -d CdTe_JPARCDec -o blank2
 
+# =====
+# ================== CdTeDSD2 2mm run (2021.08) ====================
+# =====
+python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/Image/20210806a_00003_001.root -d FEC2 -o 500n20_image -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root  
+#python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/Am/20210804a_00006_001.root -d FEC2 -o 500n20_Am -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root  
+#python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/Am/20210804a_00009_001.root -d FEC2 -o 500n20_Ba -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root  
+#python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/Am/20210804a_00016_001.root -d FEC2 -o 500n20_Co -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root  
+ # *** calibration sample ***
+#parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210804a_0000{2}_001.root -d FEC2 -o 500n20_{1} -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Am ::: 6 7 8
+#parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210804a_0000{2}_001.root -d FEC2 -o 500n20_{1} -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Ba ::: 9 10 11
+#parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210804a_0000{2}_001.root -d FEC2 -o 500n20_{1} -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Co ::: 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 
+
 
 # =====
 # ================== 2mm CdTe run (2020.07) ====================
@@ -78,7 +90,7 @@ OUTNAME="test1020"
 #python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe -o LP_0909 
 #python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe_35MeV -o 35MeV
 #python3 image.py -i ${OUTDIR}/Si_root_fix -d Si -o 1120
-python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper -d Si_30MeV -c 0 -s 1
+#python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper -d Si_30MeV -c 0 -s 1
 #python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper -d Si_35MeV
 
 

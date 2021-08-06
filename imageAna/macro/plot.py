@@ -28,7 +28,7 @@ ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
 
 # === normal ===
 triggercut="1"
-energycut="1"
+energycut="(energy > 20 && energy < 40)"
 ## === JPARC 2020March CdTe ===
 #triggercut="((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253))"
 #energycut="(energy > 72 && energy < 78)"
@@ -189,12 +189,8 @@ class Baseplot():
           gPad.SetLogz(0) 
           gStyle.SetPalette(56)
           gPad.SetRightMargin(0.15)
-          if "Lab" in self.dtype or "JPARC" in self.dtype:
-             hist_image.RebinX(1)
-             hist_image.RebinY(1)
-          else:
-             hist_image.RebinX(4)
-             hist_image.RebinY(4)
+          hist_image.RebinX(1)
+          hist_image.RebinY(1)
           hist_image.Draw("colz")
 
           outf.Write()
