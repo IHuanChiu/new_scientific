@@ -257,32 +257,30 @@ class tran_process():
           # ==================================
           self.hist_list = []
           self.tree_list = []
-          self.h2_lv1 = ROOT.TH2D("hist_level1","level1 hit channel",20,0,20,20,0,20)
+          self.h2_lv1 = ROOT.TH2D("hist_nhits_level1","level1 hit channel",20,0,20,20,0,20)
           self.h2_lv1.SetDirectory(0)
-          self.h2_lv1.GetXaxis().SetTitle("X")
-          self.h2_lv1.GetYaxis().SetTitle("Y")
-          self.h2_lv2 = ROOT.TH2D("hist_level2","level2 hit channel",20,0,20,20,0,20)
+          self.h2_lv1.SetTitle("# of hits on each side;Pt-side;Al-side")
+          self.h2_lv2 = ROOT.TH2D("hist_nhits_level2","level2 hit channel",20,0,20,20,0,20)
           self.h2_lv2.SetDirectory(0)
-          self.h2_lv2.GetXaxis().SetTitle("X")
-          self.h2_lv2.GetYaxis().SetTitle("Y")
-          self.h1_lv2_x_nstrips = ROOT.TH1D("p-side_n","p-side nstrips of level2hit",20,0,20)
+          self.h2_lv2.SetTitle("# of hits on each side;Pt-side;Al-side")
+          self.h1_lv2_x_nstrips = ROOT.TH1D("p-side_n","p-side nstrips of level2hit",10,0,10)
           self.h1_lv2_x_nstrips.SetDirectory(0)
-          self.h1_lv2_y_nstrips = ROOT.TH1D("n-side_n","n-side nstrips of level2hit",20,0,20)
+          self.h1_lv2_y_nstrips = ROOT.TH1D("n-side_n","n-side nstrips of level2hit",10,0,10)
           self.h1_lv2_y_nstrips.SetDirectory(0)
           #self.hx = ROOT.TH1D("hist_cmn_pside","p-side adc - cmn",1024,-50.5,973.5)
           #self.hy = ROOT.TH1D("hist_cmn_nside","n-side adc - cmn",1024,-50.5,973.5)
           #self.hx.SetDirectory(0)
           #self.hy.SetDirectory(0)
-          self.h2_cutflow_x = ROOT.TH2D("hist_cutflow_x","remained hit after the selections",3,0,3,128,0,128)
-          self.h2_cutflow_y = ROOT.TH2D("hist_cutflow_y","remained hit after the selections",3,0,3,128,0,128)
-          self.h2_cutflow_x.SetDirectory(0)
-          self.h2_cutflow_y.SetDirectory(0)
-          h2_Label = ["Raw","Level 1","Level 2"]
-          self.h2_cutflow_x.GetYaxis().SetTitle("number of hits")
-          self.h2_cutflow_y.GetYaxis().SetTitle("number of hits")
-          for i in range(len(h2_Label)): 
-             self.h2_cutflow_x.GetXaxis().SetBinLabel(i+1,h2_Label[i])
-             self.h2_cutflow_y.GetXaxis().SetBinLabel(i+1,h2_Label[i])
+          #self.h2_cutflow_x = ROOT.TH2D("hist_cutflow_x","remained hit after the selections",3,0,3,128,0,128)
+          #self.h2_cutflow_y = ROOT.TH2D("hist_cutflow_y","remained hit after the selections",3,0,3,128,0,128)
+          #self.h2_cutflow_x.SetDirectory(0)
+          #self.h2_cutflow_y.SetDirectory(0)
+          #h2_Label = ["Raw","Level 1","Level 2"]
+          #self.h2_cutflow_x.GetYaxis().SetTitle("number of hits")
+          #self.h2_cutflow_y.GetYaxis().SetTitle("number of hits")
+          #for i in range(len(h2_Label)): 
+          #   self.h2_cutflow_x.GetXaxis().SetBinLabel(i+1,h2_Label[i])
+          #   self.h2_cutflow_y.GetXaxis().SetBinLabel(i+1,h2_Label[i])
 
           # ==================================
           # tree
@@ -338,42 +336,36 @@ class tran_process():
           # ==================================
           self.hist_list.append(self.h2_lv1)
           self.hist_list.append(self.h2_lv2)
+          self.hist_list.append(self.h1_lv2_x_nstrips)
+          self.hist_list.append(self.h1_lv2_y_nstrips)
 #          self.hist_list.append(self.hx)
 #          self.hist_list.append(self.hy)
 #          self.hist_list.append(self.h2_cutflow_x)
 #          self.hist_list.append(self.h2_cutflow_y)
-#          self.hist_list.append(self.h1_lv2_x_nstrips)
-#          self.hist_list.append(self.h1_lv2_y_nstrips)
 #          self.hist_list.append(self.h1_event_cutflow)
           self.tree_list.append(self.tout)
 
           self.drawables = self.hist_list + self.tree_list
 
       def tran_adc2e(self,ie):
-          # TODO: check processing time by "tti" var.
-          tti=time.time()
           hitx_lv2, hity_lv2, cluster, hit_signal = {},{},{},{}
           self.tree.GetEntry(self.event_list.GetEntry(ie))
 
-          tti2=time.time()
 #          rawdata_list = GetEventTree(self.tree, self.cut, self.coef_R, self.dtype)
 #          hitx_lv1, hity_lv1 = Level1HitArray(rawdata_list, self.line, self.dblist)
-          hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.coef_R, self.dblist, self.efile, self.line, self.dtype)#Slow
+          hitx_lv1, hity_lv1 = Level1Hit(self.tree, self.coef_R, self.dblist, self.efile, self.line, self.dtype)#Store position and energy info.
           self.h2_lv1.Fill(len(hitx_lv1),len(hity_lv1))
 
-          tti3=time.time()
           hitx_lv2, hity_lv2 = Level2Hit(hitx_lv1, hity_lv1) # merge adjacent signal
           self.h2_lv2.Fill(len(hitx_lv2),len(hity_lv2))
-#          for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
-#          for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
+          for _mx in hitx_lv2 : self.h1_lv2_x_nstrips.Fill(hitx_lv2[_mx].nstrips)
+          for _my in hity_lv2 : self.h1_lv2_y_nstrips.Fill(hity_lv2[_my].nstrips)
 
-          tti4=time.time()
           if len(hitx_lv2) != 0 and len(hity_lv2) != 0:   
    #          cluster = findcluster(hitx_lv2, hity_lv2)#Slow
    #          hit_signal = ClusterCategory(cluster)#Slow
              hit_signal = matchLv2(hitx_lv2, hity_lv2, self.deltae, self.response)
 
-          tti5=time.time()
           if len(hitx_lv2)*len(hity_lv2) > 512: return 0 # huge hit channel 
           #if len(hit_signal) == 0: return 0 # skip 0 hit events, need those event to check lv1 hit
 
@@ -389,8 +381,5 @@ class tran_process():
           # if struct.trigger > 2147482648: print(struct.trigger)
           struct.unixtime = self.tree.unixtime
           makentuple(hit_signal,cluster,hitx_lv2, hity_lv2,hitx_lv1, hity_lv1)
-          tti6=time.time()
           self.tout.Fill()
-          ttif=tti6-tti
-#          print("time ==> ", "GetEntry : ", (tti2-tti)/ttif, "lv1 : ",(tti3-tti2)/ttif, " lv2 : ",(tti4-tti3)/ttif, " match : ",(tti5-tti4)/ttif, " save : ",(tti6-tti5)/ttif )
 

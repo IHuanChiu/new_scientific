@@ -46,14 +46,17 @@ def reset(index, _lv1hit, nad, _mhit):
        energy += _lv1hit[new_index].energy
        adc += _lv1hit[new_index].adc
        dic.update({_lv1hit[new_index].energy:new_index})
-    _maxEnergy = heapq.nlargest(1,dic)
-    _index = dic[_maxEnergy[0]]
+    _maxEnergy = heapq.nlargest(2,dic)# get leading two energy, _maxEnergy is list
+    _index = dic[_maxEnergy[0]]# find index of Level1 hits with max. energy
 
     _mhit.energy, _mhit.adc = energy, adc
     _mhit.stripid, _mhit.position = _lv1hit[_index].stripid, _lv1hit[_index].position
     _mhit.Lv1hit = _lv1hit 
     _mhit.Lv1index = [index - _n for _n in range(nad+1)]
     _mhit.nstrips = nad+1
+    #TODO for FEC2 (Furukawa method)
+    _stripID1, _stripID2 = dic[_maxEnergy[0]], dic[_maxEnergy[1]] # find two leading index
+    _mhit.position = (_lv1hit[_stripID1].position*_lv1hit[_stripID2].energy + _lv1hit[_stripID2].position*_lv1hit[_stripID1].energy)/(_lv1hit[_stripID1].energy + _lv1hit[_stripID2].energy)
     return _mhit
           
 def Level2Hit(_hitx, _hity): 
@@ -277,9 +280,11 @@ def Level1Hit(tree, coef_R, dblist, efname, eline, dtype):
              n_hit_x += 1 #hit !
              poi=dblist[ChannelID].posx
              stripid=dblist[ChannelID].stripid
-             #TODO fix this
+             #TODO for FEC2
              if "FEC2" in dtype:
-                poi=16-0.125-ChannelID*0.25
+                poi=16-0.125-ChannelID*0.25# center value
+                sigma=(0.25/2)/3. # 3sigma = 0.125 mm
+                poi=random.gauss(poi,sigma)
                 stripid=ChannelID
              signal_hitx = SetHitInfo(n_hit_x, pha, energy, poi, stripid, iasic)
              signalx.update({n_hit_x:signal_hitx})
@@ -287,9 +292,11 @@ def Level1Hit(tree, coef_R, dblist, efname, eline, dtype):
              n_hit_y += 1
              poi = dblist[ChannelID].posy
              stripid=dblist[ChannelID].stripid
-             #TODO fix this
+             #TODO for FEC2
              if "FEC2" in dtype:
                 poi=16-0.125-(ChannelID-128)*0.25
+                sigma=(0.25/2)/3. # 3sigma = 0.125 mm
+                poi=random.gauss(poi,sigma)
                 stripid=ChannelID
              signal_hity = SetHitInfo(n_hit_y, pha, energy, poi, stripid, iasic)
              signaly.update({n_hit_y:signal_hity})               

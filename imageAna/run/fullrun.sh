@@ -25,12 +25,12 @@ OUTNAME="test1020"
 # =====
 # ================== CdTeDSD2 2mm run (2021.08) ====================
 # =====
-python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/Image/20210806a_00003_001.root -d FEC2 -o 500n20_image -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root  
+#python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/Image/20210806a_00003_001.root -d FEC2 -o 500n20_image_newPOI -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root  
 #python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/Am/20210804a_00006_001.root -d FEC2 -o 500n20_Am -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root  
 #python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/Am/20210804a_00009_001.root -d FEC2 -o 500n20_Ba -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root  
 #python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/Am/20210804a_00016_001.root -d FEC2 -o 500n20_Co -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root  
  # *** calibration sample ***
-#parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210804a_0000{2}_001.root -d FEC2 -o 500n20_{1} -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Am ::: 6 7 8
+parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210806a_0000{2}_001.root -d FEC2 -o 500n20_{1}_newPOI -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Image ::: 3 4 5 6 7 8 
 #parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210804a_0000{2}_001.root -d FEC2 -o 500n20_{1} -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Ba ::: 9 10 11
 #parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210804a_0000{2}_001.root -d FEC2 -o 500n20_{1} -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Co ::: 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 
 
