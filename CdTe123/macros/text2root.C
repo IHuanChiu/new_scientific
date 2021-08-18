@@ -45,7 +45,7 @@ void tran(std::string input_name, std::string output_name){
   tree->Branch("channel",&eve.channel,"channel/I");
   tree->Branch("energy",&eve.energy,"energy/D");
   TH1F * h1 = new TH1F ("ADC","ADC",nch,0,nch);
-  TH1F * h2 =  new TH1F ("energy","energy",nch,0,415);;
+  TH1F * h2 =  new TH1F ("energy","energy",nch,0,500);;
 
   bool find_data_line=false;
   while(getline(fin,str)) // get each line in fin
@@ -62,7 +62,7 @@ void tran(std::string input_name, std::string output_name){
       eve.count = stod(str);//number of count in each channel
 
       eve.channel = inti_channel;//find channel
-      eve.energy = 0.264337+eve.channel*0.0447607;
+      eve.energy = -0.264337+eve.channel*0.0447607;
       cout << eve.channel << "|" << eve.count << " ";
       if(inti_channel%10 == 0) cout << " \n";
       for (int ie=0; ie < eve.count; ie++){

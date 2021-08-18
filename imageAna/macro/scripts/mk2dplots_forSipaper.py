@@ -13,7 +13,8 @@ ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
 ROOT.SetAtlasStyle()
 
 #inputname="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_1111_mlemall_iteration30.root"
-inputname="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.Si_30MeV_forSipaper.root"
+#inputname="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.Si_30MeV_forSipaper.root" #(x:y)
+inputname="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.Si_30MeV_forSipaper_yx.root" #(y:x)
 plot_list=["h0","h1","h2","h3","h4","h5","h6","h7","h8","h9","h10","h11","h12","h13","h14","h15"]
 
 def mk2dplots(h_list):
@@ -22,13 +23,13 @@ def mk2dplots(h_list):
     for _h in h_list:
        index=index+1
        cv = createRatioCanvas("cv_"+str(index), 1000, 900)
-       outname = "/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/Scan2DPlotsForPaper/hist_Si_"+_h.GetName()+".pdf"
+       outname = "/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/Scan2DPlotsForPaper/hist_Si_"+_h.GetName()+"_yx.pdf"
        _h2=_h.Clone()
        _array=hist2array(_h)
        _array[np.where(_array == 0)]=0.0000000000001
        array2hist(_array,_h2)
        _h2.SetStats(0)
-       _h2.SetTitle("Image; X[mm]; Y[mm]")
+       _h2.SetTitle("Image; X [mm]; Y [mm]")
        _h2.RebinX(RebinSize); _h2.RebinY(RebinSize)
        _h2.GetXaxis().CenterTitle()
        _h2.GetYaxis().CenterTitle()

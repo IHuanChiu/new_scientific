@@ -75,6 +75,7 @@ void make_spectrum_si(){
 
   //file = new TFile("/Users/chiu.i-huan/Desktop/Si_merge_fix.root","READ");
   file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/JPARC2020March_Si_sum.root","READ");
+  //file = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/JPARC2020March_Si_calibration_5_9_10_Am.root","READ");
   mytree = (TTree*)file->Get("tree");
      
 //  mytree->SetBranchAddress("energy_p",e_p);
@@ -85,9 +86,11 @@ void make_spectrum_si(){
 //  mytree->SetBranchAddress("nhitx",&nhitx);
 //  mytree->SetBranchAddress("nhity",&nhity);
 
-  TCut cut_signal = "((x < 6 && x > -2) && (y < 7 && y > -6))";
-  TCut cut_bkg = "!((x < 6 && x > -2) && (y < 7 && y > -6))";
+  TCut cut_signal = "((x < 8 && x > -5) && (y < 10 && y > -8))";
+  TCut cut_bkg = "!((x < 14 && x > -14) && (y < 14 && y > -14))";
+//  TCut cut_bkg = "!((x < 8))";
   TCut cut_basic = "((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))";
+  //TCut cut_basic = "1";
   
   c1->cd(1);
   mytree->Draw("energy_p >> h_all_pa(300,0,150)",cut_basic,"");
@@ -187,15 +190,15 @@ void make_spectrum_si(){
   c1->SaveAs(name);
 
   c2->cd();
-  mytree->Draw("energy >> h_all_a(300,0,150)",cut_basic,"");
-  mytree->Draw("energy >> h_all_s(300,0,150)",cut_basic+cut_signal,"");
-  mytree->Draw("energy >> h_all_b(300,0,150)",cut_basic+cut_bkg,"");
+  mytree->Draw("energy_p >> h_all_a(600,0,150)",cut_basic,"");
+  mytree->Draw("energy_p >> h_all_s(600,0,150)",cut_basic+cut_signal,"");
+  mytree->Draw("energy_p >> h_all_b(600,0,150)",cut_basic+cut_bkg,"");
   h_all_a = (TH1D*)gDirectory->Get("h_all_a");
   h_all_s = (TH1D*)gDirectory->Get("h_all_s");
   h_all_b = (TH1D*)gDirectory->Get("h_all_b"); 
   h_all_a->SetTitle("Energy Spectrum");
   h_all_a->GetXaxis()->SetTitle("energy [keV]");
-  h_all_a->GetYaxis()->SetTitle("Counts");
+  h_all_a->GetYaxis()->SetTitle("Counts/0.25 keV");
   h_all_a->GetYaxis()->SetNdivisions(5,4,5);
   h_all_a->SetMaximum(h_all_a->GetMaximum()*1.2);
   h_all_a->SetMinimum(0);
@@ -214,7 +217,7 @@ void make_spectrum_si(){
   legnew->AddEntry(h_all_s,  "Signal", "l");
   legnew->AddEntry(h_all_b,   "Bkg.",   "l");
   legnew->Draw("same");
-  sprintf(name, "../../run/figs/hist_comparison_e_si.pdf");
+  sprintf(name, "/Users/chiu.i-huan/Desktop/hist_comparison_all_si.pdf");
   c2->SaveAs(name);
 
  }
