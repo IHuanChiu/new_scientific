@@ -56,7 +56,7 @@ void make_EPI1vsEPI2(){
   TTree* tree_a = (TTree*)fa->Get("tree");
      
   // make 2d plots
-  c0->cd();
+//  c0->cd();
 //  tree_a->Draw("(E_p_lv2-E_n_lv2)/2:(E_p_lv2+E_n_lv2)/2 >> ha_com(600,0,150,200,-40,60)","nsignalx_lv2 == 1 && nsignaly_lv2 == 1","colz");
 //  ha_com = (TH2D*)gDirectory->Get("ha_com"); 
 //  ha_com->SetTitle(";(E_{Pt}+E_{Al})/2 [keV];(E_{Pt}-E_{Al})/2 [keV]");
@@ -69,48 +69,53 @@ void make_EPI1vsEPI2(){
 
 
   // make energy spectrum
-  TH1D *h1, *h2, *h3;
-  tree_a->Draw("(E_p_lv2+E_n_lv2)/2 >> h1(3000,0,150)","(E_p_lv2-E_n_lv2)/2 > -1 && (E_p_lv2-E_n_lv2)/2 < 1 && nsignalx_lv2 == 1 && nsignaly_lv2 == 1","colz");
-  tree_a->Draw("(E_p_lv2+E_n_lv2)/2 >> h2(3000,0,150)","(E_p_lv2-E_n_lv2)/2 > -4 && (E_p_lv2-E_n_lv2)/2 < -3 && nsignalx_lv2 == 1 && nsignaly_lv2 == 1","colz");
-  tree_a->Draw("(E_p_lv2+E_n_lv2)/2 >> h3(3000,0,150)","(E_p_lv2-E_n_lv2)/2 > -6 && (E_p_lv2-E_n_lv2)/2 < -5 && nsignalx_lv2 == 1 && nsignaly_lv2 == 1","colz");
-  h1 = (TH1D*)gDirectory->Get("h1");
-  h2 = (TH1D*)gDirectory->Get("h2");
-  h3 = (TH1D*)gDirectory->Get("h3");
-  h1->SetLineColor(3);
-  h2->SetLineColor(2);
-  h3->SetLineColor(4);
-  h1->SetTitle(";E_{avg};Count/0.05 keV");
-  TLegend* leg = new TLegend(.2,.6,.7,.9);
-  leg->SetFillColor(0);
-  leg->SetLineColor(0);
-  leg->SetBorderSize(0);
-  leg->AddEntry(h1, "#DeltaE = 0" , "l");
-  leg->AddEntry(h2, "#DeltaE = -3.5" , "l");
-  leg->AddEntry(h3, "#DeltaE = -5.5" , "l");
-  c2->cd();
-  h1->Draw("hist");
-  h2->Draw("hist same");
-  h3->Draw("hist same");
-  leg->Draw("same");
-  c2->SaveAs("/Users/chiu.i-huan/Desktop/map_plot.pdf");
+//  TH1D *h1, *h2, *h3;
+//  tree_a->Draw("(E_p_lv2+E_n_lv2)/2 >> h1(3000,0,150)","(E_p_lv2-E_n_lv2)/2 > -1 && (E_p_lv2-E_n_lv2)/2 < 1 && nsignalx_lv2 == 1 && nsignaly_lv2 == 1","colz");
+//  tree_a->Draw("(E_p_lv2+E_n_lv2)/2 >> h2(3000,0,150)","(E_p_lv2-E_n_lv2)/2 > -4 && (E_p_lv2-E_n_lv2)/2 < -3 && nsignalx_lv2 == 1 && nsignaly_lv2 == 1","colz");
+//  tree_a->Draw("(E_p_lv2+E_n_lv2)/2 >> h3(3000,0,150)","(E_p_lv2-E_n_lv2)/2 > -6 && (E_p_lv2-E_n_lv2)/2 < -5 && nsignalx_lv2 == 1 && nsignaly_lv2 == 1","colz");
+//  h1 = (TH1D*)gDirectory->Get("h1");
+//  h2 = (TH1D*)gDirectory->Get("h2");
+//  h3 = (TH1D*)gDirectory->Get("h3");
+//  h1->SetLineColor(3);
+//  h2->SetLineColor(2);
+//  h3->SetLineColor(4);
+//  h1->SetTitle(";E_{avg};Count/0.05 keV");
+//  TLegend* leg = new TLegend(.2,.6,.7,.9);
+//  leg->SetFillColor(0);
+//  leg->SetLineColor(0);
+//  leg->SetBorderSize(0);
+//  leg->AddEntry(h1, "#DeltaE = 0" , "l");
+//  leg->AddEntry(h2, "#DeltaE = -3.5" , "l");
+//  leg->AddEntry(h3, "#DeltaE = -5.5" , "l");
+//  c2->cd();
+//  h1->Draw("hist");
+//  h2->Draw("hist same");
+//  h3->Draw("hist same");
+//  leg->Draw("same");
+//  c2->SaveAs("/Users/chiu.i-huan/Desktop/map_plot.pdf");
 
   // make energy spectrum for map
   TFile *fout = new TFile("/Users/chiu.i-huan/Desktop/Eavg_forMap.root","RECREATE");
   fout->cd();
   TH1D* hmap;
-  int h_index=0;
-  double ori_E=-7;//from -7 keV
+  int h_index;
+  double ori_E;
+  double range = 0.2;
   for(int nx = 1; nx < 3;nx++){
      for(int ny = 1; ny < 3;ny++){
-     for(int i = 0 ; i < 1000; i++){
-        if(-7+i*0.2 > 5) continue;   
-        tree_a->Draw("(E_p_lv2+E_n_lv2)/2 >> hmap(600,0,150)",Form("(E_p_lv2-E_n_lv2)/2 > %f && (E_p_lv2-E_n_lv2)/2 < %f && nsignalx_lv2 == %d && nsignaly_lv2 == %d",ori_E,ori_E+0.2,nx,ny),"");
+       ori_E=-7;//from -7 keV
+       h_index = 0;
+       for(int i = 0 ; i < 100; i++){
+        if(ori_E > 5) continue;  
+        std::cout <<  "Index : " << h_index <<"  "  << ori_E<<"<E<" << ori_E+range << std::endl;
+        tree_a->Draw("(E_p_lv2+E_n_lv2)/2 >> hmap(600,0,150)",Form("(E_p_lv2-E_n_lv2)/2 > %f && (E_p_lv2-E_n_lv2)/2 < %f && nsignalx_lv2 == %d && nsignaly_lv2 == %d",ori_E,ori_E+range,nx,ny),"");
         hmap = (TH1D*)gDirectory->Get("hmap");
         hmap->SetName(Form("h%d_nx%d_ny%d",h_index,nx,ny));
+        hmap->SetTitle(";E_{avg};Counts/0.25keV");
         hmap->Write();
-        ori_E=ori_E+i*0.2;
+        ori_E=ori_E+range;
         h_index++;  
-     }
+       }
      }
   }
 
