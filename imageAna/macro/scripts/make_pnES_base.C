@@ -50,7 +50,10 @@ void make_pnES_base(){
   TString name;
   TH1D *ha_p,*ha_n, *ha;
   
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/JPARC2020March_Si_sum.root","READ");
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/JPARC2020March_Si_sum.root","READ");//Si paper
+
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_16to30_Osaka2mmCdTe_Co.root","READ");//Osaka 2mm CdTe
+
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/cdtedsd2_0607a_Ba.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_particle_collimator_201215_2.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_particle_201215_2.root","READ");
@@ -59,8 +62,9 @@ void make_pnES_base(){
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1130d_00005_001_cali_ba3.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/data1201a_00022_001_cali_co3.root","READ");
 
-  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_si.pdf");
-  TCut cut_basic = "((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))";
+  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_PNside.pdf");
+//  TCut cut_basic = "((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630))";//Si 
+  TCut cut_basic = "1";
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
   tree_a->Draw("energy >> ha(3000,0,150)",    cut_basic,"");
@@ -78,18 +82,18 @@ void make_pnES_base(){
   ha_n->SetMaximum(maxbin*1.1);
 
   ha_n->GetXaxis()->SetTitle("Energy [keV]");
-  ha_n->GetYaxis()->SetTitle("Counts");
+  ha_n->GetYaxis()->SetTitle("Counts/0.05 keV");
 
   ha->SetLineColor(1);
   ha_n->SetLineColor(kAzure);
   ha_p->SetLineColor(kPink);
 //  ha_n->SetLineColor(kSpring-6);
 
-  TLegend* leg = new TLegend(.20,.75,.45,.90);
+  TLegend* leg = new TLegend(.25,.65,.6,.90);
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize(0);
-  leg->AddEntry(ha,  "Recon. #gamma", "l");
+//  leg->AddEntry(ha,  "Recon. #gamma", "l");
   leg->AddEntry(ha_p,  "Pt side (Cathode)", "l");
   leg->AddEntry(ha_n,   "Al side (Anode)",   "l");
 
@@ -119,12 +123,13 @@ void make_pnES_base(){
   line7->SetLineColorAlpha(1, 0.9);
 
   c1->cd();
-  //gPad->SetLeftMargin(0.2);
+  gPad->SetLeftMargin(0.15);
   ha_n->Draw();
   ha_p->Draw("same");
-  ha->Draw("same");
+//  ha->Draw("same");
 
-//  leg->Draw("same");
+  leg->Draw("same");
+
 //  lineCo1->Draw("same");
 //  lineCo2->Draw("same");
 //  lineAm1->Draw("same");
