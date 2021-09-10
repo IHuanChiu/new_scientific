@@ -50,14 +50,18 @@ void make_EPmap(){
   TCanvas *c0 = new TCanvas("temp canvas","temp canvas",10,10,800,800);
   int index = 0;
   double x,y,z;
-  TFile* f_hist = new TFile("./Eavg_forMap.root","READ");
+//  TFile* f_hist = new TFile("./Eavg_plots/Eavg_forMap_Co.root","READ");
+  TFile* f_hist = new TFile("/Users/chiu.i-huan/Desktop/Eavg_forMap_fullrange1keV.root","READ");
+  TFile* fb_hist = new TFile("./Eavg_plots/Eavg_forMap_Ba.root","READ");
 
-  double range = 0.2;
+  double range = 1;
+  int n_init=-30; int n_end=5;
   int nx = 3;// 0 & fitting value & end point
   int ny;// -7 < deltaE < 5
-  ny=(5-(-7))/range;
+  ny=(n_end-(n_init))/range;
   TGraph2D *g = new TGraph2D(nx*ny);
   TH1D* h1;
+  TH1D* h2;
   TSpectrum *s;
   Int_t nfound;
   Double_t *xpeaks;
@@ -69,8 +73,9 @@ void make_EPmap(){
   c0->Print("/Users/chiu.i-huan/Desktop/map_fitting.pdf[", "pdf");
   index = 0;
   for(int i = 0; i < ny; i++){
-     ie=-7+range*i;
+     ie=n_init+range*i;
      h1 = (TH1D*)f_hist->Get(Form("h%d_nx%d_ny%d",i,1,1));
+     h2 = (TH1D*)fb_hist->Get(Form("h%d_nx%d_ny%d",i,1,1));
      s = new TSpectrum(1);
      s->SetResolution(1);
      nfound = s->Search(h1,0.01,"",0.005);
@@ -78,13 +83,14 @@ void make_EPmap(){
      xp = xpeaks[0];//find peak
      std::cout << ie << "< E <" << ie+1 << std::endl;
      std::cout << " Found peak at : " << xp << std::endl;
+     if (xp > 150 || xp < 50) xp=122.1;
      h1->Draw("");
      c0->Print("/Users/chiu.i-huan/Desktop/map_fitting.pdf");
      for (int y = 0; y < 3; y++){//energy point 
         if (y==0){ yp = 0; zp= 0;}
         if (y==1){ yp=xp; zp = 122.1;}
         if (y==2){ yp=((xp-0)/(122.1-0))*200; zp = 200;}
-        g->SetPoint(index,ie+0.5,yp,zp);
+        g->SetPoint(index,yp,ie+0.5*range,zp);
         index++;
      }
   }
@@ -92,7 +98,7 @@ void make_EPmap(){
   TFile* fout = new TFile("/Users/chiu.i-huan/Desktop/test_map.root","RECREATE");
   fout->cd();
   g->SetName(Form("graph2d_%d_%d",1,1));
-  g->SetTitle(";#DeltaE;E_{avg.};E_{exp.}");
+  g->SetTitle(";E_{avg.};#DeltaE;E_{exp.}");
   g->Write();
      
  }

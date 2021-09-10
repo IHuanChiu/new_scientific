@@ -38,6 +38,7 @@ def GetProjection(treesum,scale_bin):
     _h2new.GetXaxis().SetRangeUser(-24,24)
     hx=_h2new.ProjectionX()
     hy=_h2new.ProjectionY()
+    h2new.Rebin(scale_bin)
     return hx, hy, h2new
 
 def makecv(_h2, _h2_rot, _hx,_hy,scale_bin):

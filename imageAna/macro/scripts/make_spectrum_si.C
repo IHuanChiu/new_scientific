@@ -57,6 +57,7 @@ void make_spectrum_si(){
 
   TCanvas *c1 = new TCanvas("c1","Energy Spectum",10,10,1600,800);
   TCanvas *c2 = new TCanvas("c2","Energy Spectum sum",10,10,800,800);
+  TCanvas *c3 = new TCanvas("c3","Energy Spectum sub",10,10,800,800);
   c1->Divide(2,1);
 
   TFile *file; 
@@ -199,20 +200,27 @@ void make_spectrum_si(){
   h_all_a->SetTitle("Energy Spectrum");
   h_all_a->GetXaxis()->SetTitle("energy [keV]");
   h_all_a->GetYaxis()->SetTitle("Counts/0.25 keV");
+  h_all_a->GetXaxis()->CenterTitle();
+  h_all_a->GetYaxis()->CenterTitle();
+//  gPad->SetLeftMargin(0.2);
   h_all_a->GetYaxis()->SetNdivisions(5,4,5);
   h_all_a->SetMaximum(h_all_a->GetMaximum()*1.2);
   h_all_a->SetMinimum(0);
   h_all_a->SetLineColor(1);
   h_all_a->SetLineWidth(1);
-  h_all_s->SetLineColor(kPink+9);
+//  h_all_s->SetLineColor(kPink+9);
   h_all_s->SetLineWidth(1);
-  h_all_b->SetLineColor(kAzure-1);
+  h_all_s->SetLineColor(kAzure-1);
+  h_all_b->SetLineColor(kSpring-6);
   h_all_b->SetLineWidth(1);
   h_all_a->Draw("HIST");
   h_all_s->Draw("HIST same");
   h_all_b->Draw("HIST same");
 
-  TLegend* legnew = new TLegend(.65,.75,.85,.90);
+  h_all_a->SetLineWidth(3);
+  h_all_s->SetLineWidth(3);
+  h_all_b->SetLineWidth(3);
+  TLegend* legnew = new TLegend(.55,.65,.85,.90);
   legnew->AddEntry(h_all_a,  "Sum", "l");
   legnew->AddEntry(h_all_s,  "Signal", "l");
   legnew->AddEntry(h_all_b,   "Bkg.",   "l");
@@ -220,5 +228,15 @@ void make_spectrum_si(){
   sprintf(name, "/Users/chiu.i-huan/Desktop/hist_comparison_all_si.pdf");
   c2->SaveAs(name);
 
+  c3->cd();
+  h_all_s->Add(h_all_b,-1);
+  h_all_s->SetLineWidth(3);
+  h_all_s->SetLineColor(1);
+  h_all_s->SetTitle("Energy Spectrum; energy [keV]; Counts/0.25 keV");
+  h_all_s->GetXaxis()->CenterTitle();
+  h_all_s->GetYaxis()->CenterTitle();
+  h_all_s->Draw("hist");
+  sprintf(name, "/Users/chiu.i-huan/Desktop/hist_comparison_sub_si.pdf");
+  c3->SaveAs(name);
  }
 

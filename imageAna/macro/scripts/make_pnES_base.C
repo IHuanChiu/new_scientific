@@ -46,13 +46,14 @@ void make_pnES_base(){
   #endif
   SetAtlasStyle();
 
-  TCanvas *c1 = new TCanvas("c1","Energy Spectum",10,10,1100,800);
+  TCanvas *c1 = new TCanvas("c1","Energy Spectum",0,0,1100,800);
   TString name;
   TH1D *ha_p,*ha_n, *ha;
   
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/JPARC2020March_Si_sum.root","READ");//Si paper
 
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_16to30_Osaka2mmCdTe_Co.root","READ");//Osaka 2mm CdTe
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_16to30_Osaka2mmCdTe_Co.root","READ");//Osaka 2mm CdTe
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_00016_001_500n20_Co_Ecorr_watanabe.root","READ");//Osaka 2mm CdTe
 
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/cdtedsd2_0607a_Ba.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_particle_collimator_201215_2.root","READ");
@@ -67,9 +68,9 @@ void make_pnES_base(){
   TCut cut_basic = "1";
 
   TTree* tree_a = (TTree*)fa->Get("tree");     
-  tree_a->Draw("energy >> ha(3000,0,150)",    cut_basic,"");
-  tree_a->Draw("energy_p >> ha_p(3000,0,150)",cut_basic,"");
-  tree_a->Draw("energy_n >> ha_n(3000,0,150)",cut_basic,"");
+  tree_a->Draw("energy >> ha(3000,1,151)",    cut_basic,"");
+  tree_a->Draw("energy_p >> ha_p(3000,1,151)",cut_basic,"");
+  tree_a->Draw("energy_n >> ha_n(3000,1,151)",cut_basic,"");
   //tree_a->Draw("E_p_lv1 >> ha_p(3000,0,150)",cut_basic,"");
   //tree_a->Draw("E_n_lv1 >> ha_n(3000,0,150)",cut_basic,"");
   ha = (TH1D*)gDirectory->Get("ha");
@@ -83,6 +84,8 @@ void make_pnES_base(){
 
   ha_n->GetXaxis()->SetTitle("Energy [keV]");
   ha_n->GetYaxis()->SetTitle("Counts/0.05 keV");
+  ha->GetXaxis()->SetTitle("Energy [keV]");
+  ha->GetYaxis()->SetTitle("Counts/0.05 keV");
 
   ha->SetLineColor(1);
   ha_n->SetLineColor(kAzure);
@@ -93,7 +96,7 @@ void make_pnES_base(){
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize(0);
-//  leg->AddEntry(ha,  "Recon. #gamma", "l");
+  leg->AddEntry(ha,  "Recon. E", "l");
   leg->AddEntry(ha_p,  "Pt side (Cathode)", "l");
   leg->AddEntry(ha_n,   "Al side (Anode)",   "l");
 
@@ -126,7 +129,7 @@ void make_pnES_base(){
   gPad->SetLeftMargin(0.15);
   ha_n->Draw();
   ha_p->Draw("same");
-//  ha->Draw("same");
+  ha->Draw("same");
 
   leg->Draw("same");
 
