@@ -53,7 +53,7 @@ void make_pnES_base(){
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/JPARC2020March_Si_sum.root","READ");//Si paper
 
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_16to30_Osaka2mmCdTe_Co.root","READ");//Osaka 2mm CdTe
-  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_00016_001_500n20_Co_Ecorr_watanabe.root","READ");//Osaka 2mm CdTe
+  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_merge_500n20_Co_Emap.root","READ");//Osaka 2mm CdTe
 
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/cdtedsd2_0607a_Ba.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/sample_particle_collimator_201215_2.root","READ");
@@ -127,11 +127,12 @@ void make_pnES_base(){
 
   c1->cd();
   gPad->SetLeftMargin(0.15);
-  ha_n->Draw();
-  ha_p->Draw("same");
-  ha->Draw("same");
+//  ha_n->Draw();
+//  ha_p->Draw("same");
+//  ha->Draw("same");
+//  leg->Draw("same");
 
-  leg->Draw("same");
+    ha->Draw();
 
 //  lineCo1->Draw("same");
 //  lineCo2->Draw("same");

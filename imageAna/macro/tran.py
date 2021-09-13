@@ -107,7 +107,7 @@ def getTSpline(efname,dblist):
 
 def getResponse():
     _response_list=dict()
-    _file=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/macro/auxfile/epi2_epi1_caldata.root")
+#    _file=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/macro/auxfile/epi2_epi1_caldata.root")
 #    _response_list.update({"p1n1":_file.Get("graph2d_1_1")})
 #    _response_list.update({"p1n2":_file.Get("graph2d_1_2")})
 #    _response_list.update({"p1n3":_file.Get("graph2d_1_3")})
@@ -120,21 +120,26 @@ def getResponse():
 #    _response_list.update({"p4n1":_file.Get("graph2d_4_1")})
 #    _response_list.update({"p4n2":_file.Get("graph2d_4_2")})
 #    _response_list.update({"p4n3":_file.Get("graph2d_4_2")})
-#    _file=ROOT.TFile("/Users/chiu.i-huan/Desktop/test_map.root")
-    _response_list.update({"p1n1":_file.Get("graph2d_1_1")})
-    _response_list.update({"p1n2":_file.Get("graph2d_1_1")})
-    _response_list.update({"p1n3":_file.Get("graph2d_1_1")})
-    _response_list.update({"p2n1":_file.Get("graph2d_1_1")})
-    _response_list.update({"p2n2":_file.Get("graph2d_1_1")})
-    _response_list.update({"p2n3":_file.Get("graph2d_1_1")})
-    _response_list.update({"p3n1":_file.Get("graph2d_1_1")})
-    _response_list.update({"p3n2":_file.Get("graph2d_1_1")})
-    _response_list.update({"p3n3":_file.Get("graph2d_1_1")})
-    _response_list.update({"p4n1":_file.Get("graph2d_1_1")})
-    _response_list.update({"p4n2":_file.Get("graph2d_1_1")})
-    _response_list.update({"p4n3":_file.Get("graph2d_1_1")})
-    for _n in _response_list:
-       _response_list[_n].SetDirectory(0)
+    _file=ROOT.TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/macro/auxfile/ep1_ep2_map.root")
+    n_init=-30; n_end=5; bin_range=0.2; nplots=int((n_end-(n_init))/bin_range)
+    for i in range(nplots):
+       name = "Graph_map{0}".format(i)
+       _response_list.update({i:_file.Get(name)})
+#    _response_list.update({"p1n1":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p1n1":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p1n2":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p1n3":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p2n1":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p2n2":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p2n3":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p3n1":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p3n2":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p3n3":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p4n1":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p4n2":_file.Get("graph2d_1_1")})
+#    _response_list.update({"p4n3":_file.Get("graph2d_1_1")})
+#    for _n in _response_list:
+#       _response_list[_n].SetDirectory(0)
     return _response_list
 
 def Getdatabase():

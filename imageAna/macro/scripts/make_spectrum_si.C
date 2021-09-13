@@ -221,7 +221,7 @@ void make_spectrum_si(){
   h_all_s->SetLineWidth(3);
   h_all_b->SetLineWidth(3);
   TLegend* legnew = new TLegend(.55,.65,.85,.90);
-  legnew->AddEntry(h_all_a,  "Sum", "l");
+  legnew->AddEntry(h_all_a,  "Overall data", "l");
   legnew->AddEntry(h_all_s,  "Signal", "l");
   legnew->AddEntry(h_all_b,   "Bkg.",   "l");
   legnew->Draw("same");

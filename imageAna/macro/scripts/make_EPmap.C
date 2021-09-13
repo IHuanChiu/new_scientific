@@ -35,6 +35,8 @@
 #include <string>
 #include <vector>
 #include <TGraph.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "ATLASStyle/AtlasStyle.C"
 #include "ATLASStyle/AtlasLabels.C"
@@ -51,15 +53,16 @@ void make_EPmap(){
   int index = 0;
   double x,y,z;
 //  TFile* f_hist = new TFile("./Eavg_plots/Eavg_forMap_Co.root","READ");
-  TFile* f_hist = new TFile("/Users/chiu.i-huan/Desktop/Eavg_forMap_fullrange1keV.root","READ");
+  TFile* f_hist = new TFile("./Eavg_plots/Eavg_forMap_fullrange0p2keV.root","READ");
   TFile* fb_hist = new TFile("./Eavg_plots/Eavg_forMap_Ba.root","READ");
 
-  double range = 1;
+  double range = 0.2;
   int n_init=-30; int n_end=5;
   int nx = 3;// 0 & fitting value & end point
   int ny;// -7 < deltaE < 5
   ny=(n_end-(n_init))/range;
   TGraph2D *g = new TGraph2D(nx*ny);
+  TGraph* gr;
   TH1D* h1;
   TH1D* h2;
   TSpectrum *s;
@@ -69,7 +72,10 @@ void make_EPmap(){
   Double_t yp;
   Double_t zp;
   Double_t ie;
+  Double_t x_1d[3], y_1d[3];
 
+  TFile* fout = new TFile("/Users/chiu.i-huan/Desktop/test_map.root","RECREATE");
+  fout->cd();
   c0->Print("/Users/chiu.i-huan/Desktop/map_fitting.pdf[", "pdf");
   index = 0;
   for(int i = 0; i < ny; i++){
@@ -81,22 +87,24 @@ void make_EPmap(){
      nfound = s->Search(h1,0.01,"",0.005);
      xpeaks = s->GetPositionX();
      xp = xpeaks[0];//find peak
-     std::cout << ie << "< E <" << ie+1 << std::endl;
+     std::cout << "index : " << i  << ","<<  ie << "< E <" << ie+range << std::endl;
      std::cout << " Found peak at : " << xp << std::endl;
-     if (xp > 150 || xp < 50) xp=122.1;
+//     if (xp > 150 || xp < 50) xp=122.1;
      h1->Draw("");
      c0->Print("/Users/chiu.i-huan/Desktop/map_fitting.pdf");
      for (int y = 0; y < 3; y++){//energy point 
-        if (y==0){ yp = 0; zp= 0;}
-        if (y==1){ yp=xp; zp = 122.1;}
-        if (y==2){ yp=((xp-0)/(122.1-0))*200; zp = 200;}
+//        std::cout  << ((double) rand() / (RAND_MAX + 1.0)) << std::endl;
+        if (y==0){ yp = 0; zp= 0; x_1d[0] = 0; y_1d[0]=0;}
+        if (y==1){ yp=xp; zp = 122.1 + ((double) rand() / (RAND_MAX + 1.0))*0.1; x_1d[1] = xp; y_1d[1]=122.1;}
+        if (y==2){ yp=((xp-0)/(122.1+ ((double) rand() / (RAND_MAX + 1.0))*0.1 -0))*200; zp = 200; x_1d[2] = ((xp-0)/(122.1-0))*200; y_1d[2]=200;}
         g->SetPoint(index,yp,ie+0.5*range,zp);
         index++;
      }
+     gr = new TGraph(3,x_1d,y_1d);
+     gr->SetName(Form("Graph_map%d",i));
+     gr->Write();     
   }
   c0->Print("/Users/chiu.i-huan/Desktop/map_fitting.pdf]", "pdf");
-  TFile* fout = new TFile("/Users/chiu.i-huan/Desktop/test_map.root","RECREATE");
-  fout->cd();
   g->SetName(Form("graph2d_%d_%d",1,1));
   g->SetTitle(";E_{avg.};#DeltaE;E_{exp.}");
   g->Write();

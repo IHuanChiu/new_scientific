@@ -39,11 +39,35 @@ def mk2dplots(h_list):
        cv.SaveAs(outname)
     print("Output in : {}".format(outname))
 
+def mk2dsumplots(h_list):
+    index=0
+    _htemp=ROOT.TH2D()
+    for _h in h_list:
+       if index == 0: _htemp=_h.Clone()
+       else: _htemp.Add(_h)
+       index = index+1
+    _htemp2=_htemp.Clone()
+    _array=hist2array(_htemp)
+    _array[np.where(_array == 0)]=0.0000000000001
+    array2hist(_array,_htemp2)
+    _htemp2.SetStats(0)
+    _htemp2.SetTitle("Image; X [mm]; Y [mm]")
+    _htemp2.GetXaxis().CenterTitle()
+    _htemp2.GetYaxis().CenterTitle()
+#    _htemp2.GetZaxis().SetRangeUser(0, Zrange)
+    gStyle.SetPalette(53)
+    outname = "/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/Scan2DPlotsForPaper/hist_Si_"+_h.GetName()+"_yx_all.pdf"
+    cv = createRatioCanvas("cv_"+str(index), 1000, 900)
+    _htemp2.Draw("colz")
+    cv.SaveAs(outname)
+    print("Output in : {}".format(outname))
+
 if __name__ == "__main__":  
    fint=ROOT.TFile(inputname,"read")
    h_list=[]
    for _pname in plot_list:
       h=fint.Get(_pname) 
       h_list.append(h)
-   mk2dplots(h_list)
+#   mk2dplots(h_list)
+   mk2dsumplots(h_list)
       

@@ -40,11 +40,11 @@
 #include "ATLASStyle/AtlasUtils.C"
 
 void make_EPI1vsEPI2(){
-//  #ifdef __CINT__
-//    gROOT->LoadMacro("AtlasLabels.C");
-//    gROOT->LoadMacro("AtlasUtils.C");
-//  #endif
-//  SetAtlasStyle();
+  #ifdef __CINT__
+    gROOT->LoadMacro("AtlasLabels.C");
+    gROOT->LoadMacro("AtlasUtils.C");
+  #endif
+  SetAtlasStyle();
 
   TCanvas *c0 = new TCanvas("temp canvas","temp canvas",10,10,800,800);
   TCanvas *c1 = new TCanvas("c1","Energy Spectum comparison",10,10,1000,800);
@@ -52,6 +52,7 @@ void make_EPI1vsEPI2(){
   TCanvas *c3 = new TCanvas("c3","C3 Energy Spectum",10,10,1000,800);
 
   TH2D *ha_com;
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_merge_500n20_Co_Emap.root","READ");
   TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_16to30_Osaka2mmCdTe_Co.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_9to11_Osaka2mmCdTe_Ba.root","READ");
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_6to8_merge_500n20_Am.root","READ");
@@ -60,6 +61,7 @@ void make_EPI1vsEPI2(){
   // make 2d plots
   c0->cd();
   tree_a->Draw("(E_p_lv2-E_n_lv2)/2:(E_p_lv2+E_n_lv2)/2 >> ha_com(600,0,150,200,-40,60)","nsignalx_lv2 == 1 && nsignaly_lv2 == 1","colz");
+//  tree_a->Draw("(E_p_lv2-E_n_lv2)/2:energy >> ha_com(600,0,150,200,-40,60)","nsignalx_lv2 == 1 && nsignaly_lv2 == 1","colz");
   ha_com = (TH2D*)gDirectory->Get("ha_com"); 
   ha_com->SetTitle(";(E_{Pt}+E_{Al})/2 [keV];(E_{Pt}-E_{Al})/2 [keV]");
   c1->cd();
