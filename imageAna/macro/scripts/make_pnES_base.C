@@ -52,6 +52,7 @@ void make_pnES_base(){
   
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/JPARC2020March_Si_sum.root","READ");//Si paper
 
+//  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_6to8_merge_500n20_Am.root","READ");//Osaka 2mm CdTe Am
 //  TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_16to30_Osaka2mmCdTe_Co.root","READ");//Osaka 2mm CdTe
   TFile* fa = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20210804a_merge_500n20_Co_Emap.root","READ");//Osaka 2mm CdTe
 
@@ -89,14 +90,16 @@ void make_pnES_base(){
 
   ha->SetLineColor(1);
   ha_n->SetLineColor(kAzure);
-  ha_p->SetLineColor(kPink);
+//  ha_p->SetLineColor(kPink);
+  ha_p->SetLineColor(kTeal+9);
 //  ha_n->SetLineColor(kSpring-6);
 
   TLegend* leg = new TLegend(.25,.65,.6,.90);
+//  TLegend* leg = new TLegend(.55,.65,.9,.90);
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize(0);
-  leg->AddEntry(ha,  "Recon. E", "l");
+  //leg->AddEntry(ha,  "Recon. E", "l");
   leg->AddEntry(ha_p,  "Pt side (Cathode)", "l");
   leg->AddEntry(ha_n,   "Al side (Anode)",   "l");
 
@@ -127,12 +130,11 @@ void make_pnES_base(){
 
   c1->cd();
   gPad->SetLeftMargin(0.15);
-//  ha_n->Draw();
-//  ha_p->Draw("same");
+  ha_n->Draw();
+  ha_p->Draw("same");
 //  ha->Draw("same");
-//  leg->Draw("same");
+  leg->Draw("same");
 
-    ha->Draw();
 
 //  lineCo1->Draw("same");
 //  lineCo2->Draw("same");
