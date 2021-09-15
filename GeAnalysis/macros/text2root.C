@@ -48,10 +48,10 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   static const int total_dets=std::stoi( nDets );
   //calibration, change argv[2] in the bottom a*x^2 + b*x + c
 // /*  //2020.12 Ryugu exp.
-  Double_t a[6]={0.,0.,0.,0.,0.,0.};
-  Double_t b[6]={0.024983, 0.100011, 0.024952, 0.024989, 0.100043, 0.024871};
-  Double_t c[6]={0.268035, 1.369860, 0.368891, 0.834436, 1.323832, 0.411497};
-  int ignore_CH=-1;// */
+//  Double_t a[6]={0.,0.,0.,0.,0.,0.};
+//  Double_t b[6]={0.024983, 0.100011, 0.024952, 0.024989, 0.100043, 0.024871};
+//  Double_t c[6]={0.268035, 1.369860, 0.368891, 0.834436, 1.323832, 0.411497};
+//  int ignore_CH=-1;// */
  /*  //2021.04 terada exp.
   Double_t a[6]={0.,0.,0.,0.,0.,0.};
   Double_t b[6]={0.025,0.024995,0.024995,0.025053,0.025006,0.024983};
@@ -62,6 +62,11 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   Double_t b[6]={0.024981,0.024974,0.024981,0.025024,0.249961,0.024999};
   Double_t c[6]={0.300472,0.035980,0.050147,0.338917,0.338917,0.334527};
   int ignore_CH=2; // */
+///*  //2021.06 Ryugu exp.
+  Double_t a[6]={0.,0.,0.,0.,0.,0.};
+  Double_t b[6]={0.183614,0.054868,0.056922,0.053395,0.054819,0.05512};
+  Double_t c[6]={2.100311,0.842528,1.024566,0.644279,0.649818,0.633493};
+  int ignore_CH=-1; // */
 
   int base_CH=1;
   double a_base=a[base_CH-1];//CH1
@@ -78,7 +83,8 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
     Double_t count;
   };
   Event eve;
-  TFile * outputTfile = new TFile (Form("%s.root",(run_number+"_beam"+output_name).c_str()),"RECREATE");
+//  TFile * outputTfile = new TFile (Form("%s.root",(run_number+"_beam"+output_name).c_str()),"RECREATE");
+  TFile * outputTfile = new TFile (Form("%s.root",(run_number+"_self"+output_name).c_str()),"RECREATE");//RI
   TTree * tree = new TTree ("tree","Event tree from ascii file");
   tree->Branch("detID",&eve.detID,"detID/I");
   tree->Branch("channel",&eve.channel,"channel/I");
@@ -98,7 +104,8 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
      if(eve.detID == ignore_CH) continue;
 
      int init_channel = 1;
-     std::string input_name=run_number+"_beam_CH"+std::to_string(idet+1)+".pha";
+//     std::string input_name=run_number+"_beam_CH"+std::to_string(idet+1)+".pha";
+     std::string input_name=run_number+"_self_CH"+std::to_string(idet+1)+".pha";//RI
      std::ifstream fin;
      fin.open(input_name);
    
@@ -212,12 +219,14 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   h1->Write();
   h2->Write();
   outputTfile->Write();
-  cout << "output : " <<Form("%s.root",(run_number+"_beam"+output_name).c_str()) << endl;
+//  cout << "output : " <<Form("%s.root",(run_number+"_beam"+output_name).c_str()) << endl;
+  cout << "output : " <<Form("%s.root",(run_number+"_self"+output_name).c_str()) << endl;//RI
 
   //----------------------------------------------------
   // make pha text data file from merged hist.
   //----------------------------------------------------
-  TString phaDataName(run_number+"_beam"+output_name+"_Sum.pha");
+//  TString phaDataName(run_number+"_beam"+output_name+"_Sum.pha");
+  TString phaDataName(run_number+"_self"+output_name+"_Sum.pha");//RI
   ofstream phaDataFile(phaDataName.Data());
   TDatime now;
   phaDataFile << "# Merged PHA DATA for J-PARC created by I-Huan CHIU" << std::endl;
