@@ -12,9 +12,9 @@ __location__ = os.path.realpath(
 ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
 ROOT.SetAtlasStyle()
 
-#inputname="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_1111_mlemall_iteration30.root"
 #inputname="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.Si_30MeV_forSipaper.root" #(x:y)
 inputname="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.Si_30MeV_forSipaper_yx.root" #(y:x)
+#inputname="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV.root" #CdTe
 plot_list=["h0","h1","h2","h3","h4","h5","h6","h7","h8","h9","h10","h11","h12","h13","h14","h15"]
 
 def mk2dplots(h_list):
@@ -24,6 +24,7 @@ def mk2dplots(h_list):
        index=index+1
        cv = createRatioCanvas("cv_"+str(index), 1000, 900)
        outname = "/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/Scan2DPlotsForPaper/hist_Si_"+_h.GetName()+"_yx.pdf"
+#       outname = "/Users/chiu.i-huan/Desktop/hist_CdTe_"+_h.GetName()+".pdf"
        _h2=_h.Clone()
        _array=hist2array(_h)
        _array[np.where(_array == 0)]=0.0000000000001
@@ -68,6 +69,6 @@ if __name__ == "__main__":
    for _pname in plot_list:
       h=fint.Get(_pname) 
       h_list.append(h)
-#   mk2dplots(h_list)
-   mk2dsumplots(h_list)
+   mk2dplots(h_list)
+#   mk2dsumplots(h_list)
       

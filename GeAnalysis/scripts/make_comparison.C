@@ -81,42 +81,52 @@ void make_comparison(){
   leg->SetLineColor(0);
   leg->SetBorderSize(0);
   leg->AddEntry(h1,  "Particle", "l");
-  leg->AddEntry(h2,   "Blank",   "l");// */
+  leg->AddEntry(h2,   "Blank",   "l");
+  c1->cd();
+  gPad->SetLeftMargin(0.15);
+  h2->Draw("hist");
+  h1->Draw("hist same");
+  leg->Draw("same");// */
 
 // /*
-  TFile* f1 = new TFile("/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021July_Ryugu/203297/203297_self.root","READ");//Signal
+  TFile* f1 = new TFile("/Users/chiu.i-huan/Desktop/202106_self_Ba.root","READ");//Signal
   TFile* f2 = new TFile("/Users/chiu.i-huan/Desktop/ri_ba133_simulation_specfile.root","READ");//Blank 
+  name.Form("/Users/chiu.i-huan/Desktop/EnergySpectrum_Ge_comparison_SimvsData.pdf");
   TTree* tree1 = (TTree*)f1->Get("tree");     
-  tree1->Draw("energy >> h1(6800, 10,180)","","");
+  tree1->Draw("energy_ori >> h1(6800, 10,180)","detID == 1 || detID == 5 || detID == 4","");
   h1 = (TH1D*)gDirectory->Get("h1");
   h2=(TH1D*)f2->Get("spec_det_all");
-  double h1_scale=1./h1->GetMaximum();
-  double h2_scale=1./h2->GetMaximum();
+//  h2=(TH1D*)f2->Get("spec_det1");//5
+//  h2=(TH1D*)f2->Get("spec_det2");//4
+//  h2=(TH1D*)f2->Get("spec_det3");//3
+//  h2=(TH1D*)f2->Get("spec_det4");//2
+//  h2=(TH1D*)f2->Get("spec_det5");//1
+//  h2=(TH1D*)f2->Get("spec_det6");//6
+
+//  double h1_scale=1./h1->GetMaximum();
+//  double h2_scale=1./h2->GetMaximum();
+//  h1->Scale(h1_scale);
+//  h2->Scale(h2_scale);
   h1->Rebin(2);
   h2->Rebin(2);
-  h1->Scale(h1_scale);
-  h2->Scale(h2_scale);
   h1->GetXaxis()->SetTitle("Energy [keV]");
   h1->GetYaxis()->SetTitle("Normalized");
   h2->GetXaxis()->SetTitle("Energy [keV]");
   h2->GetYaxis()->SetTitle("Normalized");
-  h1->SetLineColor(2);
-  h2->SetLineColor(4);
-  h1->DrawNormalized("hist");
-  h2->DrawNormalized("hist same");
+  h1->SetLineColorAlpha(2,0.7);
+  h2->SetLineColorAlpha(4,0.7);
   TLegend* leg = new TLegend(.65,.75,.9,.90);
   leg->SetFillColor(0);
   leg->SetLineColor(0);
   leg->SetBorderSize(0);
   leg->AddEntry(h1,  "Exp.", "l");
-  leg->AddEntry(h2,  "Sim.",   "l");// */
-
+  leg->AddEntry(h2,  "Sim.",   "l");
   c1->cd();
   gPad->SetLeftMargin(0.15);
-  h2->Draw("hist");
-  h1->Draw("hist same");
-  leg->Draw("same");
-
+  gPad->SetLogy(1);
+  h1->DrawNormalized("hist");
+  h2->DrawNormalized("hist same");
+  leg->Draw("same");// */
 
   c1->SaveAs(name.Data());
 
