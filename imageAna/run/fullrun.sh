@@ -32,7 +32,7 @@ OUTNAME="test1020"
  # *** calibration sample ***
 #parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210806a_0000{2}_001.root -d FEC2 -o 500n20_{1}_newPOI -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Image ::: 3 4 5 6 7 8 
 #parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210804a_000{2}_001.root -d FEC2 -o 500n20_{1} -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Ba ::: 09 10 11
-parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210804a_000{2}_001.root -d FEC2 -o 500n20_{1} -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Co ::: 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 
+#parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/{1}/20210804a_000{2}_001.root -d FEC2 -o 500n20_{1} -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root ::: Co ::: 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 
 
 
 # =====
@@ -87,8 +87,7 @@ parallel --eta -j ${NCORES} python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/
 # =====
 # ================== run rotation 2D plots and FBP image ====================
 # =====
-#python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe -o LP_0909 
-#python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe_35MeV -o 35MeV
+python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe_30MeV -o 30MeV_paper
 #python3 image.py -i ${OUTDIR}/Si_root_fix -d Si -o 1120
 #python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper_yx -d Si_30MeV -c 0 -s 1
 #python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper -d Si_35MeV
