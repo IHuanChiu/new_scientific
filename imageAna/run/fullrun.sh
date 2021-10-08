@@ -87,7 +87,7 @@ OUTNAME="test1020"
 # =====
 # ================== run rotation 2D plots and FBP image ====================
 # =====
-python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe_30MeV -o 30MeV_paper
+#python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe_30MeV -o forpaper
 #python3 image.py -i ${OUTDIR}/Si_root_fix -d Si -o 1120
 #python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper_yx -d Si_30MeV -c 0 -s 1
 #python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper -d Si_35MeV
@@ -96,5 +96,6 @@ python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe_30MeV -o 30MeV_paper
 # =====
 # ================== run MLEM ====================
 # =====
-#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_LP_0909.root 
 #python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV.root -o 30MeV -l 1
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_forpaper -l 1
+python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_osem_forpaper -l 1 -t osem

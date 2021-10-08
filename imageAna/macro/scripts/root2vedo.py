@@ -16,8 +16,11 @@ ROOT.gErrorIgnoreLevel = ROOT.kWarning
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_iteration100.root"
-plotname="MLEM_3Dimage_h15_iteration14"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_iteration100.root"
+#plotname="MLEM_3Dimage_h15_iteration14"
+
+inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_osem_forpaper_iteration5.root"
+plotname="MLEM_3Dimage"
 
 #inputfile="/Users/chiu.i-huan/Desktop/edb2root/test_rannor.root"
 #plotname="h3"
@@ -76,24 +79,26 @@ if __name__=="__main__":
    plt = IsosurfaceBrowser(vol, c='gold') # Plotter instance
    thresholds = [0.1, 0.25, 0.4, 0.6, 0.75, 0.9]
    isos = Volume(matrix).isosurface(thresholds)
-   volvtk = Volume(dataImporter)
-   pltvtk = SlicerPlotter( vol,bg='white', bg2='lightblue',cmaps=("gist_ncar_r","jet","Spectral_r","hot_r","bone_r"),useSlider3D=False,)
+#   volvtk = Volume(dataImporter)
+#   pltvtk = SlicerPlotter( vol,bg='white', bg2='lightblue',cmaps=("gist_ncar_r","jet","Spectral_r","hot_r","bone_r"),useSlider3D=False,)
   
-
    #show(vol, __doc__, axes=1).close()
    #plt.show(axes=7, bg2='lb').close()
    #show(isos, __doc__, axes=1, interactive=False).addCutterTool(isos)
    #pltvtk.show().close()
 
-   vol = Volume(matrix).alpha([0.0, 0.0, 0.2, 0.4, 0.8, 1.0]).c('white')
+   vol = Volume(matrix).alpha([0.0, 0.0, 0.2, 0.6/2, 0.8/2, 1.0/2]).c('lightblue')
    slices = []
-   for i in range(10):
-       sl = vol.slicePlane(origin=[10,10,i*5+10], normal=(1,1,1))
+   for i in range(5):
+       sl = vol.slicePlane(origin=[i*5+10,10,10], normal=(1,0,0))
        slices.append(sl)
    amap = [0, 1, 1, 1, 1]  # hide low value points giving them alpha 0
    mslices = merge(slices) # merge all slices into a single Mesh
-   mslices.cmap('hot_r', alpha=amap).lighting('off').addScalarBar3D()
-   show(vol, mslices, __doc__, axes=1).close()
+#   mslices.cmap('hot_r', alpha=amap).lighting('off').addScalarBar3D(title='Slice', c='w')
+   mslices.cmap('hot_r', alpha=amap).lighting('off').addScalarBar(title='Slice', c='w')
+   show(vol, mslices, __doc__, axes=1)
+#   plt=show(vol, mslices, __doc__, axes=1,viewup='z',mode=9,interactive=False)#no interactive
+#   dolfin.screenshot(filename="/Users/chiu.i-huan/Desktop/vedo3Dplot.png")
 
       
 #log().info("output npy file: {}".format("3Dplot_mlem.npy"))

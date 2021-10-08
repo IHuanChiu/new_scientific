@@ -17,6 +17,8 @@ from utils.logger import log, supports_color
 from helpers import createRatioCanvas
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
 import enums
+import numpy as np
+from root_numpy import hist2array, array2hist, tree2array
 
 gROOT.ProcessLine(
 "struct RootHistStruct {\
@@ -150,8 +152,8 @@ def makeTH2D(_chain,dtype):
     _it = enums.UTOfRotation
     h2list=[]
     if "CdTe" in dtype:
-#       cutname = "((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253)) && ((energy > 72 && energy < 78) || (energy > 12 && energy < 16))" 
-       cutname = "((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253)) && ((energy > 72 && energy < 78))" 
+       cutname = "((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253)) && ((energy > 72 && energy < 78) || (energy > 12 && energy < 16))" #forpaper
+#       cutname = "((trigger > 235 && trigger < 240) || (trigger > 247 && trigger < 253)) && ((energy > 72 && energy < 78))" 
     else: 
        cutname = "((trigger > 590 && trigger < 600) || (trigger > 620 && trigger < 630)) && (energy > 12 && energy < 16)"
     if "30MeV" in dtype:

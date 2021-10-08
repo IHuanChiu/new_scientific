@@ -120,17 +120,23 @@ void make_spectrum_forCdTePaper(){
   h_all_s->Draw("hist same");
   h_all_b->Draw("hist same");
   h_all_minus->Draw("hist same");
-  TLegend* leg = new TLegend(.65,.70,.85,.95);
+  TLegend* leg = new TLegend(.6,.60,.9,.9);
   leg->AddEntry(h_all_a,  "All", "l");
   leg->AddEntry(h_all_s,  "Signal", "l");
   leg->AddEntry(h_all_b,   "Bkg.",   "l");
-  leg->AddEntry(h_all_minus,   "Signal-Bkg.",   "l");
+  leg->AddEntry(h_all_minus,   "Signal - Bkg.",   "l");
   leg->Draw("same");
   sprintf(name, "/Users/chiu.i-huan/Desktop/hist_cdteES_paper.pdf");
   c2->SaveAs(name);
   
   //2D image (rotation)
   gStyle->SetPalette(53);
+  TLatex t;
+  t.SetNDC();
+  t.SetTextFont( 62 );
+  t.SetTextColor( 0 );
+  t.SetTextSize( 0.12 );
+  t.SetTextAlign( 12 );
   for (int i = 0; i < 8; i++){
      c3->cd(i+1);
      gPad->SetRightMargin(0.15);
@@ -139,7 +145,8 @@ void make_spectrum_forCdTePaper(){
      h_image_rot->SetTitle(";X[mm];Y[mm]");
      h_image_rot->GetXaxis()->CenterTitle();
      h_image_rot->GetYaxis()->CenterTitle();
-     h_image_rot->Draw("colz");  
+     h_image_rot->Draw("colz");
+     t.DrawLatex(0.65,0.25,Form("%d^{o}",i*45));
   }
   sprintf(name, "/Users/chiu.i-huan/Desktop/hist_rot_image.pdf");
   c3->SaveAs(name);
