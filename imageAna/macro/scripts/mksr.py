@@ -90,9 +90,13 @@ class PrepareParameters():
                    # bad fitting channels
                    if index == 1: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.74254e+02,8.10055e+00,1.72548e+00,1.50197e+01,1.49098e+00,-9.93072e-02
                    elif index == 10: constant,mean_x,sigma_x,mean_y,sigma_y,rho=2.75625e+02,1.61334e+01,2.03669e+00,-1.09053e-01,1.87555e+00,1.30457e-01
+                   elif index == 23: constant,mean_x,sigma_x,mean_y,sigma_y,rho=153.506,-7.924,-14.984,1.764,1.289,0.026
                    elif index == 26: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.95446e+02,7.34044e+00,1.82564e+00,1.40217e+01,1.73770e+00,2.42294e-02
+                   elif index == 70: constant,mean_x,sigma_x,mean_y,sigma_y,rho=164.553,12.696,-13.386,1.838,1.850,-0.061
                    elif index == 81: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.49021e+02,6.13308e+00,1.74712e+00,5.69160e+00,1.85554e+00,-1.01725e-01
                    elif index == 100: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.18486e+02,1.12588e+01,1.95410e+00,1.05471e+01,1.80264e+00,-8.80853e-02
+                   elif index == 103: constant,mean_x,sigma_x,mean_y,sigma_y,rho=129.508,-5.297,10.620,1.889,1.692,-0.114
+                   elif index == 105: constant,mean_x,sigma_x,mean_y,sigma_y,rho=130.808,11.157,5.097,1.647,1.808,0.004
                    elif index == 110: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.41792e+02,1.09893e+01,1.89663e+00,-2.30509e-01,1.95740e+00,9.20033e-02
                    elif index == 122: constant,mean_x,sigma_x,mean_y,sigma_y,rho=1.25659e+02,1.06397e-01,1.69141e+00,-1.10063e+01,1.94154e+00,5.99720e-02
                    else:
@@ -316,6 +320,10 @@ class MLEM():
           self.npoints=npoints
           self.npixels=npixels
           self.object_range=20 #mm
+          self._xdownbin ,self._xupbin = 41, 89 # -6 < x < 6
+          self._ydownbin ,self._yupbin = 23, 107 # -10 < y < 10
+          self._xdownObject ,self._ydownObject, self._zdownObject = 5, 0, 10 # cut object
+          self._xupObject ,self._yupObject, self._zupObject = 30, 30, 35 # cut object
           # === class members ===
           self.mlemhist_list,self.mlem3Dhist_list,self.mlemhist_proje_list,self.mlemratio_list,self.h_data_list=[],[],[],[],[]
           self.source_intensity = 363.1*1000 #Bq, Am-241
@@ -329,13 +337,14 @@ class MLEM():
           # === plots and tree ===
           self.image_hx_hy_list_ori, self.image_hx_hy_list_sr, self.image_hx_hy_list_matrix, self.hist_delta_mu=self.mkimage()
           self.mlemtree=self.mktree()
-          self.object_init=self.mkInitObject()
+          self.object_init, self.image_init=self.mkInitObject()
           self.h_measurement_list,self.h_angle_list,self.h_name_list=self.getmeasurement(inputname=imageinput)
 
       def movemeasurement(self,_harray):
           _image=np.zeros((self.nbins,self.nbins),dtype=float)
           image=np.zeros((self.nbins,self.nbins),dtype=float)
-          xmov,ymov=16,4# bins, 4 bins for 1mm in the images
+          #xmov,ymov=16,4# bins, 4 bins for 1mm in the images # x:y plots
+          xmov,ymov=0,8# bins, 4 bins for 1mm in the images # y:x plots
           for i in range(self.nbins-xmov):
              _image[i]=_harray[i+xmov]
           for j in range(self.nbins-ymov):
@@ -360,9 +369,20 @@ class MLEM():
              #if i == 1: continue # you can remove some plots
              _h=fint.Get("h"+str(i))
              _h.SetDirectory(0)
+             #TODO weight each image?
              weight=maxentries/_h.GetEntries()
              _horiarray=hist2array(_h)
              _harray=self.movemeasurement(_horiarray*weight)
+             #_harray=self.movemeasurement(hist2array(_h))#no weight
+             #TODO cut signal region
+             for c in range(0,self._xdownbin):
+                _harray[c]=0# x_donw
+             for c in range(self._xupbin,127):
+                _harray[c]=0# x_up
+             for c in range(0,self._ydownbin):
+                _harray[:,c]=0# y_down
+             for c in range(self._yupbin,127):
+                _harray[:,c]=0# y_up
              _mlist.append(_harray)          
              _anglelist.append((-1)*i*(360/n_angles))# use Angle for ratation, not Radian
              _namelist.append(_h.GetName())
@@ -676,8 +696,15 @@ class MLEM():
       def mkInitObject(self):
           log().info("Processing guess object...")
           _object_init=np.ones((self.npixels,self.npixels,self.npixels),dtype=float)
+          _image_init=np.ones((128,128),dtype=float)
           _object_init=_object_init*self.source_intensity
-          return _object_init          
+          # TODO apply selected region for init. object 
+          #for ix in range(self.npixels):
+          #   for iy in range(self.npixels):
+          #      for iz in range(self.npixels):
+          #         if not (self._xdownObject<ix and ix<self._xupObject and self._ydownObject<iy and iy<self._yupObject and self._zdownObject<iz and iz<self._zupObject):
+          #            _object_init[ix][iy][iz] = 0
+          return _object_init, _image_init          
 
       def getindex(self,_angle): # need to be fixed before appliaction
           # === coordinate rotation ===
@@ -697,46 +724,58 @@ class MLEM():
           ix,iy,iz=XCor[x0, x1, x2],YrotCor[y0, y1, y2],ZrotCor[z0, z1, z2]
           return [y0, y1, y2] # x0?y0?z0?
 
-      def updateImage(self,_object):
+      def updateImage(self,_object,_nevproc,prog):
           # === rotate matrix to make the images at the different angles ===
           _image_update=np.zeros((self.nbins,self.nbins),dtype=float)
-          for imx in range(self.nbins):
-             for imy in range(self.nbins):
-                _image_update[imx][imy]=np.sum(self.matrix[:,:,:,imx,imy]*_object)
-          # TODO - selection is fine?
-          # cut for region
-          _cutBinHorizontal,_cutBinVertical=8,24 # bins; 4 bins for 1mm
-          for c in range(int(_cutBinHorizontal)):
-             _image_update[c]=0# left
-             _image_update[127-c]=0 # right
-          for c in range(int(_cutBinVertical)):
-             _image_update[:,c]=0# bottom
-             _image_update[:,127-c]=0 # upper
-          # cut for value
-          n_top=9
+          # TODO - only loop selected region
+          #for imx in range(self.nbins):
+          #   for imy in range(self.nbins):
+          for imx in range(self._xdownbin, self._xupbin):
+             for imy in range(self._ydownbin, self._yupbin):
+                _nevproc+=1
+                if prog: prog.update(_nevproc)
+                _image_update[imx][imy]=np.sum(_object*self.matrix[:,:,:,imx,imy])/np.sum(self.matrix[:,:,:,imx,imy])
+                #_image_update[imx][imy]=np.sum(_object*self.matrix[:,:,:,imx,imy])
+          # TODO - cut for value
+          #n_top=int((int(self._xupbin - self._xdownbin) * int(self._yupbin - self._ydownbin))*0.01) # top 1% pixels of image
+          n_top=3 # yop 3 pixels of image
           _image_sort=np.reshape(_image_update,_image_update.shape[0]*_image_update.shape[1]) # reshape
-          _image_index=np.argpartition(_image_sort, -n_top)[-n_top:]# get n_top of the leading values
-          maxvalue=np.sum(_image_sort[_image_index])/n_top # get max. content
-          where_bins=np.where(_image_update < maxvalue*0.1)# drop 10% of max. 
-          _image_update[where_bins]=0
-          return _image_update
+          _image_index=np.argpartition(_image_sort, -n_top)[-n_top:]# get the leading "n_top" values
+          maxvalue=np.sum(_image_sort[_image_index])/n_top # set max. content (average value)
+          where_downbins=np.where(_image_update < maxvalue*0.10)# drop pixels with 10% of max. value
+          #where_upbins=np.where(_image_update > maxvalue*5)# drop pixels with 10 times of max. value
+          _image_update[where_downbins]=0
+          #_image_update[where_upbins]=0
+          return _image_update, _nevproc
 
       def findratio(self,measurement_image_array,reproduction_image_array):
           # === input/output type: numpy.array ===
           image_ratio=np.zeros((self.nbins,self.nbins),dtype=float)
-          _where_thre = np.where(reproduction_image_array > 0.0001)# skip divide 0 problem (sys.float_info.min or 0.01 for threshold)
+          _where_thre = np.where(reproduction_image_array > 0.0001)# skip divide 0 problem (sys.float_info.min or 0.0001 for threshold)
+          # because producted image with samll value is setted to be 0, those points will not be used for ratio calculation
           image_ratio[_where_thre]=measurement_image_array[_where_thre]/reproduction_image_array[_where_thre] # get ratio
+          # TODO - drop large ratio
+          #n_top=int((int(self._xupbin - self._xdownbin) * int(self._yupbin - self._ydownbin))*0.3) # top 30% pixels of image
+          #_ratio_sort=np.reshape(image_ratio,image_ratio.shape[0]*image_ratio.shape[1]) # reshape
+          #_ratio_index=np.argpartition(_ratio_sort, -n_top)[-n_top:]# get the leading "n_top" values
+          #maxvalue=np.sum(_ratio_sort[_ratio_index])/n_top # set max. content (average value)
+          #where_bins=np.where(image_ratio > maxvalue*3)# drop pixels with 2 times of max. value
+          #image_ratio[where_bins]=0
           return image_ratio
 
-      def getObjectRatio(self,object_pre,image_ratio):
+      def getObjectRatio(self,object_pre,image_ratio,_nevproc,prog):
           # === update object with ratio, and then rotate the updated object for each angles ===
           object_ratio=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
+          # cannot apply selected region in here, this is ratio for correcting all regions !
           for ix in range(self.npixels):
              for iy in range(self.npixels):
                 for iz in range(self.npixels):
+                   _nevproc+=1
+                   if prog: prog.update(_nevproc)
                    object_ratio[ix][iy][iz]=np.sum(image_ratio*self.matrix[ix][iy][iz])/np.sum(self.matrix[ix][iy][iz])
+                   #object_ratio[ix][iy][iz]=np.sum(image_ratio*self.matrix[ix][iy][iz])
           _object_update=object_pre*object_ratio#_object_update is no more used
-          return object_ratio, _object_update
+          return object_ratio, _object_update, _nevproc
 
       def rotObject(self,_object,_angle):
           # === rotate object for next iteration ===
@@ -748,19 +787,24 @@ class MLEM():
           #for i in range(self.npixels-_mov):
           #   object_movupdate[i]=object_update_rot[i+_mov]
           #return object_movupdate
-          return ndimage.rotate(_object,_angle,axes=(0,2),reshape=False)
+          #return ndimage.rotate(_object,_angle,axes=(0,2),reshape=False)
+
+          return ndimage.rotate(_object,_angle,axes=(1,2),reshape=False)
           
       def iterate_osem(self,n_iteration,n_subset):                   
-          prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iteration",init_t=time.time())
+          _n_im=(self._xupbin-self._xdownbin)*(self._yupbin-self._ydownbin)
+          _n_ob=pow(self.npixels,3)
+          prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list)*(_n_im+_n_ob),text="Processing iteration",init_t=time.time())
+          #prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iteration",init_t=time.time())
           nevproc, n_savehist=0, 20
           n_set=int(len(self.h_measurement_list)/n_subset)# ex. if n_subset is 2, then n_set is 8;  if n_subset is 4, then n_set is 4
           for i in range(n_iteration):
-             if i == 0: _object = self.object_init# unit guess object
+             if i == 0: _object, _image = self.object_init, self.image_init# unit guess object and image
              for iset in range(n_set):
                 ratio_object=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
                 for k in range(n_subset):
-                   nevproc+=1
-                   if prog: prog.update(nevproc)
+#                   nevproc+=1
+#                   if prog: prog.update(nevproc)
                    _ih=iset+k*n_set
                    h_measurement_array=self.h_measurement_list[_ih]
                    h_angle=self.h_angle_list[_ih]
@@ -768,15 +812,16 @@ class MLEM():
 
                    # === main processes ===
                    _object_rot=self.rotObject(_object,h_angle)# rotate object
-                   _image=self.updateImage(_object_rot)# make 2D image corresponding to angle from object
+                   _image,nevproc=self.updateImage(_object_rot,nevproc,prog)# make 2D image corresponding to angle from object
                    _image_ratio=self.findratio(h_measurement_array, _image)# find ratio with data
-                   _object_ratio,_=self.getObjectRatio(_object, _image_ratio)# Get object rate & Update object
-                   _object_ratio=self.rotObject(_object_ratio,(-1)*h_angle)
-                   ratio_object+=_object_ratio
+                   _temp=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)#no use (empty object)
+                   _object_ratio,_,nevproc=self.getObjectRatio(_temp, _image_ratio,nevproc,prog)# Get object rate & Update object
+                   _object_ratio=self.rotObject(_object_ratio,(-1)*h_angle)# anti-rotate ratio for nor. object
+                   ratio_object+=_object_ratio# sum of all ratios
 
                    # === save 2D plots ===  
-                   hist_image_ratio=ROOT.TH2D("Ratio_image_{0}_iteration{1}".format(h_name,i),"image_ratio_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
-                   hist_process_image=ROOT.TH2D("MLEM_2Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_2Dimage_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
+                   hist_image_ratio=ROOT.TH2D("Ratio_image_{0}_iteration{1}".format(h_name,i+1),"image_ratio_{0}_iteration{1}".format(h_name,i+1),self.nbins,-16,16,self.nbins,-16,16)
+                   hist_process_image=ROOT.TH2D("MLEM_2Dimage_{0}_iteration{1}".format(h_name,i+1),"MLEM_2Dimage_{0}_iteration{1}".format(h_name,i+1),self.nbins,-16,16,self.nbins,-16,16)
                    hist_process_image.SetStats(0); hist_image_ratio.SetStats(0);
                    array2hist(_image,hist_process_image)
                    array2hist(_image_ratio,hist_image_ratio)
@@ -785,9 +830,9 @@ class MLEM():
                    self.mlemhist_proje_list.append(hist_process_image.ProjectionX())
                    self.mlemhist_proje_list.append(hist_process_image.ProjectionY())
 
-                _object=_object*ratio_object/n_subset#update object per subset
+                _object=_object*ratio_object/n_subset#UPDATE object per subset
                 # === save 3D plots ===  
-                hist_process_object=ROOT.TH3D("MLEM_3Dimage_set{0}_iteration{1}".format(iset,i),"MLEM_3Dimage_set{0}_iteration{1}".format(iset,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+                hist_process_object=ROOT.TH3D("MLEM_3Dimage_set{0}_iteration{1}".format(iset,i+1),"MLEM_3Dimage_set{0}_iteration{1}".format(iset+1,i+1),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
                 hist_process_object.SetStats(0);
                 array2hist(_object,hist_process_object)
                 self.mlemhist_list.append(hist_process_object)
@@ -803,30 +848,33 @@ class MLEM():
           return hist_final_object
 
       def iterate_mlem(self,n_iteration):                   
-          prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iteration",init_t=time.time())
+          _n_im=(self._xupbin-self._xdownbin)*(self._yupbin-self._ydownbin)
+          _n_ob=pow(self.npixels,3)
+          prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list)*(_n_im+_n_ob),text="Processing iteration",init_t=time.time())
+          #prog = ProgressBar(ntotal=n_iteration*len(self.h_measurement_list),text="Processing iteration",init_t=time.time())
           nevproc=0
           for i in range(n_iteration):
-             if i == 0: _object = self.object_init# unit guess object
+             if i == 0: _object, _image = self.object_init, self.image_init# unit guess object and image
              _object_sumratio=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)
              for _ih in range(len(self.h_measurement_list)):
-                nevproc+=1
-                if prog: prog.update(nevproc)
+#                nevproc+=1
+#                if prog: prog.update(nevproc)
                 h_measurement_array=self.h_measurement_list[_ih]
                 h_angle=self.h_angle_list[_ih]
                 h_name=self.h_name_list[_ih]
 
                 # === main processes ===
                 _object_rot=self.rotObject(_object,h_angle)# rotate object
-                _image=self.updateImage(_object_rot)# make 2D image from rotated object
+                _image,nevproc=self.updateImage(_object_rot,nevproc,prog)# make 2D image corresponding to angle from object
                 _image_ratio=self.findratio(h_measurement_array, _image)# find ratio with data
-                _temp=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)#no use
-                _object_ratio,_=self.getObjectRatio(_temp, _image_ratio)# get object ratio for rotated object
+                _temp=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)#no use (empty object)
+                _object_ratio,_,nevproc=self.getObjectRatio(_temp, _image_ratio,nevproc,prog)# get object ratio for rotated object
                 _object_ratio=self.rotObject(_object_ratio,(-1)*h_angle)# anti-rotate ratio for nor. object
-                _object_sumratio+=_object_ratio# sum of all ratio
+                _object_sumratio+=_object_ratio# sum of all ratios
 
                 # === save plots ===  
-                hist_image_ratio=ROOT.TH2D("Ratio_image_{0}_iteration{1}".format(h_name,i),"image_ratio_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
-                hist_process_image=ROOT.TH2D("MLEM_2Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_2Dimage_{0}_iteration{1}".format(h_name,i),self.nbins,-16,16,self.nbins,-16,16)
+                hist_image_ratio=ROOT.TH2D("Ratio_image_{0}_iteration{1}".format(h_name,i+1),"image_ratio_{0}_iteration{1}".format(h_name,i+1),self.nbins,-16,16,self.nbins,-16,16)
+                hist_process_image=ROOT.TH2D("MLEM_2Dimage_{0}_iteration{1}".format(h_name,i+1),"MLEM_2Dimage_{0}_iteration{1}".format(h_name,i+1),self.nbins,-16,16,self.nbins,-16,16)
                 hist_image_ratio.SetStats(0); hist_process_image.SetStats(0);
                 array2hist(_image,hist_process_image)
                 array2hist(_image_ratio,hist_image_ratio)
@@ -834,8 +882,8 @@ class MLEM():
                 self.mlemhist_list.append(hist_process_image)
                 self.mlemhist_proje_list.append(hist_process_image.ProjectionX());self.mlemhist_proje_list.append(hist_process_image.ProjectionY());             
 
-             _object=_object*_object_sumratio/int(len(self.h_measurement_list))# UPDATE object
-             hist_process_object=ROOT.TH3D("MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),"MLEM_3Dimage_{0}_iteration{1}".format(h_name,i),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
+             _object=_object*_object_sumratio/int(len(self.h_measurement_list))# UPDATE object per iteration
+             hist_process_object=ROOT.TH3D("MLEM_3Dimage_iteration{0}".format(i+1),"MLEM_3Dimage_iteration{0}".format(i+1),self.npixels,-20,20,self.npixels,-20,20,self.npixels,-20,20)
              hist_process_object.SetStats(0);
              array2hist(_object,hist_process_object)
              self.mlem3Dhist_list.append(hist_process_object)
@@ -941,7 +989,7 @@ def main_run(args):
     ML=MLEM(PPclass=PP,SRclass=SR,npoints=args.npoints,nbins=image_nbins,npixels=_npixels,matrix=_matrix,imageinput=args.imageinput) # do iteration and get final plots
 
     # MLEM iteration
-    if   "osem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_osem(n_iteration=_n_iteration,n_subset=4)# Ordered Subset Expectation Maximization
+    if   "osem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_osem(n_iteration=_n_iteration,n_subset=4)# Ordered Subset Expectation Maximization (subset : ? angle in one set)
     elif "mlem" == args.iterationtype.lower(): MLEM_3DHist=ML.iterate_mlem(n_iteration=_n_iteration)# Maximum Likelihood Expectation Maximisation
     else: log().error("Wrong type, only MLEM or OSEM is supported.")
 
@@ -969,7 +1017,7 @@ if __name__=="__main__":
 
    parser = argparse.ArgumentParser(description='Process some integers.')
    parser.add_argument("-i","--inputFolder", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/20200406a_5to27_cali_caldatat_0828_split.root", help="Input File Name for system response")
-   parser.add_argument("--imageinput", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_LP_0909.root", help="Input File Name for 3D image")
+   parser.add_argument("--imageinput", type=str, default=None, help="Input File Name for 3D image")
    #parser.add_argument("--imageinput", type=str, default="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.Si_1120.root", help="Input File Name for 3D image")
    parser.add_argument("-o", "--output", type=str, default="temp", help="Additional Output File Name")
    parser.add_argument("-m", "--matrix", type=str, default=None, help="System response database")

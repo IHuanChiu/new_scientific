@@ -109,13 +109,14 @@ void make_spectrum_forCdTePaper(){
   h_all_b = (TH1D*)gDirectory->Get("h_all_b"); 
   h_all_minus = (TH1D*)h_all_s->Clone();
   h_all_minus->Add(h_all_b,-1);
+  h_all_a->SetMaximum((h_all_a->GetMaximum())*1.2);
   h_all_a->SetTitle(";Energy[keV];Counts/0.5keV");
   h_all_a->GetXaxis()->CenterTitle();
   h_all_a->GetYaxis()->CenterTitle();
   h_all_a->SetLineColor(1);
-  h_all_s->SetLineColor(2);
+  h_all_s->SetLineColor(kTeal+9);
   h_all_b->SetLineColor(4);
-  h_all_minus->SetLineColor(kTeal+9);
+  h_all_minus->SetLineColor(2);
   h_all_a->Draw("hist");
   h_all_s->Draw("hist same");
   h_all_b->Draw("hist same");

@@ -177,16 +177,6 @@ void make_spectrum_si(){
   leg2->AddEntry(h_all_nb,   "N-side bkg.",   "l");
   leg2->Draw("same");
 
-//  gPad->SetRightMargin(0.15);
-//  gPad->SetLogy(0);
-//  gPad->SetLogz(0);
-//  mytree->Draw("x:y >> h_image",cut_basic+cut_energy,"colz");
-//  h_image = (TH2D*)gDirectory->Get("h_image");
-//  h_image->GetXaxis()->SetTitle("N-side signal");
-//  h_image->GetYaxis()->SetTitle("N-side bkg.");
-//  gStyle->SetPalette(53);
-//  h_image->Draw("colz");
-  
   sprintf(name, "../../run/figs/hist_comparison_pn_e_si.pdf");
   c1->SaveAs(name);
 

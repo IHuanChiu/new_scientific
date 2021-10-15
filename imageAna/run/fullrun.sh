@@ -12,7 +12,7 @@ OUTNAME="test1020"
 
      
 # =====
-# ================== Simple test run ====================
+# ================== simple test run ====================
 # =====
 #python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/STD27MeV/ -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV
@@ -88,6 +88,7 @@ OUTNAME="test1020"
 # ================== run rotation 2D plots and FBP image ====================
 # =====
 #python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe_30MeV -o forpaper
+#python3 image.py -i ${OUTDIR}/CdTe_root_fix -d CdTe_30MeV -o no14keV
 #python3 image.py -i ${OUTDIR}/Si_root_fix -d Si -o 1120
 #python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper_yx -d Si_30MeV -c 0 -s 1
 #python3 image.py -i ${OUTDIR}/JPARC2020March_Si_sum.root -o forSipaper -d Si_35MeV
@@ -96,6 +97,17 @@ OUTNAME="test1020"
 # =====
 # ================== run MLEM ====================
 # =====
-#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV.root -o 30MeV -l 1
-#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_forpaper -l 1
-python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_osem_forpaper -l 1 -t osem
+   # plots is x:y -> check movemeasurement & updateImage 
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV.root -o 30MeV -l 1 
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_no14keV.root -o 30MeV_no14keV -l 15
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_no14keV.root -o 30MeV_osem_no14keV -l 15 -t osem
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_noweight_forpaper -l 5
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_noweight_osem_forpaper -l 5 -t osem
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_forpaper -l 50
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_ImageCut_w_forpaper -l 50
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_ImageCut_w_rot12_noX_osem_forpaper -l 10 -t osem
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_cutR_forpaper -l 15
+python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_mlem_forpaper -l 100
+python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_osem_forpaper -l 100 -t osem
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_ImageCut_osem_forpaper -l 5 -t osem
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_osem_forpaper -l 15 -t osem
