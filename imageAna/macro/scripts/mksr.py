@@ -755,11 +755,11 @@ class MLEM():
           # because producted image with samll value is setted to be 0, those points will not be used for ratio calculation
           image_ratio[_where_thre]=measurement_image_array[_where_thre]/reproduction_image_array[_where_thre] # get ratio
           # TODO - drop large ratio
-          #n_top=int((int(self._xupbin - self._xdownbin) * int(self._yupbin - self._ydownbin))*0.3) # top 30% pixels of image
+          #n_top=int((int(self._xupbin - self._xdownbin) * int(self._yupbin - self._ydownbin))*0.5) # top 50% pixels of image
           #_ratio_sort=np.reshape(image_ratio,image_ratio.shape[0]*image_ratio.shape[1]) # reshape
           #_ratio_index=np.argpartition(_ratio_sort, -n_top)[-n_top:]# get the leading "n_top" values
           #maxvalue=np.sum(_ratio_sort[_ratio_index])/n_top # set max. content (average value)
-          #where_bins=np.where(image_ratio > maxvalue*3)# drop pixels with 2 times of max. value
+          #where_bins=np.where(image_ratio > maxvalue*5)# drop pixels with 5 times of max. value
           #image_ratio[where_bins]=0
           return image_ratio
 

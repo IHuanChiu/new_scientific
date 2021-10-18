@@ -12,13 +12,14 @@ import itkwidgets
 from vedo import *
 from vedo.applications import IsosurfaceBrowser
 from vedo.applications import SlicerPlotter
+from scipy import ndimage, misc
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
 __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 #x:y plots
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_iteration100.root"
-#plotname="MLEM_3Dimage_h15_iteration4"
+#plotname="MLEM_3Dimage_h15_iteration14"
 
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_ImageCut_w_rot12_forpaper_iteration15.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_ImageCut_w_rot12_noX_osem_forpaper_iteration10.root"
@@ -30,11 +31,15 @@ __location__ = os.path.realpath(
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutR_forpaper_iteration15.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutR3_osem_forpaper_iteration15.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutR3_dropIM_osem_forpaper_iteration5.root"
-inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_dropIM_osem_forpaper_iteration5.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_dropIM_osem_forpaper_iteration5.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_mlem_forpaper_iteration15.root"
+
 #TODO here
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_mlem_forpaper_iteration100.root"
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_osem_forpaper_iteration100.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_mlem_forpaper_iteration150.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_osem_forpaper_iteration150.root"
 #plotname="MLEM_3Dimage_iteration2"
+inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_noRcut_mlem_forpaper_iteration50.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_noRcut_osem_forpaper_iteration50.root"
 
 # === with bug ===
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_ImageCut_w_forpaper_iteration50.root"
@@ -46,7 +51,7 @@ inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_outp
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_noweight_forpaper_iteration5.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_forpaper_iteration5.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_forpaper_iteration15.root"
-#plotname="MLEM_3Dimage_iteration15"
+plotname="MLEM_3Dimage_iteration40"
 
 #osem
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_osem_no14keV_iteration15.root"
@@ -54,9 +59,9 @@ inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_outp
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_noweight_osem_forpaper_iteration5.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_ImageCut_osem_forpaper_iteration5.root"#noweight
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_osem_forpaper_iteration15.root"
-#plotname="MLEM_3Dimage_set3_iteration4"
+#plotname="MLEM_3Dimage_set3_iteration10"
 
-plotname="MLEM_3Dimage"
+#plotname="MLEM_3Dimage"
 
 if __name__=="__main__":
    f_mlem=ROOT.TFile(inputfile,"read")
@@ -65,8 +70,12 @@ if __name__=="__main__":
    with open('3Dplot_mlem.npy', 'wb') as f:
       np.save(f, matrix)
 
-   with open("./Sample_4sphere.npy", 'rb') as f:
-      sample_matrix=np.load(f)
+#   with open("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/macro/scripts/Sample_4sphere.npy", 'rb') as f:
+#      sample_matrix=np.load(f)
+
+   # === Rotation ===
+   _angle=65
+   matrix=ndimage.rotate(matrix,_angle,axes=(1,2),reshape=False)   
 
    # === only for 2D image ===
 #   VTK_data = numpy_support.numpy_to_vtk(num_array=matrix.ravel(), deep=True, array_type=vtk.VTK_FLOAT)
@@ -110,16 +119,19 @@ if __name__=="__main__":
 #   writer.Write()
 
    # === VEDO ===
-   
-   move=(10,10,5)
-   poi_big1=(0.0+move[0], 0.0+move[1], 0.0+6.35+move[2])
-   poi_big2=(poi_big1[0]+6.351, poi_big1[1]+10.0+10, poi_big1[2]+3.175+6.35)
-   poi_small1=(poi_big1[0]+10.51, poi_big1[1]+3.175, poi_big1[2]-6.35+6.35)
-   poi_small2=(poi_big1[0]+6.0, poi_big1[1]-3.175+10, poi_big1[2]+10.5+6.35)
-   s1 = Sphere(pos=poi_big1, r=12.7/2).wireframe()
-   s2 = Sphere(pos=poi_big2, r=12.7/2).wireframe()
-   s3 = Sphere(pos=poi_small1, r=12.7/4).wireframe()
-   s4 = Sphere(pos=poi_small2, r=12.7/4).wireframe()
+   init_X=20
+   init_Y=20
+   init_Z=11
+   diff_Big=4
+   shift_small=0.2
+   poi_big1  =(init_X+7.07,init_Y+7.07,init_Z+12.7-diff_Big)
+   poi_big2  =(init_X-7.07,init_Y-7.07,init_Z)
+   poi_small1=(init_X+7.07,init_Y-7.07,init_Z+6.35-diff_Big+6.35-6.35/2)
+   poi_small2=(init_X-7.07,init_Y+7.07,init_Z+12.7+6.35-diff_Big-6.35/2)
+   s1 = Sphere(c="white",pos=poi_big1, r=12.7/2,alpha=0.5, res=12).wireframe()
+   s2 = Sphere(c="white",pos=poi_big2, r=12.7/2,alpha=0.5, res=12).wireframe()
+   s3 = Sphere(c="white",pos=poi_small1, r=12.7/4,alpha=0.5, res=12).wireframe()
+   s4 = Sphere(c="white",pos=poi_small2, r=12.7/4,alpha=0.5, res=12).wireframe()
 
 #   vol_sample=Volume(sample_matrix).isosurface(thresholds_sample)
 #   vol_sample.addScalarBar3D()
@@ -146,12 +158,41 @@ if __name__=="__main__":
        slices.append(sl)
    amap = [0, 1, 1, 1, 1]  # hide low value points giving them alpha 0
    mslices = merge(slices) # merge all slices into a single Mesh
-#   mslices.cmap('hot_r', alpha=amap).lighting('off').addScalarBar3D(title='Slice', c='w')
    mslices.cmap('hot_r', alpha=amap).lighting('off').addScalarBar(title='Slice', c='w')
-   show(vol,mslices, s1,s2,s3,s4, __doc__, axes=1)
-#   plt=show(vol, mslices, __doc__, axes=1,viewup='z',mode=9,interactive=False)#no interactive
-#   dolfin.screenshot(filename="/Users/chiu.i-huan/Desktop/vedo3Dplot.png")
+   # == check ==
+#   show(s1,s2,s3,s4,vol,mslices,  __doc__, axes=1)
 
+   # == paper plot ==
+   #plt=show(s1,s2,s3,s4, vol, mslices, __doc__, axes=1,viewup='y',mode=9,interactive=False)#no interactive
+   #dolfin.screenshot(filename="/Users/chiu.i-huan/Desktop/vedo3Dplot.png")
+
+   # == video ==
+   #cam = dict(pos=(4.14, -4.25, 2.35),
+   #        focalPoint=(0.167, -0.287, 0.400),
+   #        viewup=(-0.230, 0.235, 0.944),
+   #        distance=5.94)
+   #plt=show(s1,s2,s3,s4,vol,mslices,  __doc__, axes=1, camera=cam, interactive=False)
+   #for i in range(200):
+   #   plt.camera.Azimuth(-0.2)
+   #   vol.rotateZ(3.6)
+   #   s1.rotateZ(3.6)
+   #   s2.rotateZ(3.6)
+   #   s3.rotateZ(3.6)
+   #   s4.rotateZ(3.6)
+   #   mslices.rotateZ(3.6)
+   #interactive().close()
+
+   # == video 2 ==
+   #settings.screeshotScale = 2
+   plt = Plotter(axes=1, offscreen=True)
+   #plt = Plotter(axes=1, interactive=False)
+   video = Video("video_rot.mp4", duration=6,backend='opencv')
+   for i in range(200):
+      plt.camera.Azimuth(-2)
+      plt.show(s1,s2,s3,s4,vol,mslices)
+      video.addFrame()
+   video.close()
+#   plt.close()
       
 #log().info("output npy file: {}".format("3Dplot_mlem.npy"))
 #log().info("output vtk file: {}".format("3Dplot_mlem.vtk"))
