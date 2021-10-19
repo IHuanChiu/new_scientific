@@ -698,12 +698,6 @@ class MLEM():
           _object_init=np.ones((self.npixels,self.npixels,self.npixels),dtype=float)
           _image_init=np.ones((128,128),dtype=float)
           _object_init=_object_init*self.source_intensity
-          # TODO apply selected region for init. object 
-          #for ix in range(self.npixels):
-          #   for iy in range(self.npixels):
-          #      for iz in range(self.npixels):
-          #         if not (self._xdownObject<ix and ix<self._xupObject and self._ydownObject<iy and iy<self._yupObject and self._zdownObject<iz and iz<self._zupObject):
-          #            _object_init[ix][iy][iz] = 0
           return _object_init, _image_init          
 
       def getindex(self,_angle): # need to be fixed before appliaction
@@ -738,11 +732,11 @@ class MLEM():
                 #_image_update[imx][imy]=np.sum(_object*self.matrix[:,:,:,imx,imy])
           # TODO - cut for value
           #n_top=int((int(self._xupbin - self._xdownbin) * int(self._yupbin - self._ydownbin))*0.01) # top 1% pixels of image
-          n_top=3 # yop 3 pixels of image
+          n_top=5 # top 3 pixels of image
           _image_sort=np.reshape(_image_update,_image_update.shape[0]*_image_update.shape[1]) # reshape
           _image_index=np.argpartition(_image_sort, -n_top)[-n_top:]# get the leading "n_top" values
           maxvalue=np.sum(_image_sort[_image_index])/n_top # set max. content (average value)
-          where_downbins=np.where(_image_update < maxvalue*0.10)# drop pixels with 10% of max. value
+          where_downbins=np.where(_image_update < maxvalue*0.05)# drop pixels with 5% of max. value
           #where_upbins=np.where(_image_update > maxvalue*5)# drop pixels with 10 times of max. value
           _image_update[where_downbins]=0
           #_image_update[where_upbins]=0
@@ -870,6 +864,7 @@ class MLEM():
                 _temp=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)#no use (empty object)
                 _object_ratio,_,nevproc=self.getObjectRatio(_temp, _image_ratio,nevproc,prog)# get object ratio for rotated object
                 _object_ratio=self.rotObject(_object_ratio,(-1)*h_angle)# anti-rotate ratio for nor. object
+#                if _ih == 0 or _ih == 1 or _ih == 7 or _ih == 8 or _ih == 9 or _ih == 15:  #TODO test
                 _object_sumratio+=_object_ratio# sum of all ratios
 
                 # === save plots ===  
