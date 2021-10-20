@@ -34,35 +34,20 @@ __location__ = os.path.realpath(
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_dropIM_osem_forpaper_iteration5.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_mlem_forpaper_iteration15.root"
 
-#TODO here
+#here : weight + cut image + noRatioCut + moveIM cut 
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_mlem_forpaper_iteration150.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_osem_forpaper_iteration150.root"
-#plotname="MLEM_3Dimage_iteration2"
-inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_noRcut_mlem_forpaper_iteration50.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_noRcut_mlem_forpaper_iteration50.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_noRcut_osem_forpaper_iteration50.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_fixedCut_mlem_forpaper_iteration100.root"
 
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_dropImage_mlem_forpaper_iteration15.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_fixedCut_mlem_forpaper_iteration15.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_nomove_mlem_forpaper_iteration15.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_nomove2_mlem_forpaper_iteration15.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_movey_mlem_forpaper_iteration15.root"
+inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_1020_mlem_forpaper_iteration100.root"
 
-# === with bug ===
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_ImageCut_w_forpaper_iteration50.root"
-#mlem
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_no14keV_iteration15.root"
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_ImageCut_forpaper_iteration5.root"#noweight
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_ImageCut_forpaper_iteration15.root"#noweight
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_forpaper_iteration50.root"#noweight
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_noweight_forpaper_iteration5.root"
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_forpaper_iteration5.root"
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_forpaper_iteration15.root"
-plotname="MLEM_3Dimage_iteration35"
-
-#osem
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_osem_no14keV_iteration15.root"
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_osem_forpaper_iteration5.root"
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_noweight_osem_forpaper_iteration5.root"
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_ImageCut_osem_forpaper_iteration5.root"#noweight
-#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_osem_forpaper_iteration15.root"
-#plotname="MLEM_3Dimage_set3_iteration10"
-
+plotname="MLEM_3Dimage_iteration15"
 #plotname="MLEM_3Dimage"
 
 if __name__=="__main__":
@@ -116,12 +101,19 @@ if __name__=="__main__":
    init_X=20
    init_Y=20
    init_Z=11
-   diff_Big=4
+   diff_Big=5
    shift_small=0.2
+   #setting
+   #poi_big1  =(init_X+7.07,init_Y+7.07,init_Z+12.7-diff_Big)
+   #poi_big2  =(init_X-7.07,init_Y-7.07,init_Z)
+   #poi_small1=(init_X+7.07,init_Y-7.07,init_Z+6.35-diff_Big+6.35-6.35/2)
+   #poi_small2=(init_X-7.07,init_Y+7.07,init_Z+12.7+6.35-diff_Big-6.35/2)
+   # from photo
    poi_big1  =(init_X+7.07,init_Y+7.07,init_Z+12.7-diff_Big)
    poi_big2  =(init_X-7.07,init_Y-7.07,init_Z)
    poi_small1=(init_X+7.07,init_Y-7.07,init_Z+6.35-diff_Big+6.35-6.35/2)
-   poi_small2=(init_X-7.07,init_Y+7.07,init_Z+12.7+6.35-diff_Big-6.35/2)
+   poi_small2=(init_X-7.07,init_Y+7.07,init_Z+12.7+6.35-diff_Big-6.35/2-3)
+
    s1 = Sphere(c="white",pos=poi_big1, r=12.7/2,alpha=0.5, res=12).wireframe()
    s2 = Sphere(c="white",pos=poi_big2, r=12.7/2,alpha=0.5, res=12).wireframe()
    s3 = Sphere(c="white",pos=poi_small1, r=12.7/4,alpha=0.5, res=12).wireframe()
@@ -151,10 +143,11 @@ if __name__=="__main__":
 #   mslices.cmap("Spectral", alpha=amap).lighting('off').addScalarBar(title='Slice',pos=(0.65, 0.05),size=(100,350))# or gist_ncar_r
 
    # == check ==
-#   plt = IsosurfaceBrowser(vol, c='gold') # Plotter instance
+   plt = IsosurfaceBrowser(vol, c='gold') # Plotter instance
 #   plt = SlicerPlotter( vol, bg='white', bg2='lightblue', cmaps=("gist_ncar_r","jet_r","Spectral_r","hot_r","bone_r"),useSlider3D=False,)
 #   plt.show().close()
    show(s1,s2,s3,s4,vol,mslices,__doc__, axes=1)
+#   show(s1,s2,s3,s4,mslices,__doc__, axes=1)
 
    # == paper plot ==
 #   cam = dict(pos=(-60, 80, 100),
@@ -172,21 +165,18 @@ if __name__=="__main__":
 #   plt = Plotter(axes=1, offscreen=True)
 #   video = Video("video_rot.mp4", duration=18,backend='opencv')
 #   _angle=2
-#   for i in range(int(360/_angle)*3):
-##      if i < 360/_angle:
-#         plt.camera.Azimuth(-_angle)
-#         plt.show(s1,s2,s3,s4,vol,mslices)
-#         video.addFrame()
-##      elif i < int(360/_angle*2):
-##         plt.camera.Elevation(-_angle)
-##         plt.show(s1,s2,s3,s4,vol,mslices)
-##         video.addFrame()
-##      else:
-##         plt.camera.Roll(-_angle)
-##         plt.show(s1,s2,s3,s4,vol,mslices)
-##         video.addFrame()
+#   _inver,to_angle=-1,0
+#   for i in range(int(360/_angle)):
+#      plt.camera.Azimuth(-_angle)
+#      plt.show(s1,s2,s3,s4,vol,mslices)
+#      video.addFrame()
+#   for i in range(int((360-60)/_angle)):
+#      #to_angle+=_angle
+#      if i > int((360-60)/(_angle*2)): _inver=1
+#      plt.camera.Elevation(_inver*_angle)
+#      plt.show(s1,s2,s3,s4,vol,mslices)
+#      video.addFrame()
 #   video.close()
-##   plt.close()
 
    # == video (rotated objects) ==
    #cam = dict(pos=(4.14, -4.25, 2.35),

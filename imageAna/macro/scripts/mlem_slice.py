@@ -103,15 +103,23 @@ def doslice(hist3d,outname,axisname):
        _h.GetYaxis().CenterTitle()
        _h.GetZaxis().SetRangeUser(0, Zmaxrange)
        _h.Draw("colz")
+       _h.SetName("hist_{0}_{1}to{2}".format(titlename[0],int(_d),int(_u)))
+       _h.Write()
        cv2.Print(name2)
 
-for _if in inputname_list:
-   f_mlem=ROOT.TFile(_if,"read")
-#   h3=f_mlem.Get("MLEM_3Dimage")
-#   h3=f_mlem.Get("MLEM_3Dimage_h15_iteration14")
-   h3=f_mlem.Get("MLEM_3Dimage_iteration40")
-#   doslice(h3,_outname,"x")
-#   doslice(h3,_outname,"y")
-   doslice(h3,_outname,"z")
+if __name__=="__main__":
+   f_outname=""
+   for _if in inputname_list:
+      f_mlem=ROOT.TFile(_if,"read")
+      f_outname=_if.replace(".root","_fitSlice.root")
+      f_out=ROOT.TFile(f_outname,"recreate")
+   #   h3=f_mlem.Get("MLEM_3Dimage")
+   #   h3=f_mlem.Get("MLEM_3Dimage_h15_iteration14")
+      h3=f_mlem.Get("MLEM_3Dimage_iteration40")
+      f_out.cd()
+      doslice(h3,_outname,"x")
+      doslice(h3,_outname,"y")
+      doslice(h3,_outname,"z")
       
-log().info("Path of pdf: {}".format("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/3Dslices/"))
+   log().info("Path of pdf: {}".format("/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/3Dslices/"))
+   log().info("Path of output: {}".format(f_outname))

@@ -320,10 +320,12 @@ class MLEM():
           self.npoints=npoints
           self.npixels=npixels
           self.object_range=20 #mm
-          self._xdownbin ,self._xupbin = 41, 89 # -6 < x < 6
-          self._ydownbin ,self._yupbin = 23, 107 # -10 < y < 10
-          self._xdownObject ,self._ydownObject, self._zdownObject = 5, 0, 10 # cut object
-          self._xupObject ,self._yupObject, self._zupObject = 30, 30, 35 # cut object
+          self.moveIm=True
+          self._xdownbin ,self._xupbin = 37, 93 # -7 < x < 7
+          self._ydownbin ,self._yupbin = 21, 109 # -11 < y < 11
+          if not self.moveIm:
+             self._xdownbin ,self._xupbin = 37, 93 # -7 < x < 7
+             self._ydownbin ,self._yupbin = 25, 117 # -10 < y < 12
           # === class members ===
           self.mlemhist_list,self.mlem3Dhist_list,self.mlemhist_proje_list,self.mlemratio_list,self.h_data_list=[],[],[],[],[]
           self.source_intensity = 363.1*1000 #Bq, Am-241
@@ -344,7 +346,7 @@ class MLEM():
           _image=np.zeros((self.nbins,self.nbins),dtype=float)
           image=np.zeros((self.nbins,self.nbins),dtype=float)
           #xmov,ymov=16,4# bins, 4 bins for 1mm in the images # x:y plots
-          xmov,ymov=0,8# bins, 4 bins for 1mm in the images # y:x plots
+          xmov,ymov=0,10# bins, 4 bins for 1mm in the images # y:x plots (y move 2.46 mm)
           for i in range(self.nbins-xmov):
              _image[i]=_harray[i+xmov]
           for j in range(self.nbins-ymov):
@@ -369,12 +371,15 @@ class MLEM():
              #if i == 1: continue # you can remove some plots
              _h=fint.Get("h"+str(i))
              _h.SetDirectory(0)
-             #TODO weight each image?
+                # -- weight each image --
              weight=maxentries/_h.GetEntries()
              _horiarray=hist2array(_h)
-             _harray=self.movemeasurement(_horiarray*weight)
-             #_harray=self.movemeasurement(hist2array(_h))#no weight
-             #TODO cut signal region
+                # -- no move --
+             if self.moveIm:
+                _harray=self.movemeasurement(_horiarray*weight)
+             else:
+                _harray=_horiarray*weight
+                # -- cut signal region --
              for c in range(0,self._xdownbin):
                 _harray[c]=0# x_donw
              for c in range(self._xupbin,127):
@@ -732,14 +737,15 @@ class MLEM():
                 #_image_update[imx][imy]=np.sum(_object*self.matrix[:,:,:,imx,imy])
           # TODO - cut for value
           #n_top=int((int(self._xupbin - self._xdownbin) * int(self._yupbin - self._ydownbin))*0.01) # top 1% pixels of image
-          n_top=5 # top 3 pixels of image
+          n_top=10 # top 3 pixels of image
           _image_sort=np.reshape(_image_update,_image_update.shape[0]*_image_update.shape[1]) # reshape
           _image_index=np.argpartition(_image_sort, -n_top)[-n_top:]# get the leading "n_top" values
           maxvalue=np.sum(_image_sort[_image_index])/n_top # set max. content (average value)
           where_downbins=np.where(_image_update < maxvalue*0.05)# drop pixels with 5% of max. value
-          #where_upbins=np.where(_image_update > maxvalue*5)# drop pixels with 10 times of max. value
-          _image_update[where_downbins]=0
-          #_image_update[where_upbins]=0
+          _image_update[where_downbins]=0 # if a bin of the producted image is 0, this bin will not be used in "findratio"
+          #TODO test drop fixed value
+          #where_downbins=np.where(_image_update < 0.1)          
+          #_image_update[where_downbins]=0 
           return _image_update, _nevproc
 
       def findratio(self,measurement_image_array,reproduction_image_array):
@@ -767,7 +773,6 @@ class MLEM():
                    _nevproc+=1
                    if prog: prog.update(_nevproc)
                    object_ratio[ix][iy][iz]=np.sum(image_ratio*self.matrix[ix][iy][iz])/np.sum(self.matrix[ix][iy][iz])
-                   #object_ratio[ix][iy][iz]=np.sum(image_ratio*self.matrix[ix][iy][iz])
           _object_update=object_pre*object_ratio#_object_update is no more used
           return object_ratio, _object_update, _nevproc
 
@@ -782,7 +787,6 @@ class MLEM():
           #   object_movupdate[i]=object_update_rot[i+_mov]
           #return object_movupdate
           #return ndimage.rotate(_object,_angle,axes=(0,2),reshape=False)
-
           return ndimage.rotate(_object,_angle,axes=(1,2),reshape=False)
           
       def iterate_osem(self,n_iteration,n_subset):                   
@@ -864,7 +868,6 @@ class MLEM():
                 _temp=np.zeros((self.npixels,self.npixels,self.npixels),dtype=float)#no use (empty object)
                 _object_ratio,_,nevproc=self.getObjectRatio(_temp, _image_ratio,nevproc,prog)# get object ratio for rotated object
                 _object_ratio=self.rotObject(_object_ratio,(-1)*h_angle)# anti-rotate ratio for nor. object
-#                if _ih == 0 or _ih == 1 or _ih == 7 or _ih == 8 or _ih == 9 or _ih == 15:  #TODO test
                 _object_sumratio+=_object_ratio# sum of all ratios
 
                 # === save plots ===  
