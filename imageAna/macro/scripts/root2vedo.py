@@ -45,10 +45,37 @@ __location__ = os.path.realpath(
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_nomove_mlem_forpaper_iteration15.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_nomove2_mlem_forpaper_iteration15.root"
 #inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_movey_mlem_forpaper_iteration15.root"
-inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_1020_mlem_forpaper_iteration100.root"
 
-plotname="MLEM_3Dimage_iteration15"
+#new update moveYaxis
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_5per_mlem_forpaper_iteration100.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_mlem_forpaper_iteration30.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_mlem_forpaper_iteration80.root"
+
+#test move - round 1
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_m2_osem_forpaper_iteration5.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_m1p5_osem_forpaper_iteration5.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_m1_osem_forpaper_iteration5.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_m0p5_osem_forpaper_iteration5.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_zero_osem_forpaper_iteration5.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_0p5_osem_forpaper_iteration5.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_1_osem_forpaper_iteration5.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_1p5_osem_forpaper_iteration5.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_2_osem_forpaper_iteration5.root"
+#test move - round 2
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_zero_osem_forpaper_iteration20.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_0p5_osem_forpaper_iteration20.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_0p75_osem_forpaper_iteration20.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_1_osem_forpaper_iteration20.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_1p25_osem_forpaper_iteration20.root"
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_1p5_osem_forpaper_iteration20.root"
+#test move - round 3 MLEM
+#inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_1_mlem_forpaper_iteration100.root"
+inputfile="/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_1p25_mlem_forpaper_iteration100.root"
+
+plotname="MLEM_3Dimage_iteration50"
+#plotname="MLEM_3Dimage_set3_iteration1"
 #plotname="MLEM_3Dimage"
+
 
 if __name__=="__main__":
    f_mlem=ROOT.TFile(inputfile,"read")
@@ -61,7 +88,10 @@ if __name__=="__main__":
 #      sample_matrix=np.load(f)
 
    # === Rotation ===
-   _angle=65
+   add_angle=90
+   _angle=60
+   if add_angle == 90:
+      _angle = _angle +45
    matrix=ndimage.rotate(matrix,_angle,axes=(1,2),reshape=False)   
  
    # === only for 2D image (to vtk data, no used) ===
@@ -100,7 +130,7 @@ if __name__=="__main__":
    # *** Samples ***
    init_X=20
    init_Y=20
-   init_Z=11
+   init_Z=12
    diff_Big=5
    shift_small=0.2
    #setting
@@ -113,6 +143,11 @@ if __name__=="__main__":
    poi_big2  =(init_X-7.07,init_Y-7.07,init_Z)
    poi_small1=(init_X+7.07,init_Y-7.07,init_Z+6.35-diff_Big+6.35-6.35/2)
    poi_small2=(init_X-7.07,init_Y+7.07,init_Z+12.7+6.35-diff_Big-6.35/2-3)
+   if add_angle == 90:
+      poi_big1  =(init_X+9.9985,init_Y+0,init_Z+12.7-diff_Big)
+      poi_big2  =(init_X-9.9985,init_Y-0,init_Z)
+      poi_small1=(init_X+0,init_Y-9.9985,init_Z+6.35-diff_Big+6.35-6.35/2)
+      poi_small2=(init_X-0,init_Y+9.9985,init_Z+12.7+6.35-diff_Big-6.35/2-3)
 
    s1 = Sphere(c="white",pos=poi_big1, r=12.7/2,alpha=0.5, res=12).wireframe()
    s2 = Sphere(c="white",pos=poi_big2, r=12.7/2,alpha=0.5, res=12).wireframe()
@@ -133,8 +168,9 @@ if __name__=="__main__":
 #   for i in range(7):
 #       sl = vol.slicePlane(origin=[10,10,15+i*3], normal=(0,0,1))
    for i in range(5):
-       if i == 2: continue
+       if i == 0: continue
        sl = vol.slicePlane(origin=[10,10+i*5,10], normal=(0,1,0))
+#       sl = vol.slicePlane(origin=[10+i*5,10,10], normal=(1,0,0))
        slices.append(sl)
    amap = [0.1, 0.8, 1, 1, 1]  # hide low value points giving them alpha 0
    mslices = merge(slices) # merge all slices into a single Mesh
@@ -143,7 +179,7 @@ if __name__=="__main__":
 #   mslices.cmap("Spectral", alpha=amap).lighting('off').addScalarBar(title='Slice',pos=(0.65, 0.05),size=(100,350))# or gist_ncar_r
 
    # == check ==
-   plt = IsosurfaceBrowser(vol, c='gold') # Plotter instance
+#   plt = IsosurfaceBrowser(vol, c='gold') # Plotter instance
 #   plt = SlicerPlotter( vol, bg='white', bg2='lightblue', cmaps=("gist_ncar_r","jet_r","Spectral_r","hot_r","bone_r"),useSlider3D=False,)
 #   plt.show().close()
    show(s1,s2,s3,s4,vol,mslices,__doc__, axes=1)
@@ -163,17 +199,23 @@ if __name__=="__main__":
 
    # == video 2 ==
 #   plt = Plotter(axes=1, offscreen=True)
-#   video = Video("video_rot.mp4", duration=18,backend='opencv')
+#   video = Video("video_rot.mp4", duration=24,backend='opencv')
 #   _angle=2
 #   _inver,to_angle=-1,0
 #   for i in range(int(360/_angle)):
 #      plt.camera.Azimuth(-_angle)
 #      plt.show(s1,s2,s3,s4,vol,mslices)
 #      video.addFrame()
-#   for i in range(int((360-60)/_angle)):
+#   for i in range(int((170)/_angle)):
 #      #to_angle+=_angle
-#      if i > int((360-60)/(_angle*2)): _inver=1
-#      plt.camera.Elevation(_inver*_angle)
+#      if i >= int((170/2.)/_angle): _inver=1
+#      plt.camera.Elevation(_inver*_angle*(-1))
+#      plt.show(s1,s2,s3,s4,vol,mslices)
+#      video.addFrame()
+#   for i in range(int((170)/_angle)):
+#      #to_angle+=_angle
+#      if i >= int((170/2.)/_angle): _inver=-1
+#      plt.camera.Elevation(_inver*_angle*(-1))
 #      plt.show(s1,s2,s3,s4,vol,mslices)
 #      video.addFrame()
 #   video.close()

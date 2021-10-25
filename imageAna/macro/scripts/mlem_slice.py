@@ -15,7 +15,7 @@ ROOT.SetAtlasStyle()
 
 #inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_1111_mlemall_iteration30.root"]
 #inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_iteration100.root"]
-inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_noRcut_mlem_forpaper_iteration50.root"]
+inputname_list=["/Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/root/MLEM_output/myMLEMoutput_30MeV_cutT10_10per_Lyaxis_Yshift_1p25_mlem_forpaper_iteration100.root"]
 
 nplots=20
 Zmaxrange=25# check slice of 3D plot
@@ -55,15 +55,17 @@ def doslice(hist3d,outname,axisname):
 
     # === because the rotation at root2vedo.py ===
     _h3array=hist2array(hist3d)
-    _angle=65
-    _h3array=ndimage.rotate(_h3array,_angle,axes=(1,2),reshape=False)  
+    _angle=105
+    #_h3array=ndimage.rotate(_h3array,_angle,axes=(1,2),reshape=False)  
+    #_h3array=ndimage.rotate(_h3array,180,axes=(0,2),reshape=False)  
+    #_h3array=ndimage.rotate(_h3array,180,axes=(1,0),reshape=False)  
     _h3array[np.where(_h3array < 0.5)]=0.001
     array2hist(_h3array,hist3d)
 
     for i in range(nplots):                   
        _h3temp = hist3d.Clone()
        #_h3temp.SetTitle(";X [mm];Y [mm];Z [mm]")#for root plots
-       _h3temp.SetTitle(";Z [mm];X [mm];Y [mm]")#for paper (vedo plts)
+       _h3temp.SetTitle(";Z [mm];X [mm];-Y [mm]")#for paper (vedo plts)
        _u, _d = (20 - (40./nplots)*(i)), (20 - (40./nplots)*(i+1))
        setrange(_h3temp, axisname, _u, _d)
        _h2temp = _h3temp.Project3D(scan_axis)
@@ -115,7 +117,7 @@ if __name__=="__main__":
       f_out=ROOT.TFile(f_outname,"recreate")
    #   h3=f_mlem.Get("MLEM_3Dimage")
    #   h3=f_mlem.Get("MLEM_3Dimage_h15_iteration14")
-      h3=f_mlem.Get("MLEM_3Dimage_iteration40")
+      h3=f_mlem.Get("MLEM_3Dimage_iteration50")
       f_out.cd()
       doslice(h3,_outname,"x")
       doslice(h3,_outname,"y")

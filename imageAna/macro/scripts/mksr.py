@@ -320,12 +320,9 @@ class MLEM():
           self.npoints=npoints
           self.npixels=npixels
           self.object_range=20 #mm
-          self.moveIm=True
-          self._xdownbin ,self._xupbin = 37, 93 # -7 < x < 7
-          self._ydownbin ,self._yupbin = 21, 109 # -11 < y < 11
-          if not self.moveIm:
-             self._xdownbin ,self._xupbin = 37, 93 # -7 < x < 7
-             self._ydownbin ,self._yupbin = 25, 117 # -10 < y < 12
+          self.moveshift=1.25# [mm], 1mm for 4 bin 
+          sself.moveshiftelf._xdownbin ,self._xupbin = 37, 93 # -7 < x < 7
+          self._ydownbin ,self._yupbin = 17-int(self.moveshift*4), 113-int(self.moveshift*4) # -12 < y < 12
           # === class members ===
           self.mlemhist_list,self.mlem3Dhist_list,self.mlemhist_proje_list,self.mlemratio_list,self.h_data_list=[],[],[],[],[]
           self.source_intensity = 363.1*1000 #Bq, Am-241
@@ -345,8 +342,7 @@ class MLEM():
       def movemeasurement(self,_harray):
           _image=np.zeros((self.nbins,self.nbins),dtype=float)
           image=np.zeros((self.nbins,self.nbins),dtype=float)
-          #xmov,ymov=16,4# bins, 4 bins for 1mm in the images # x:y plots
-          xmov,ymov=0,10# bins, 4 bins for 1mm in the images # y:x plots (y move 2.46 mm)
+          xmov,ymov=0,10+int(self.moveshift*4)# bins, 4 bins for 1mm in the images # y:x plots (starndard : y move 2.46 mm)
           for i in range(self.nbins-xmov):
              _image[i]=_harray[i+xmov]
           for j in range(self.nbins-ymov):
@@ -375,10 +371,7 @@ class MLEM():
              weight=maxentries/_h.GetEntries()
              _horiarray=hist2array(_h)
                 # -- no move --
-             if self.moveIm:
-                _harray=self.movemeasurement(_horiarray*weight)
-             else:
-                _harray=_horiarray*weight
+             _harray=self.movemeasurement(_horiarray*weight)
                 # -- cut signal region --
              for c in range(0,self._xdownbin):
                 _harray[c]=0# x_donw
@@ -741,7 +734,7 @@ class MLEM():
           _image_sort=np.reshape(_image_update,_image_update.shape[0]*_image_update.shape[1]) # reshape
           _image_index=np.argpartition(_image_sort, -n_top)[-n_top:]# get the leading "n_top" values
           maxvalue=np.sum(_image_sort[_image_index])/n_top # set max. content (average value)
-          where_downbins=np.where(_image_update < maxvalue*0.05)# drop pixels with 5% of max. value
+          where_downbins=np.where(_image_update < maxvalue*0.10)# drop pixels with 5% of max. value
           _image_update[where_downbins]=0 # if a bin of the producted image is 0, this bin will not be used in "findratio"
           #TODO test drop fixed value
           #where_downbins=np.where(_image_update < 0.1)          
