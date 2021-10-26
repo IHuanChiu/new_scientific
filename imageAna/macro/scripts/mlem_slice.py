@@ -43,6 +43,18 @@ def setrange(_h, _axis,_up,_down):
     if _axis == "y": _h.GetYaxis().SetRangeUser(_down, _up)
     if _axis == "z": _h.GetZaxis().SetRangeUser(_down, _up)
 
+def doRot(hist3d):
+    # === because the rotation at root2vedo.py ===
+    _hist3d=hist3d.Clone()
+    _h3array=hist2array(_hist3d)
+    _angle=20
+    _h3array=ndimage.rotate(_h3array,_angle,axes=(1,2),reshape=False)  
+    #_h3array=ndimage.rotate(_h3array,180,axes=(0,2),reshape=False)  
+    #_h3array=ndimage.rotate(_h3array,180,axes=(1,0),reshape=False)  
+    _h3array[np.where(_h3array < 0.1)]=0.001
+    array2hist(_h3array,_hist3d)
+    return _hist3d
+
 def doslice(hist3d,outname,axisname):
     _scan_axis="xyz"
     scan_axis=_scan_axis.replace(axisname,"")
@@ -52,15 +64,6 @@ def doslice(hist3d,outname,axisname):
     cv.SetLeftMargin(0.1)
     cv.Print(name + "[", "pdf")
     _hist_list=[]
-
-    # === because the rotation at root2vedo.py ===
-    _h3array=hist2array(hist3d)
-    _angle=105
-    #_h3array=ndimage.rotate(_h3array,_angle,axes=(1,2),reshape=False)  
-    #_h3array=ndimage.rotate(_h3array,180,axes=(0,2),reshape=False)  
-    #_h3array=ndimage.rotate(_h3array,180,axes=(1,0),reshape=False)  
-    _h3array[np.where(_h3array < 0.5)]=0.001
-    array2hist(_h3array,hist3d)
 
     for i in range(nplots):                   
        _h3temp = hist3d.Clone()
@@ -109,15 +112,21 @@ def doslice(hist3d,outname,axisname):
        _h.Write()
        cv2.Print(name2)
 
+    h3_check=ROOT.TH3D("MLEM","MLEM",40,-20,20,40,-20,20,40,-20,20)
+    h3_array_temp=_h3array
+    w=np.where(h3_array_temp <  5)
+    h3_array_temp[w]=0
+    array2hist(h3_array_temp,h3_check)
+    h3_check.Write()
+
 if __name__=="__main__":
    f_outname=""
    for _if in inputname_list:
       f_mlem=ROOT.TFile(_if,"read")
       f_outname=_if.replace(".root","_fitSlice.root")
       f_out=ROOT.TFile(f_outname,"recreate")
-   #   h3=f_mlem.Get("MLEM_3Dimage")
-   #   h3=f_mlem.Get("MLEM_3Dimage_h15_iteration14")
-      h3=f_mlem.Get("MLEM_3Dimage_iteration50")
+      _h3=f_mlem.Get("MLEM_3Dimage_iteration50")
+      h3=doRot(_h3)
       f_out.cd()
       doslice(h3,_outname,"x")
       doslice(h3,_outname,"y")
