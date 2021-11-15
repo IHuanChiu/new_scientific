@@ -58,7 +58,7 @@ Int_t myEnergy_min=20;//20
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar/203089_beam.root";
 //const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri/DEW12007_bar_35MeV/203095_beam.root";
 
-const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri//Al/203081_beam.root";
+const char *f_name = "/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/Al/203081_beam.root";
 
 
 const char *h_name = "em"; // must be a "fix bin size" TH1F, (el, em, eh or Energy)
@@ -115,7 +115,8 @@ void peaks() {
    //Use TSpectrum to find the peak candidates
    TSpectrum *s = new TSpectrum(npeaks);
    s->SetResolution(1);//determines resolution of the neighbouring peaks default value is 1 correspond to 3 sigma distance between peaks.
-   Int_t nfound = s->Search(h,0.01,"",0.005);
+   //Int_t nfound = s->Search(h,0.01,"",0.005);
+   Int_t nfound = s->Search(h,0.01,"",0.05);
    printf("Found %d candidate peaks to fit\n",nfound);
    
    //Estimate background using TSpectrum::Background

@@ -113,10 +113,10 @@ def doslice(hist3d,outname,axisname):
        cv2.Print(name2)
 
     h3_check=ROOT.TH3D("MLEM","MLEM",40,-20,20,40,-20,20,40,-20,20)
-    h3_array_temp=_h3array
-    w=np.where(h3_array_temp <  5)
-    h3_array_temp[w]=0
-    array2hist(h3_array_temp,h3_check)
+    h3_array_check=hist2array(hist3d)
+    w=np.where(h3_array_check <  5)
+    h3_array_check[w]=0
+    array2hist(h3_array_check,h3_check)
     h3_check.Write()
 
 if __name__=="__main__":

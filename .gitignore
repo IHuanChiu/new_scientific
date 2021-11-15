@@ -1,6 +1,11 @@
 imageAna/data/*
 GeAnalysis/data/*
 GeAnalysis/*/data
+GeAnalysis/scripts/edb_analysis/edb
+GeAnalysis/scripts/edb_analysis/root
+GeAnalysis/scripts/*/edb
+GeAnalysis/scripts/*/csv
+GeAnalysis/scripts/*/root
 *.pdf
 *.pyc
 *.npy

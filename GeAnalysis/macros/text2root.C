@@ -48,24 +48,30 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
   static const int total_dets=std::stoi( nDets );
   //calibration, change argv[2] in the bottom a*x^2 + b*x + c
 // /*  //2020.12 Ryugu exp.
+//  Double_t l[6]={0.,0.,0.,0.,0.,0.};
 //  Double_t a[6]={0.,0.,0.,0.,0.,0.};
 //  Double_t b[6]={0.024983, 0.100011, 0.024952, 0.024989, 0.100043, 0.024871};
 //  Double_t c[6]={0.268035, 1.369860, 0.368891, 0.834436, 1.323832, 0.411497};
 //  int ignore_CH=-1;// */
  /*  //2021.04 terada exp.
+  Double_t l[6]={0.,0.,0.,0.,0.,0.};
   Double_t a[6]={0.,0.,0.,0.,0.,0.};
   Double_t b[6]={0.025,0.024995,0.024995,0.025053,0.025006,0.024983};
   Double_t c[6]={0.260015,0.372299,0.447283,0.098903,0.297717,0.271931};
   int ignore_CH=-1;// */
 /*  //2021.04 Ryugu exp.
+  Double_t l[6]={0.,0.,0.,0.,0.,0.};
   Double_t a[6]={0.,0.,0.,0.,0.,0.};
   Double_t b[6]={0.024981,0.024974,0.024981,0.025024,0.249961,0.024999};
   Double_t c[6]={0.300472,0.035980,0.050147,0.338917,0.338917,0.334527};
   int ignore_CH=2; // */
 ///*  //2021.06 Ryugu exp.
-  Double_t a[6]={0.,0.,0.,0.,0.,0.};
-  Double_t b[6]={0.024981,0.024974,0.024981,0.025024,0.0249961,0.024999};
-  Double_t c[6]={0.300472,0.035980,0.050147,0.338917,0.338917,0.334527};
+  Double_t l[6]={7.069E-12,9.028E-12,4.844E-13,3.441E-12,6.646E-14,4.974E-13};
+  Double_t a[6]={-5.450E-08,-5.064E-08,-1.430E-08,-2.811E-08,-2.720E-09,-3.098E-09};
+  Double_t b[6]={2.509E-02,2.499E-02,2.505E-02,2.509E-02,2.501E-02,2.500E-02};
+  Double_t c[6]={2.489E-01,4.231E-01,4.262E-01,3.029E-01,2.868E-01,3.359E-01};
+//  Double_t b[6]={0.024981,0.024974,0.024981,0.025024,0.0249961,0.024999};
+//  Double_t c[6]={0.300472,0.035980,0.050147,0.338917,0.338917,0.334527};
   int ignore_CH=-1; // */
 
   int base_CH=1;
@@ -138,7 +144,7 @@ void tran(std::string run_number, std::string nDets, std::string output_name){
          if(idet == 0) cout << eve.channel << "|" << eve.count << " ";
 #endif
 
-         eve.energy_ori = a[idet]*pow(eve.channel,2)+b[idet]*eve.channel+c[idet];
+         eve.energy_ori = l[idet]*pow(eve.channel,3)+a[idet]*pow(eve.channel,2)+b[idet]*eve.channel+c[idet];
          eve.energy_shift = eve.energy_ori-e_shift;
          //energy correction (WRONG way)
          double channel_base=(eve.energy_shift-c_base)/b_base;
