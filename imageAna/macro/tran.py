@@ -12,7 +12,7 @@ __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 # modules
 import sys,os,random,math,ROOT
 from ROOT import TFile, TTree, TCut, TChain, TSelector
-from ROOT import gROOT, AddressOf
+from ROOT import gROOT, addressof
 ROOT.gROOT.SetBatch(1)
 import argparse
 import math
@@ -307,38 +307,38 @@ class tran_process():
           self.tout.SetDirectory(0)
           self.tout.Branch( 'intvar', struct, 'trigger/I:livetime:unixtime:nhit:ncluster:nsignalx_lv1:nsignaly_lv1:nsignalx_lv2:nsignaly_lv2' )  
           #  === match hit (case-1, case-2 ...) ===
-          self.tout.Branch( 'energy', AddressOf( struct, 'energy' ),  'energy[nhit]/D' )
-          self.tout.Branch( 'energy_p', AddressOf( struct, 'energy_p' ),  'energy_p[nhit]/D' )
-          self.tout.Branch( 'energy_n', AddressOf( struct, 'energy_n' ),  'energy_n[nhit]/D' )
-          self.tout.Branch( 'adc_p',    AddressOf( struct, 'adc_p' ),     'adc_p[nhit]/D' )
-          self.tout.Branch( 'adc_n',    AddressOf( struct, 'adc_n' ),     'adc_n[nhit]/D' )
-          self.tout.Branch( 'x',        AddressOf( struct, 'axis_x' ),    'x[nhit]/D' )
-          self.tout.Branch( 'y',        AddressOf( struct, 'axis_y' ),    'y[nhit]/D' )
-          self.tout.Branch( 'type',        AddressOf( struct, 'type' ),   'type[nhit]/D' )
+          self.tout.Branch( 'energy', addressof( struct, 'energy' ),  'energy[nhit]/D' )
+          self.tout.Branch( 'energy_p', addressof( struct, 'energy_p' ),  'energy_p[nhit]/D' )
+          self.tout.Branch( 'energy_n', addressof( struct, 'energy_n' ),  'energy_n[nhit]/D' )
+          self.tout.Branch( 'adc_p',    addressof( struct, 'adc_p' ),     'adc_p[nhit]/D' )
+          self.tout.Branch( 'adc_n',    addressof( struct, 'adc_n' ),     'adc_n[nhit]/D' )
+          self.tout.Branch( 'x',        addressof( struct, 'axis_x' ),    'x[nhit]/D' )
+          self.tout.Branch( 'y',        addressof( struct, 'axis_y' ),    'y[nhit]/D' )
+          self.tout.Branch( 'type',        addressof( struct, 'type' ),   'type[nhit]/D' )
 
           #  === Lv1: raw data with base energy cut; Lv2: merged hit ===
-          self.tout.Branch( 'E_p_lv1', AddressOf( struct, 'E_p_lv1' ),    'E_p_lv1[nsignalx_lv1]/D' )
-          self.tout.Branch( 'E_n_lv1', AddressOf( struct, 'E_n_lv1' ),    'E_n_lv1[nsignaly_lv1]/D' )
-          self.tout.Branch( 'E_p_lv2', AddressOf( struct, 'E_p_lv2' ),    'E_p_lv2[nsignalx_lv2]/D' )
-          self.tout.Branch( 'E_n_lv2', AddressOf( struct, 'E_n_lv2' ),    'E_n_lv2[nsignaly_lv2]/D' )
-          self.tout.Branch( 'Nstrips_p_lv2', AddressOf( struct, 'Nstrips_p_lv2' ),    'Nstrips_p_lv2[nsignalx_lv2]/I' )
-          self.tout.Branch( 'Nstrips_n_lv2', AddressOf( struct, 'Nstrips_n_lv2' ),    'Nstrips_n_lv2[nsignaly_lv2]/I' )
+          self.tout.Branch( 'E_p_lv1', addressof( struct, 'E_p_lv1' ),    'E_p_lv1[nsignalx_lv1]/D' )
+          self.tout.Branch( 'E_n_lv1', addressof( struct, 'E_n_lv1' ),    'E_n_lv1[nsignaly_lv1]/D' )
+          self.tout.Branch( 'E_p_lv2', addressof( struct, 'E_p_lv2' ),    'E_p_lv2[nsignalx_lv2]/D' )
+          self.tout.Branch( 'E_n_lv2', addressof( struct, 'E_n_lv2' ),    'E_n_lv2[nsignaly_lv2]/D' )
+          self.tout.Branch( 'Nstrips_p_lv2', addressof( struct, 'Nstrips_p_lv2' ),    'Nstrips_p_lv2[nsignalx_lv2]/I' )
+          self.tout.Branch( 'Nstrips_n_lv2', addressof( struct, 'Nstrips_n_lv2' ),    'Nstrips_n_lv2[nsignaly_lv2]/I' )
 
-#          self.tout.Branch( 'Poi_x_lv1', AddressOf( struct, 'Poi_x_lv1' ),'Poi_x_lv1[nsignalx_lv1]/D' )
-#          self.tout.Branch( 'Poi_y_lv1', AddressOf( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
-#          self.tout.Branch( 'Poi_x_lv2', AddressOf( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
-#          self.tout.Branch( 'Poi_y_lv2', AddressOf( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
-          self.tout.Branch( 'Stripid_x_lv1', AddressOf( struct, 'Stripid_x_lv1' ),'Stripid_x_lv1[nsignalx_lv1]/D' )
-          self.tout.Branch( 'Stripid_y_lv1', AddressOf( struct, 'Stripid_y_lv1' ),'Stripid_y_lv1[nsignaly_lv1]/D' )
+#          self.tout.Branch( 'Poi_x_lv1', addressof( struct, 'Poi_x_lv1' ),'Poi_x_lv1[nsignalx_lv1]/D' )
+#          self.tout.Branch( 'Poi_y_lv1', addressof( struct, 'Poi_y_lv1' ),'Poi_y_lv1[nsignaly_lv1]/D' )
+#          self.tout.Branch( 'Poi_x_lv2', addressof( struct, 'Poi_x_lv2' ),'Poi_x_lv2[nsignalx_lv2]/D' )
+#          self.tout.Branch( 'Poi_y_lv2', addressof( struct, 'Poi_y_lv2' ),'Poi_y_lv2[nsignaly_lv2]/D' )
+          self.tout.Branch( 'Stripid_x_lv1', addressof( struct, 'Stripid_x_lv1' ),'Stripid_x_lv1[nsignalx_lv1]/D' )
+          self.tout.Branch( 'Stripid_y_lv1', addressof( struct, 'Stripid_y_lv1' ),'Stripid_y_lv1[nsignaly_lv1]/D' )
 
            # === Cluster ===
-#          self.tout.Branch( 'E_p',     AddressOf( struct, 'E_p' ),        'E_p[ncluster]/D' )
-#          self.tout.Branch( 'E_n',     AddressOf( struct, 'E_n' ),        'E_n[ncluster]/D' )
-#          self.tout.Branch( 'Poi_x',     AddressOf( struct, 'Poi_x' ),    'Poi_x[ncluster]/D' )
-#          self.tout.Branch( 'Poi_y',     AddressOf( struct, 'Poi_y' ),    'Poi_y[ncluster]/D' )
-#          self.tout.Branch( 'DeltaE',  AddressOf( struct, 'DeltaE' ),     'DeltaE[ncluster]/D' )
-#          self.tout.Branch( 'Nstrips_x', AddressOf( struct, 'Nstrips_x' ),'Nstrips_x[ncluster]/D' )
-#          self.tout.Branch( 'Nstrips_y', AddressOf( struct, 'Nstrips_y' ),'Nstrips_y[ncluster]/D' )
+#          self.tout.Branch( 'E_p',     addressof( struct, 'E_p' ),        'E_p[ncluster]/D' )
+#          self.tout.Branch( 'E_n',     addressof( struct, 'E_n' ),        'E_n[ncluster]/D' )
+#          self.tout.Branch( 'Poi_x',     addressof( struct, 'Poi_x' ),    'Poi_x[ncluster]/D' )
+#          self.tout.Branch( 'Poi_y',     addressof( struct, 'Poi_y' ),    'Poi_y[ncluster]/D' )
+#          self.tout.Branch( 'DeltaE',  addressof( struct, 'DeltaE' ),     'DeltaE[ncluster]/D' )
+#          self.tout.Branch( 'Nstrips_x', addressof( struct, 'Nstrips_x' ),'Nstrips_x[ncluster]/D' )
+#          self.tout.Branch( 'Nstrips_y', addressof( struct, 'Nstrips_y' ),'Nstrips_y[ncluster]/D' )
 
           # ==================================
           # auxfiles
@@ -394,6 +394,7 @@ class tran_process():
           struct.nsignaly_lv2 = len(hity_lv2)
           struct.ncluster = len(hitx_lv2)*len(hity_lv2)
           struct.nhit = len(hit_signal)
+          if self.tree.integral_livetime > 2147483647: self.tree.integral_livetime=2147483646
           struct.trigger  = self.tree.integral_livetime
           struct.livetime  = self.tree.livetime
           # if struct.trigger > 2147482648: print(struct.trigger)

@@ -11,7 +11,7 @@ __license__   = "GPL http://www.gnu.org/licenses/gpl.html"
 
 # modules
 import sys,os,random,math,time,ROOT,argparse, ctypes
-from ROOT import TFile, TTree, gROOT, TCut, gDirectory, TMinuit, Long, Double, TMath, AddressOf
+from ROOT import TFile, TTree, gROOT, TCut, gDirectory, TMinuit, TMath, addressof
 gROOT.SetBatch(1)
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/imageAna/macro/utils/')
 sys.path.append('/Users/chiu.i-huan/Desktop/new_scientific/imageAna/macro/')
@@ -151,42 +151,43 @@ def fcn_constant(npar, gin, f, par, iflag):
     for _index in range(pow(npoints,3)):
        #chisq += pow((paramater_list[_index][0] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
        chisq += pow((paramater_list[_index][0] - constantfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
-    f[0] = chisq
+    #f[0] = chisq#v6.20
+    f.value = chisq # in linearChi2 of v6.24, f is a ctypes.c_double, so you need to use f.value to set the value but not f[0]
 def fcn_x(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][1] - muxfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
-    f[0] = chisq
+    f.value = chisq
 def fcn_x2(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][1] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
-    f[0] = chisq
+    f.value = chisq
 def fcn_xsig(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][2] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
-    f[0] = chisq
+    f.value = chisq
 def fcn_y(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][3] - muyfunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
-    f[0] = chisq
+    f.value = chisq
 def fcn_y2(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][3] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
-    f[0] = chisq
+    f.value = chisq
 def fcn_ysig(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][4] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
-    f[0] = chisq
+    f.value = chisq
 def fcn_rho(npar, gin, f, par, iflag):
     chisq, npoints = 0., 5
     for _index in range(pow(npoints,3)):
        chisq += pow((paramater_list[_index][5] - deffunc(point_axis[_index][0],point_axis[_index][1],point_axis[_index][2],par)),2)
-    f[0] = chisq
+    f.value = chisq
 
 
 class SystemResponse():
@@ -321,7 +322,7 @@ class MLEM():
           self.npixels=npixels
           self.object_range=20 #mm
           self.moveshift=1.25# [mm], 1mm for 4 bin 
-          sself.moveshiftelf._xdownbin ,self._xupbin = 37, 93 # -7 < x < 7
+          self._xdownbin ,self._xupbin = 37, 93 # -7 < x < 7
           self._ydownbin ,self._yupbin = 17-int(self.moveshift*4), 113-int(self.moveshift*4) # -12 < y < 12
           # === class members ===
           self.mlemhist_list,self.mlem3Dhist_list,self.mlemhist_proje_list,self.mlemratio_list,self.h_data_list=[],[],[],[],[]
@@ -487,8 +488,8 @@ class MLEM():
           image_var = self.srf(mypoint[0],mypoint[1],mypoint[2])
           _tree=TTree('tree','tree')          
           _tree.SetDirectory(0)
-          _tree.Branch( 'mlemx', AddressOf( mlstruct, 'mlemx' ),  'mlemx/D' )
-          _tree.Branch( 'mlemy', AddressOf( mlstruct, 'mlemy' ),  'mlemy/D' )
+          _tree.Branch( 'mlemx', addressof( mlstruct, 'mlemx' ),  'mlemx/D' )
+          _tree.Branch( 'mlemy', addressof( mlstruct, 'mlemy' ),  'mlemy/D' )
           h_gaus = ROOT.TF2("h_gaus","bigaus",-16,16,-16,16)
           h_gaus.SetParameters(image_var[0],image_var[1],image_var[2],image_var[3],image_var[4],image_var[5])
           for ix in range(128):

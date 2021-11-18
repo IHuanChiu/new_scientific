@@ -14,13 +14,13 @@ OUTNAME="test1020"
 # =====
 # ================== simple test run ====================
 # =====
-#python3 main.py ${NTUPDIRCDTE}/20200307a_00072_001.root -o oldtest_20201005
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/STD27MeV/ -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV
 
 #python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/watanabe_sample/cdtedsd_inseki2_tmp1.root -d CdTe_Lab -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root -o STD27MeV_fix
 #parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/Co57/cdtedsd_0402a_0000{1}_001.root -d CdTe_Lab -o Co57_{1} -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root ::: 5 6 7 8 9 
 #parallel --eta -j ${NCORES} python3 main.py /Users/chiu.i-huan/Desktop/new_scientific/imageAna/data/JPARC2021Apri/Co57/cdtedsd_0403a_0000{1}_001.root -d CdTe_Lab -o Co57_{1} -e ${MACRODIR}/auxfile/cdtedsd_2020a_cal_3_m5c400v.root ::: 3 4 5 6 7 8 9
 #python3 sum_plots.py ../../../2020.12.09/sumrootblank2.root -d CdTe_JPARCDec -o blank2
+#python3 main.py ../data/IPMU2021Aug_OsakaNo7/500n20/Image/20210806a_00003_001.root -d FEC2 -o 500n20_image_newPOI -e ${MACRODIR}/auxfile/spline_calibration_osaka7_500n20_merge.root -n 50000
 
 # =====
 # ================== 2mm CdTe OsakaNo7 (2021.08) ====================
@@ -98,7 +98,7 @@ OUTNAME="test1020"
 # ================== run MLEM ====================
 # =====
    # plots is x:y -> check movemeasurement & updateImage 
-#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV.root -o 30MeV -l 1 
+python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV.root -o 30MeV -l 1 
 #python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_no14keV.root -o 30MeV_no14keV -l 15
 #python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_no14keV.root -o 30MeV_osem_no14keV -l 15 -t osem
 #python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_ImageCut_w_rot12_noX_osem_forpaper -l 10 -t osem
@@ -114,4 +114,4 @@ OUTNAME="test1020"
 
 #final 
 #python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_cutT10_10per_Lyaxis_Yshift_1p25_mlem_forpaper -l 100 -t mlem
-python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_mlem_forpaper -l 100 -t mlem
+#python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_mlem_forpaper -l 100 -t mlem
