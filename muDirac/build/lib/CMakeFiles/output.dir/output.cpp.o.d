@@ -1,6 +1,6 @@
 lib/CMakeFiles/output.dir/output.cpp.o: \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/output.cpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/output.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/output.cpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/output.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/fstream \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__config \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/pthread.h \
@@ -232,8 +232,8 @@ lib/CMakeFiles/output.dir/output.cpp.o: \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__split_buffer \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iomanip \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/vector \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/atom.hpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/../vendor/aixlog/aixlog.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/atom.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/../vendor/aixlog/aixlog.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iostream \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/sstream \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/os/log.h \
@@ -394,17 +394,17 @@ lib/CMakeFiles/output.dir/output.cpp.o: \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/mach/error.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/syslog.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/sys/syslog.h \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/boundary.hpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/constants.hpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/utils.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/boundary.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/constants.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/utils.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cmath \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/state.hpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/integrate.hpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/econfigs.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/state.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/integrate.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/econfigs.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tree \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__node_handle \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/optional \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/elements.hpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/hydrogenic.hpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/potential.hpp
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/elements.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/hydrogenic.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/potential.hpp

@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/input.cpp" "lib/CMakeFiles/input.dir/input.cpp.o" "gcc" "lib/CMakeFiles/input.dir/input.cpp.o.d"
+  "/Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/input.cpp" "lib/CMakeFiles/input.dir/input.cpp.o" "gcc" "lib/CMakeFiles/input.dir/input.cpp.o.d"
   )
 
 # Targets to which this target links.

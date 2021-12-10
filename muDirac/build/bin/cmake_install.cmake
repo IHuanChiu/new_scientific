@@ -1,4 +1,4 @@
-# Install script for directory: /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/src
+# Install script for directory: /Users/chiu.i-huan/Desktop/new_scientific/mudirac/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

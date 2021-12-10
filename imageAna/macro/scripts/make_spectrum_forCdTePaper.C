@@ -89,7 +89,7 @@ void make_spectrum_forCdTePaper(){
   c1->cd();
   mytree->Draw("y:x >> h_image(128,-16,16,128,-16,16)",cut_basic+UTcut,"");
   h_image = (TH2D*)gDirectory->Get("h_image");
-  h_image->SetTitle(";X[mm];Y[mm]");
+  h_image->SetTitle(";X [mm];Y [mm]");
   h_image->GetXaxis()->CenterTitle();
   h_image->GetYaxis()->CenterTitle();
   gStyle->SetPalette(53);

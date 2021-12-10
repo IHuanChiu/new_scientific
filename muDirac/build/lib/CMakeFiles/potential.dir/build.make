@@ -53,10 +53,10 @@ RM = /usr/local/Cellar/cmake/3.20.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac
+CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build
+CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build
 
 # Include any dependencies generated for this target.
 include lib/CMakeFiles/potential.dir/depend.make
@@ -70,18 +70,18 @@ include lib/CMakeFiles/potential.dir/progress.make
 include lib/CMakeFiles/potential.dir/flags.make
 
 lib/CMakeFiles/potential.dir/potential.cpp.o: lib/CMakeFiles/potential.dir/flags.make
-lib/CMakeFiles/potential.dir/potential.cpp.o: /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/potential.cpp
+lib/CMakeFiles/potential.dir/potential.cpp.o: ../lib/potential.cpp
 lib/CMakeFiles/potential.dir/potential.cpp.o: lib/CMakeFiles/potential.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/CMakeFiles/potential.dir/potential.cpp.o"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/potential.dir/potential.cpp.o -MF CMakeFiles/potential.dir/potential.cpp.o.d -o CMakeFiles/potential.dir/potential.cpp.o -c /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/potential.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/CMakeFiles/potential.dir/potential.cpp.o"
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/potential.dir/potential.cpp.o -MF CMakeFiles/potential.dir/potential.cpp.o.d -o CMakeFiles/potential.dir/potential.cpp.o -c /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/potential.cpp
 
 lib/CMakeFiles/potential.dir/potential.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/potential.dir/potential.cpp.i"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/potential.cpp > CMakeFiles/potential.dir/potential.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/potential.cpp > CMakeFiles/potential.dir/potential.cpp.i
 
 lib/CMakeFiles/potential.dir/potential.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/potential.dir/potential.cpp.s"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/potential.cpp -o CMakeFiles/potential.dir/potential.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/potential.cpp -o CMakeFiles/potential.dir/potential.cpp.s
 
 # Object files for target potential
 potential_OBJECTS = \
@@ -93,19 +93,19 @@ potential_EXTERNAL_OBJECTS =
 lib/libpotential.a: lib/CMakeFiles/potential.dir/potential.cpp.o
 lib/libpotential.a: lib/CMakeFiles/potential.dir/build.make
 lib/libpotential.a: lib/CMakeFiles/potential.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libpotential.a"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/potential.dir/cmake_clean_target.cmake
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/potential.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libpotential.a"
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/potential.dir/cmake_clean_target.cmake
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/potential.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 lib/CMakeFiles/potential.dir/build: lib/libpotential.a
 .PHONY : lib/CMakeFiles/potential.dir/build
 
 lib/CMakeFiles/potential.dir/clean:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/potential.dir/cmake_clean.cmake
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/potential.dir/cmake_clean.cmake
 .PHONY : lib/CMakeFiles/potential.dir/clean
 
 lib/CMakeFiles/potential.dir/depend:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib/CMakeFiles/potential.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/chiu.i-huan/Desktop/new_scientific/mudirac /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib/CMakeFiles/potential.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : lib/CMakeFiles/potential.dir/depend
 

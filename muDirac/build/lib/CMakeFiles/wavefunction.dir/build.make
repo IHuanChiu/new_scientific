@@ -53,10 +53,10 @@ RM = /usr/local/Cellar/cmake/3.20.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac
+CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build
+CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build
 
 # Include any dependencies generated for this target.
 include lib/CMakeFiles/wavefunction.dir/depend.make
@@ -70,18 +70,18 @@ include lib/CMakeFiles/wavefunction.dir/progress.make
 include lib/CMakeFiles/wavefunction.dir/flags.make
 
 lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.o: lib/CMakeFiles/wavefunction.dir/flags.make
-lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.o: /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/wavefunction.cpp
+lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.o: ../lib/wavefunction.cpp
 lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.o: lib/CMakeFiles/wavefunction.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.o"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.o -MF CMakeFiles/wavefunction.dir/wavefunction.cpp.o.d -o CMakeFiles/wavefunction.dir/wavefunction.cpp.o -c /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/wavefunction.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.o"
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.o -MF CMakeFiles/wavefunction.dir/wavefunction.cpp.o.d -o CMakeFiles/wavefunction.dir/wavefunction.cpp.o -c /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/wavefunction.cpp
 
 lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/wavefunction.dir/wavefunction.cpp.i"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/wavefunction.cpp > CMakeFiles/wavefunction.dir/wavefunction.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/wavefunction.cpp > CMakeFiles/wavefunction.dir/wavefunction.cpp.i
 
 lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/wavefunction.dir/wavefunction.cpp.s"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/wavefunction.cpp -o CMakeFiles/wavefunction.dir/wavefunction.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/wavefunction.cpp -o CMakeFiles/wavefunction.dir/wavefunction.cpp.s
 
 # Object files for target wavefunction
 wavefunction_OBJECTS = \
@@ -93,19 +93,19 @@ wavefunction_EXTERNAL_OBJECTS =
 lib/libwavefunction.a: lib/CMakeFiles/wavefunction.dir/wavefunction.cpp.o
 lib/libwavefunction.a: lib/CMakeFiles/wavefunction.dir/build.make
 lib/libwavefunction.a: lib/CMakeFiles/wavefunction.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libwavefunction.a"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/wavefunction.dir/cmake_clean_target.cmake
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/wavefunction.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libwavefunction.a"
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/wavefunction.dir/cmake_clean_target.cmake
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/wavefunction.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 lib/CMakeFiles/wavefunction.dir/build: lib/libwavefunction.a
 .PHONY : lib/CMakeFiles/wavefunction.dir/build
 
 lib/CMakeFiles/wavefunction.dir/clean:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/wavefunction.dir/cmake_clean.cmake
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/wavefunction.dir/cmake_clean.cmake
 .PHONY : lib/CMakeFiles/wavefunction.dir/clean
 
 lib/CMakeFiles/wavefunction.dir/depend:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib/CMakeFiles/wavefunction.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/chiu.i-huan/Desktop/new_scientific/mudirac /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib/CMakeFiles/wavefunction.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : lib/CMakeFiles/wavefunction.dir/depend
 

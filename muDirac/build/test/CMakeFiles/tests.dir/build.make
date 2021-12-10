@@ -53,10 +53,10 @@ RM = /usr/local/Cellar/cmake/3.20.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac
+CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build
+CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build
 
 # Utility rule file for tests.
 
@@ -74,10 +74,10 @@ test/CMakeFiles/tests.dir/build: tests
 .PHONY : test/CMakeFiles/tests.dir/build
 
 test/CMakeFiles/tests.dir/clean:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test && $(CMAKE_COMMAND) -P CMakeFiles/tests.dir/cmake_clean.cmake
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test && $(CMAKE_COMMAND) -P CMakeFiles/tests.dir/cmake_clean.cmake
 .PHONY : test/CMakeFiles/tests.dir/clean
 
 test/CMakeFiles/tests.dir/depend:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/test /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test/CMakeFiles/tests.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/chiu.i-huan/Desktop/new_scientific/mudirac /Users/chiu.i-huan/Desktop/new_scientific/mudirac/test /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test/CMakeFiles/tests.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : test/CMakeFiles/tests.dir/depend
 

@@ -54,10 +54,10 @@ RM = /usr/local/Cellar/cmake/3.20.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac
+CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build
+CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -183,14 +183,14 @@ test/clean: test/CMakeFiles/test_main.dir/clean
 lib/CMakeFiles/debugtasks.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/debugtasks.dir/build.make lib/CMakeFiles/debugtasks.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/debugtasks.dir/build.make lib/CMakeFiles/debugtasks.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=7,8 "Built target debugtasks"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=7,8 "Built target debugtasks"
 .PHONY : lib/CMakeFiles/debugtasks.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/debugtasks.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/debugtasks.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/debugtasks.dir/rule
 
 # Convenience name for target.
@@ -209,14 +209,14 @@ lib/CMakeFiles/debugtasks.dir/clean:
 lib/CMakeFiles/config.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/config.dir/build.make lib/CMakeFiles/config.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/config.dir/build.make lib/CMakeFiles/config.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=5,6 "Built target config"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=5,6 "Built target config"
 .PHONY : lib/CMakeFiles/config.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/config.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/config.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/config.dir/rule
 
 # Convenience name for target.
@@ -235,14 +235,14 @@ lib/CMakeFiles/config.dir/clean:
 lib/CMakeFiles/output.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/output.dir/build.make lib/CMakeFiles/output.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/output.dir/build.make lib/CMakeFiles/output.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=21,22 "Built target output"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=21,22 "Built target output"
 .PHONY : lib/CMakeFiles/output.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/output.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/output.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/output.dir/rule
 
 # Convenience name for target.
@@ -261,14 +261,14 @@ lib/CMakeFiles/output.dir/clean:
 lib/CMakeFiles/input.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/input.dir/build.make lib/CMakeFiles/input.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/input.dir/build.make lib/CMakeFiles/input.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=15,16 "Built target input"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=15,16 "Built target input"
 .PHONY : lib/CMakeFiles/input.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/input.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/input.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/input.dir/rule
 
 # Convenience name for target.
@@ -287,14 +287,14 @@ lib/CMakeFiles/input.dir/clean:
 lib/CMakeFiles/boundary.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/boundary.dir/build.make lib/CMakeFiles/boundary.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/boundary.dir/build.make lib/CMakeFiles/boundary.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=3,4 "Built target boundary"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=3,4 "Built target boundary"
 .PHONY : lib/CMakeFiles/boundary.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/boundary.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/boundary.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/boundary.dir/rule
 
 # Convenience name for target.
@@ -313,14 +313,14 @@ lib/CMakeFiles/boundary.dir/clean:
 lib/CMakeFiles/utils.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/utils.dir/build.make lib/CMakeFiles/utils.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/utils.dir/build.make lib/CMakeFiles/utils.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=53,54 "Built target utils"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=53,54 "Built target utils"
 .PHONY : lib/CMakeFiles/utils.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/utils.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/utils.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/utils.dir/rule
 
 # Convenience name for target.
@@ -339,14 +339,14 @@ lib/CMakeFiles/utils.dir/clean:
 lib/CMakeFiles/integrate.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/integrate.dir/build.make lib/CMakeFiles/integrate.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/integrate.dir/build.make lib/CMakeFiles/integrate.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=17,18 "Built target integrate"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=17,18 "Built target integrate"
 .PHONY : lib/CMakeFiles/integrate.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/integrate.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/integrate.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/integrate.dir/rule
 
 # Convenience name for target.
@@ -365,14 +365,14 @@ lib/CMakeFiles/integrate.dir/clean:
 lib/CMakeFiles/potential.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/potential.dir/build.make lib/CMakeFiles/potential.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/potential.dir/build.make lib/CMakeFiles/potential.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=23,24 "Built target potential"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=23,24 "Built target potential"
 .PHONY : lib/CMakeFiles/potential.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/potential.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/potential.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/potential.dir/rule
 
 # Convenience name for target.
@@ -391,14 +391,14 @@ lib/CMakeFiles/potential.dir/clean:
 lib/CMakeFiles/elements.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/elements.dir/build.make lib/CMakeFiles/elements.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/elements.dir/build.make lib/CMakeFiles/elements.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=11,12 "Built target elements"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=11,12 "Built target elements"
 .PHONY : lib/CMakeFiles/elements.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/elements.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/elements.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/elements.dir/rule
 
 # Convenience name for target.
@@ -417,14 +417,14 @@ lib/CMakeFiles/elements.dir/clean:
 lib/CMakeFiles/atom.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/atom.dir/build.make lib/CMakeFiles/atom.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/atom.dir/build.make lib/CMakeFiles/atom.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=1,2 "Built target atom"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=1,2 "Built target atom"
 .PHONY : lib/CMakeFiles/atom.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/atom.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/atom.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/atom.dir/rule
 
 # Convenience name for target.
@@ -443,14 +443,14 @@ lib/CMakeFiles/atom.dir/clean:
 lib/CMakeFiles/state.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/state.dir/build.make lib/CMakeFiles/state.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/state.dir/build.make lib/CMakeFiles/state.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=25,26 "Built target state"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=25,26 "Built target state"
 .PHONY : lib/CMakeFiles/state.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/state.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/state.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/state.dir/rule
 
 # Convenience name for target.
@@ -469,14 +469,14 @@ lib/CMakeFiles/state.dir/clean:
 lib/CMakeFiles/hydrogenic.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/hydrogenic.dir/build.make lib/CMakeFiles/hydrogenic.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/hydrogenic.dir/build.make lib/CMakeFiles/hydrogenic.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=13,14 "Built target hydrogenic"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=13,14 "Built target hydrogenic"
 .PHONY : lib/CMakeFiles/hydrogenic.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/hydrogenic.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/hydrogenic.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/hydrogenic.dir/rule
 
 # Convenience name for target.
@@ -495,14 +495,14 @@ lib/CMakeFiles/hydrogenic.dir/clean:
 lib/CMakeFiles/wavefunction.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/wavefunction.dir/build.make lib/CMakeFiles/wavefunction.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/wavefunction.dir/build.make lib/CMakeFiles/wavefunction.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=55,56 "Built target wavefunction"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=55,56 "Built target wavefunction"
 .PHONY : lib/CMakeFiles/wavefunction.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/wavefunction.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/wavefunction.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/wavefunction.dir/rule
 
 # Convenience name for target.
@@ -521,14 +521,14 @@ lib/CMakeFiles/wavefunction.dir/clean:
 lib/CMakeFiles/transforms.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/transforms.dir/build.make lib/CMakeFiles/transforms.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/transforms.dir/build.make lib/CMakeFiles/transforms.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=51,52 "Built target transforms"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=51,52 "Built target transforms"
 .PHONY : lib/CMakeFiles/transforms.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/transforms.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/transforms.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/transforms.dir/rule
 
 # Convenience name for target.
@@ -547,14 +547,14 @@ lib/CMakeFiles/transforms.dir/clean:
 lib/CMakeFiles/econfigs.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/econfigs.dir/build.make lib/CMakeFiles/econfigs.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib/CMakeFiles/econfigs.dir/build.make lib/CMakeFiles/econfigs.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=9,10 "Built target econfigs"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=9,10 "Built target econfigs"
 .PHONY : lib/CMakeFiles/econfigs.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMakeFiles/econfigs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/econfigs.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : lib/CMakeFiles/econfigs.dir/rule
 
 # Convenience name for target.
@@ -587,14 +587,14 @@ bin/CMakeFiles/mudirac.dir/all: lib/CMakeFiles/transforms.dir/all
 bin/CMakeFiles/mudirac.dir/all: lib/CMakeFiles/econfigs.dir/all
 	$(MAKE) $(MAKESILENT) -f bin/CMakeFiles/mudirac.dir/build.make bin/CMakeFiles/mudirac.dir/depend
 	$(MAKE) $(MAKESILENT) -f bin/CMakeFiles/mudirac.dir/build.make bin/CMakeFiles/mudirac.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=19,20 "Built target mudirac"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=19,20 "Built target mudirac"
 .PHONY : bin/CMakeFiles/mudirac.dir/all
 
 # Build rule for subdir invocation for target.
 bin/CMakeFiles/mudirac.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 32
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 32
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/CMakeFiles/mudirac.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : bin/CMakeFiles/mudirac.dir/rule
 
 # Convenience name for target.
@@ -628,14 +628,14 @@ test/CMakeFiles/test_lines.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_lines.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_lines.dir/build.make test/CMakeFiles/test_lines.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_lines.dir/build.make test/CMakeFiles/test_lines.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=39,40 "Built target test_lines"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=39,40 "Built target test_lines"
 .PHONY : test/CMakeFiles/test_lines.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_lines.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_lines.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_lines.dir/rule
 
 # Convenience name for target.
@@ -669,14 +669,14 @@ test/CMakeFiles/test_wavefunction.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_wavefunction.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_wavefunction.dir/build.make test/CMakeFiles/test_wavefunction.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_wavefunction.dir/build.make test/CMakeFiles/test_wavefunction.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=49,50 "Built target test_wavefunction"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=49,50 "Built target test_wavefunction"
 .PHONY : test/CMakeFiles/test_wavefunction.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_wavefunction.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_wavefunction.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_wavefunction.dir/rule
 
 # Convenience name for target.
@@ -710,14 +710,14 @@ test/CMakeFiles/test_hydrogenic.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_hydrogenic.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_hydrogenic.dir/build.make test/CMakeFiles/test_hydrogenic.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_hydrogenic.dir/build.make test/CMakeFiles/test_hydrogenic.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=33,34 "Built target test_hydrogenic"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=33,34 "Built target test_hydrogenic"
 .PHONY : test/CMakeFiles/test_hydrogenic.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_hydrogenic.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_hydrogenic.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_hydrogenic.dir/rule
 
 # Convenience name for target.
@@ -751,14 +751,14 @@ test/CMakeFiles/test_atom.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_atom.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_atom.dir/build.make test/CMakeFiles/test_atom.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_atom.dir/build.make test/CMakeFiles/test_atom.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=27,28 "Built target test_atom"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=27,28 "Built target test_atom"
 .PHONY : test/CMakeFiles/test_atom.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_atom.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_atom.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_atom.dir/rule
 
 # Convenience name for target.
@@ -792,14 +792,14 @@ test/CMakeFiles/test_potential.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_potential.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_potential.dir/build.make test/CMakeFiles/test_potential.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_potential.dir/build.make test/CMakeFiles/test_potential.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=43,44 "Built target test_potential"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=43,44 "Built target test_potential"
 .PHONY : test/CMakeFiles/test_potential.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_potential.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_potential.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_potential.dir/rule
 
 # Convenience name for target.
@@ -833,14 +833,14 @@ test/CMakeFiles/test_integrate.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_integrate.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_integrate.dir/build.make test/CMakeFiles/test_integrate.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_integrate.dir/build.make test/CMakeFiles/test_integrate.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=37,38 "Built target test_integrate"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=37,38 "Built target test_integrate"
 .PHONY : test/CMakeFiles/test_integrate.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_integrate.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_integrate.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_integrate.dir/rule
 
 # Convenience name for target.
@@ -874,14 +874,14 @@ test/CMakeFiles/test_utils.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_utils.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_utils.dir/build.make test/CMakeFiles/test_utils.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_utils.dir/build.make test/CMakeFiles/test_utils.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=47,48 "Built target test_utils"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=47,48 "Built target test_utils"
 .PHONY : test/CMakeFiles/test_utils.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_utils.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_utils.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_utils.dir/rule
 
 # Convenience name for target.
@@ -915,14 +915,14 @@ test/CMakeFiles/test_elements.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_elements.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_elements.dir/build.make test/CMakeFiles/test_elements.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_elements.dir/build.make test/CMakeFiles/test_elements.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=31,32 "Built target test_elements"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=31,32 "Built target test_elements"
 .PHONY : test/CMakeFiles/test_elements.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_elements.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_elements.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_elements.dir/rule
 
 # Convenience name for target.
@@ -956,14 +956,14 @@ test/CMakeFiles/test_econfigs.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_econfigs.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_econfigs.dir/build.make test/CMakeFiles/test_econfigs.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_econfigs.dir/build.make test/CMakeFiles/test_econfigs.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=29,30 "Built target test_econfigs"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=29,30 "Built target test_econfigs"
 .PHONY : test/CMakeFiles/test_econfigs.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_econfigs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_econfigs.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_econfigs.dir/rule
 
 # Convenience name for target.
@@ -997,14 +997,14 @@ test/CMakeFiles/test_transforms.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_transforms.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_transforms.dir/build.make test/CMakeFiles/test_transforms.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_transforms.dir/build.make test/CMakeFiles/test_transforms.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=45,46 "Built target test_transforms"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=45,46 "Built target test_transforms"
 .PHONY : test/CMakeFiles/test_transforms.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_transforms.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_transforms.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_transforms.dir/rule
 
 # Convenience name for target.
@@ -1033,14 +1033,14 @@ test/CMakeFiles/tests.dir/all: test/CMakeFiles/test_transforms.dir/all
 test/CMakeFiles/tests.dir/all: test/CMakeFiles/test_input.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/tests.dir/build.make test/CMakeFiles/tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/tests.dir/build.make test/CMakeFiles/tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num= "Built target tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num= "Built target tests"
 .PHONY : test/CMakeFiles/tests.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 54
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 54
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/tests.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/tests.dir/rule
 
 # Convenience name for target.
@@ -1074,14 +1074,14 @@ test/CMakeFiles/test_input.dir/all: lib/CMakeFiles/econfigs.dir/all
 test/CMakeFiles/test_input.dir/all: test/CMakeFiles/test_main.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_input.dir/build.make test/CMakeFiles/test_input.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_input.dir/build.make test/CMakeFiles/test_input.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=35,36 "Built target test_input"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=35,36 "Built target test_input"
 .PHONY : test/CMakeFiles/test_input.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_input.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 34
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_input.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_input.dir/rule
 
 # Convenience name for target.
@@ -1100,14 +1100,14 @@ test/CMakeFiles/test_input.dir/clean:
 test/CMakeFiles/test_main.dir/all:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_main.dir/build.make test/CMakeFiles/test_main.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_main.dir/build.make test/CMakeFiles/test_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=41,42 "Built target test_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=41,42 "Built target test_main"
 .PHONY : test/CMakeFiles/test_main.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_main.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_main.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_main.dir/rule
 
 # Convenience name for target.

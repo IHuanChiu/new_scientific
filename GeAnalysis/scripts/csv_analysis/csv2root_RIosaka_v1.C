@@ -2,7 +2,7 @@ std::vector<TString> vNameList;
 int skiplines = 9;
 
 void GetNameList(){
-   std::ifstream list_name("data_list.txt");//command : ls csv/* >> data_list.txt
+   std::ifstream list_name("data_list_new.txt");//command : ls csv/* >> data_list.txt
    TString line;
    while(1)
    {
@@ -16,7 +16,7 @@ void GetNameList(){
 void csv2root_RIosaka_v1()
 {
   GetNameList();
-  TFile* calfile = new TFile("./ge_calfunc_1115.root","read");
+  TFile* calfile = new TFile("./ge_calfunc_1210_new.root","read");
   TF1* cal_func;
 
   for (int ifile=0;ifile<vNameList.size()-1;ifile++){

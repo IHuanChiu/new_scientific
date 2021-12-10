@@ -1,6 +1,6 @@
 lib/CMakeFiles/potential.dir/potential.cpp.o: \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/potential.cpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/potential.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/potential.cpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/potential.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cmath \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__config \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/pthread.h \
@@ -142,8 +142,8 @@ lib/CMakeFiles/potential.dir/potential.cpp.o: \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/i386/_limits.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/sys/syslimits.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__split_buffer \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/constants.hpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/econfigs.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/constants.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/econfigs.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__tree \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__node_handle \
@@ -158,7 +158,7 @@ lib/CMakeFiles/potential.dir/potential.cpp.o: \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/wctype.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/wctype.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/_types/_wctrans_t.h \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/utils.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/utils.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/fstream \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/ostream \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/ios \
@@ -240,7 +240,7 @@ lib/CMakeFiles/potential.dir/potential.cpp.o: \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stack \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/deque \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iomanip \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/../vendor/aixlog/aixlog.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/../vendor/aixlog/aixlog.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iostream \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/sstream \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/os/log.h \
@@ -401,6 +401,6 @@ lib/CMakeFiles/potential.dir/potential.cpp.o: \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/mach/error.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/syslog.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/sys/syslog.h \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/elements.hpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/hydrogenic.hpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/integrate.hpp
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/elements.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/hydrogenic.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/integrate.hpp

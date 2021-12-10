@@ -53,10 +53,10 @@ RM = /usr/local/Cellar/cmake/3.20.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac
+CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build
+CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build
 
 # Include any dependencies generated for this target.
 include test/CMakeFiles/test_transforms.dir/depend.make
@@ -70,18 +70,18 @@ include test/CMakeFiles/test_transforms.dir/progress.make
 include test/CMakeFiles/test_transforms.dir/flags.make
 
 test/CMakeFiles/test_transforms.dir/test_transforms.cpp.o: test/CMakeFiles/test_transforms.dir/flags.make
-test/CMakeFiles/test_transforms.dir/test_transforms.cpp.o: /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/test/test_transforms.cpp
+test/CMakeFiles/test_transforms.dir/test_transforms.cpp.o: ../test/test_transforms.cpp
 test/CMakeFiles/test_transforms.dir/test_transforms.cpp.o: test/CMakeFiles/test_transforms.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object test/CMakeFiles/test_transforms.dir/test_transforms.cpp.o"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/CMakeFiles/test_transforms.dir/test_transforms.cpp.o -MF CMakeFiles/test_transforms.dir/test_transforms.cpp.o.d -o CMakeFiles/test_transforms.dir/test_transforms.cpp.o -c /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/test/test_transforms.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object test/CMakeFiles/test_transforms.dir/test_transforms.cpp.o"
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT test/CMakeFiles/test_transforms.dir/test_transforms.cpp.o -MF CMakeFiles/test_transforms.dir/test_transforms.cpp.o.d -o CMakeFiles/test_transforms.dir/test_transforms.cpp.o -c /Users/chiu.i-huan/Desktop/new_scientific/mudirac/test/test_transforms.cpp
 
 test/CMakeFiles/test_transforms.dir/test_transforms.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test_transforms.dir/test_transforms.cpp.i"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/test/test_transforms.cpp > CMakeFiles/test_transforms.dir/test_transforms.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/chiu.i-huan/Desktop/new_scientific/mudirac/test/test_transforms.cpp > CMakeFiles/test_transforms.dir/test_transforms.cpp.i
 
 test/CMakeFiles/test_transforms.dir/test_transforms.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_transforms.dir/test_transforms.cpp.s"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/test/test_transforms.cpp -o CMakeFiles/test_transforms.dir/test_transforms.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test && /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/chiu.i-huan/Desktop/new_scientific/mudirac/test/test_transforms.cpp -o CMakeFiles/test_transforms.dir/test_transforms.cpp.s
 
 # Object files for target test_transforms
 test_transforms_OBJECTS = \
@@ -109,18 +109,18 @@ test/test_transforms: lib/libelements.a
 test/test_transforms: lib/libinput.a
 test/test_transforms: lib/libutils.a
 test/test_transforms: test/CMakeFiles/test_transforms.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable test_transforms"
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_transforms.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable test_transforms"
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_transforms.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 test/CMakeFiles/test_transforms.dir/build: test/test_transforms
 .PHONY : test/CMakeFiles/test_transforms.dir/build
 
 test/CMakeFiles/test_transforms.dir/clean:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test && $(CMAKE_COMMAND) -P CMakeFiles/test_transforms.dir/cmake_clean.cmake
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test && $(CMAKE_COMMAND) -P CMakeFiles/test_transforms.dir/cmake_clean.cmake
 .PHONY : test/CMakeFiles/test_transforms.dir/clean
 
 test/CMakeFiles/test_transforms.dir/depend:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/test /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test/CMakeFiles/test_transforms.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/chiu.i-huan/Desktop/new_scientific/mudirac /Users/chiu.i-huan/Desktop/new_scientific/mudirac/test /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test/CMakeFiles/test_transforms.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : test/CMakeFiles/test_transforms.dir/depend
 

@@ -57,10 +57,10 @@ RM = /usr/local/Cellar/cmake/3.20.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac
+CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build
+CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -97,14 +97,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test//CMakeFiles/progress.marks
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test//CMakeFiles/progress.marks
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/clean
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/clean
 .PHONY : clean
 
 # The main clean target
@@ -113,22 +113,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/preinstall
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/preinstall
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 test/CMakeFiles/test_lines.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_lines.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_lines.dir/rule
 .PHONY : test/CMakeFiles/test_lines.dir/rule
 
 # Convenience name for target.
@@ -137,12 +137,12 @@ test_lines: test/CMakeFiles/test_lines.dir/rule
 
 # fast build rule for target.
 test_lines/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_lines.dir/build.make test/CMakeFiles/test_lines.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_lines.dir/build.make test/CMakeFiles/test_lines.dir/build
 .PHONY : test_lines/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_wavefunction.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_wavefunction.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_wavefunction.dir/rule
 .PHONY : test/CMakeFiles/test_wavefunction.dir/rule
 
 # Convenience name for target.
@@ -151,12 +151,12 @@ test_wavefunction: test/CMakeFiles/test_wavefunction.dir/rule
 
 # fast build rule for target.
 test_wavefunction/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_wavefunction.dir/build.make test/CMakeFiles/test_wavefunction.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_wavefunction.dir/build.make test/CMakeFiles/test_wavefunction.dir/build
 .PHONY : test_wavefunction/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_hydrogenic.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_hydrogenic.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_hydrogenic.dir/rule
 .PHONY : test/CMakeFiles/test_hydrogenic.dir/rule
 
 # Convenience name for target.
@@ -165,12 +165,12 @@ test_hydrogenic: test/CMakeFiles/test_hydrogenic.dir/rule
 
 # fast build rule for target.
 test_hydrogenic/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_hydrogenic.dir/build.make test/CMakeFiles/test_hydrogenic.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_hydrogenic.dir/build.make test/CMakeFiles/test_hydrogenic.dir/build
 .PHONY : test_hydrogenic/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_atom.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_atom.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_atom.dir/rule
 .PHONY : test/CMakeFiles/test_atom.dir/rule
 
 # Convenience name for target.
@@ -179,12 +179,12 @@ test_atom: test/CMakeFiles/test_atom.dir/rule
 
 # fast build rule for target.
 test_atom/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_atom.dir/build.make test/CMakeFiles/test_atom.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_atom.dir/build.make test/CMakeFiles/test_atom.dir/build
 .PHONY : test_atom/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_potential.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_potential.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_potential.dir/rule
 .PHONY : test/CMakeFiles/test_potential.dir/rule
 
 # Convenience name for target.
@@ -193,12 +193,12 @@ test_potential: test/CMakeFiles/test_potential.dir/rule
 
 # fast build rule for target.
 test_potential/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_potential.dir/build.make test/CMakeFiles/test_potential.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_potential.dir/build.make test/CMakeFiles/test_potential.dir/build
 .PHONY : test_potential/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_integrate.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_integrate.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_integrate.dir/rule
 .PHONY : test/CMakeFiles/test_integrate.dir/rule
 
 # Convenience name for target.
@@ -207,12 +207,12 @@ test_integrate: test/CMakeFiles/test_integrate.dir/rule
 
 # fast build rule for target.
 test_integrate/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_integrate.dir/build.make test/CMakeFiles/test_integrate.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_integrate.dir/build.make test/CMakeFiles/test_integrate.dir/build
 .PHONY : test_integrate/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_utils.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_utils.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_utils.dir/rule
 .PHONY : test/CMakeFiles/test_utils.dir/rule
 
 # Convenience name for target.
@@ -221,12 +221,12 @@ test_utils: test/CMakeFiles/test_utils.dir/rule
 
 # fast build rule for target.
 test_utils/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_utils.dir/build.make test/CMakeFiles/test_utils.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_utils.dir/build.make test/CMakeFiles/test_utils.dir/build
 .PHONY : test_utils/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_elements.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_elements.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_elements.dir/rule
 .PHONY : test/CMakeFiles/test_elements.dir/rule
 
 # Convenience name for target.
@@ -235,12 +235,12 @@ test_elements: test/CMakeFiles/test_elements.dir/rule
 
 # fast build rule for target.
 test_elements/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_elements.dir/build.make test/CMakeFiles/test_elements.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_elements.dir/build.make test/CMakeFiles/test_elements.dir/build
 .PHONY : test_elements/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_econfigs.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_econfigs.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_econfigs.dir/rule
 .PHONY : test/CMakeFiles/test_econfigs.dir/rule
 
 # Convenience name for target.
@@ -249,12 +249,12 @@ test_econfigs: test/CMakeFiles/test_econfigs.dir/rule
 
 # fast build rule for target.
 test_econfigs/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_econfigs.dir/build.make test/CMakeFiles/test_econfigs.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_econfigs.dir/build.make test/CMakeFiles/test_econfigs.dir/build
 .PHONY : test_econfigs/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_transforms.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_transforms.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_transforms.dir/rule
 .PHONY : test/CMakeFiles/test_transforms.dir/rule
 
 # Convenience name for target.
@@ -263,12 +263,12 @@ test_transforms: test/CMakeFiles/test_transforms.dir/rule
 
 # fast build rule for target.
 test_transforms/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_transforms.dir/build.make test/CMakeFiles/test_transforms.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_transforms.dir/build.make test/CMakeFiles/test_transforms.dir/build
 .PHONY : test_transforms/fast
 
 # Convenience name for target.
 test/CMakeFiles/tests.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/tests.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/tests.dir/rule
 .PHONY : test/CMakeFiles/tests.dir/rule
 
 # Convenience name for target.
@@ -277,12 +277,12 @@ tests: test/CMakeFiles/tests.dir/rule
 
 # fast build rule for target.
 tests/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/tests.dir/build.make test/CMakeFiles/tests.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/tests.dir/build.make test/CMakeFiles/tests.dir/build
 .PHONY : tests/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_input.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_input.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_input.dir/rule
 .PHONY : test/CMakeFiles/test_input.dir/rule
 
 # Convenience name for target.
@@ -291,12 +291,12 @@ test_input: test/CMakeFiles/test_input.dir/rule
 
 # fast build rule for target.
 test_input/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_input.dir/build.make test/CMakeFiles/test_input.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_input.dir/build.make test/CMakeFiles/test_input.dir/build
 .PHONY : test_input/fast
 
 # Convenience name for target.
 test/CMakeFiles/test_main.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_main.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_main.dir/rule
 .PHONY : test/CMakeFiles/test_main.dir/rule
 
 # Convenience name for target.
@@ -305,7 +305,7 @@ test_main: test/CMakeFiles/test_main.dir/rule
 
 # fast build rule for target.
 test_main/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_main.dir/build.make test/CMakeFiles/test_main.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_main.dir/build.make test/CMakeFiles/test_main.dir/build
 .PHONY : test_main/fast
 
 test_atom.o: test_atom.cpp.o
@@ -313,7 +313,7 @@ test_atom.o: test_atom.cpp.o
 
 # target to build an object file
 test_atom.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_atom.dir/build.make test/CMakeFiles/test_atom.dir/test_atom.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_atom.dir/build.make test/CMakeFiles/test_atom.dir/test_atom.cpp.o
 .PHONY : test_atom.cpp.o
 
 test_atom.i: test_atom.cpp.i
@@ -321,7 +321,7 @@ test_atom.i: test_atom.cpp.i
 
 # target to preprocess a source file
 test_atom.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_atom.dir/build.make test/CMakeFiles/test_atom.dir/test_atom.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_atom.dir/build.make test/CMakeFiles/test_atom.dir/test_atom.cpp.i
 .PHONY : test_atom.cpp.i
 
 test_atom.s: test_atom.cpp.s
@@ -329,7 +329,7 @@ test_atom.s: test_atom.cpp.s
 
 # target to generate assembly for a file
 test_atom.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_atom.dir/build.make test/CMakeFiles/test_atom.dir/test_atom.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_atom.dir/build.make test/CMakeFiles/test_atom.dir/test_atom.cpp.s
 .PHONY : test_atom.cpp.s
 
 test_econfigs.o: test_econfigs.cpp.o
@@ -337,7 +337,7 @@ test_econfigs.o: test_econfigs.cpp.o
 
 # target to build an object file
 test_econfigs.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_econfigs.dir/build.make test/CMakeFiles/test_econfigs.dir/test_econfigs.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_econfigs.dir/build.make test/CMakeFiles/test_econfigs.dir/test_econfigs.cpp.o
 .PHONY : test_econfigs.cpp.o
 
 test_econfigs.i: test_econfigs.cpp.i
@@ -345,7 +345,7 @@ test_econfigs.i: test_econfigs.cpp.i
 
 # target to preprocess a source file
 test_econfigs.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_econfigs.dir/build.make test/CMakeFiles/test_econfigs.dir/test_econfigs.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_econfigs.dir/build.make test/CMakeFiles/test_econfigs.dir/test_econfigs.cpp.i
 .PHONY : test_econfigs.cpp.i
 
 test_econfigs.s: test_econfigs.cpp.s
@@ -353,7 +353,7 @@ test_econfigs.s: test_econfigs.cpp.s
 
 # target to generate assembly for a file
 test_econfigs.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_econfigs.dir/build.make test/CMakeFiles/test_econfigs.dir/test_econfigs.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_econfigs.dir/build.make test/CMakeFiles/test_econfigs.dir/test_econfigs.cpp.s
 .PHONY : test_econfigs.cpp.s
 
 test_elements.o: test_elements.cpp.o
@@ -361,7 +361,7 @@ test_elements.o: test_elements.cpp.o
 
 # target to build an object file
 test_elements.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_elements.dir/build.make test/CMakeFiles/test_elements.dir/test_elements.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_elements.dir/build.make test/CMakeFiles/test_elements.dir/test_elements.cpp.o
 .PHONY : test_elements.cpp.o
 
 test_elements.i: test_elements.cpp.i
@@ -369,7 +369,7 @@ test_elements.i: test_elements.cpp.i
 
 # target to preprocess a source file
 test_elements.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_elements.dir/build.make test/CMakeFiles/test_elements.dir/test_elements.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_elements.dir/build.make test/CMakeFiles/test_elements.dir/test_elements.cpp.i
 .PHONY : test_elements.cpp.i
 
 test_elements.s: test_elements.cpp.s
@@ -377,7 +377,7 @@ test_elements.s: test_elements.cpp.s
 
 # target to generate assembly for a file
 test_elements.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_elements.dir/build.make test/CMakeFiles/test_elements.dir/test_elements.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_elements.dir/build.make test/CMakeFiles/test_elements.dir/test_elements.cpp.s
 .PHONY : test_elements.cpp.s
 
 test_hydrogenic.o: test_hydrogenic.cpp.o
@@ -385,7 +385,7 @@ test_hydrogenic.o: test_hydrogenic.cpp.o
 
 # target to build an object file
 test_hydrogenic.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_hydrogenic.dir/build.make test/CMakeFiles/test_hydrogenic.dir/test_hydrogenic.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_hydrogenic.dir/build.make test/CMakeFiles/test_hydrogenic.dir/test_hydrogenic.cpp.o
 .PHONY : test_hydrogenic.cpp.o
 
 test_hydrogenic.i: test_hydrogenic.cpp.i
@@ -393,7 +393,7 @@ test_hydrogenic.i: test_hydrogenic.cpp.i
 
 # target to preprocess a source file
 test_hydrogenic.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_hydrogenic.dir/build.make test/CMakeFiles/test_hydrogenic.dir/test_hydrogenic.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_hydrogenic.dir/build.make test/CMakeFiles/test_hydrogenic.dir/test_hydrogenic.cpp.i
 .PHONY : test_hydrogenic.cpp.i
 
 test_hydrogenic.s: test_hydrogenic.cpp.s
@@ -401,7 +401,7 @@ test_hydrogenic.s: test_hydrogenic.cpp.s
 
 # target to generate assembly for a file
 test_hydrogenic.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_hydrogenic.dir/build.make test/CMakeFiles/test_hydrogenic.dir/test_hydrogenic.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_hydrogenic.dir/build.make test/CMakeFiles/test_hydrogenic.dir/test_hydrogenic.cpp.s
 .PHONY : test_hydrogenic.cpp.s
 
 test_input.o: test_input.cpp.o
@@ -409,7 +409,7 @@ test_input.o: test_input.cpp.o
 
 # target to build an object file
 test_input.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_input.dir/build.make test/CMakeFiles/test_input.dir/test_input.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_input.dir/build.make test/CMakeFiles/test_input.dir/test_input.cpp.o
 .PHONY : test_input.cpp.o
 
 test_input.i: test_input.cpp.i
@@ -417,7 +417,7 @@ test_input.i: test_input.cpp.i
 
 # target to preprocess a source file
 test_input.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_input.dir/build.make test/CMakeFiles/test_input.dir/test_input.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_input.dir/build.make test/CMakeFiles/test_input.dir/test_input.cpp.i
 .PHONY : test_input.cpp.i
 
 test_input.s: test_input.cpp.s
@@ -425,7 +425,7 @@ test_input.s: test_input.cpp.s
 
 # target to generate assembly for a file
 test_input.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_input.dir/build.make test/CMakeFiles/test_input.dir/test_input.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_input.dir/build.make test/CMakeFiles/test_input.dir/test_input.cpp.s
 .PHONY : test_input.cpp.s
 
 test_integrate.o: test_integrate.cpp.o
@@ -433,7 +433,7 @@ test_integrate.o: test_integrate.cpp.o
 
 # target to build an object file
 test_integrate.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_integrate.dir/build.make test/CMakeFiles/test_integrate.dir/test_integrate.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_integrate.dir/build.make test/CMakeFiles/test_integrate.dir/test_integrate.cpp.o
 .PHONY : test_integrate.cpp.o
 
 test_integrate.i: test_integrate.cpp.i
@@ -441,7 +441,7 @@ test_integrate.i: test_integrate.cpp.i
 
 # target to preprocess a source file
 test_integrate.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_integrate.dir/build.make test/CMakeFiles/test_integrate.dir/test_integrate.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_integrate.dir/build.make test/CMakeFiles/test_integrate.dir/test_integrate.cpp.i
 .PHONY : test_integrate.cpp.i
 
 test_integrate.s: test_integrate.cpp.s
@@ -449,7 +449,7 @@ test_integrate.s: test_integrate.cpp.s
 
 # target to generate assembly for a file
 test_integrate.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_integrate.dir/build.make test/CMakeFiles/test_integrate.dir/test_integrate.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_integrate.dir/build.make test/CMakeFiles/test_integrate.dir/test_integrate.cpp.s
 .PHONY : test_integrate.cpp.s
 
 test_lines.o: test_lines.cpp.o
@@ -457,7 +457,7 @@ test_lines.o: test_lines.cpp.o
 
 # target to build an object file
 test_lines.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_lines.dir/build.make test/CMakeFiles/test_lines.dir/test_lines.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_lines.dir/build.make test/CMakeFiles/test_lines.dir/test_lines.cpp.o
 .PHONY : test_lines.cpp.o
 
 test_lines.i: test_lines.cpp.i
@@ -465,7 +465,7 @@ test_lines.i: test_lines.cpp.i
 
 # target to preprocess a source file
 test_lines.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_lines.dir/build.make test/CMakeFiles/test_lines.dir/test_lines.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_lines.dir/build.make test/CMakeFiles/test_lines.dir/test_lines.cpp.i
 .PHONY : test_lines.cpp.i
 
 test_lines.s: test_lines.cpp.s
@@ -473,7 +473,7 @@ test_lines.s: test_lines.cpp.s
 
 # target to generate assembly for a file
 test_lines.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_lines.dir/build.make test/CMakeFiles/test_lines.dir/test_lines.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_lines.dir/build.make test/CMakeFiles/test_lines.dir/test_lines.cpp.s
 .PHONY : test_lines.cpp.s
 
 test_main.o: test_main.cpp.o
@@ -481,7 +481,7 @@ test_main.o: test_main.cpp.o
 
 # target to build an object file
 test_main.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_main.dir/build.make test/CMakeFiles/test_main.dir/test_main.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_main.dir/build.make test/CMakeFiles/test_main.dir/test_main.cpp.o
 .PHONY : test_main.cpp.o
 
 test_main.i: test_main.cpp.i
@@ -489,7 +489,7 @@ test_main.i: test_main.cpp.i
 
 # target to preprocess a source file
 test_main.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_main.dir/build.make test/CMakeFiles/test_main.dir/test_main.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_main.dir/build.make test/CMakeFiles/test_main.dir/test_main.cpp.i
 .PHONY : test_main.cpp.i
 
 test_main.s: test_main.cpp.s
@@ -497,7 +497,7 @@ test_main.s: test_main.cpp.s
 
 # target to generate assembly for a file
 test_main.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_main.dir/build.make test/CMakeFiles/test_main.dir/test_main.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_main.dir/build.make test/CMakeFiles/test_main.dir/test_main.cpp.s
 .PHONY : test_main.cpp.s
 
 test_potential.o: test_potential.cpp.o
@@ -505,7 +505,7 @@ test_potential.o: test_potential.cpp.o
 
 # target to build an object file
 test_potential.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_potential.dir/build.make test/CMakeFiles/test_potential.dir/test_potential.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_potential.dir/build.make test/CMakeFiles/test_potential.dir/test_potential.cpp.o
 .PHONY : test_potential.cpp.o
 
 test_potential.i: test_potential.cpp.i
@@ -513,7 +513,7 @@ test_potential.i: test_potential.cpp.i
 
 # target to preprocess a source file
 test_potential.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_potential.dir/build.make test/CMakeFiles/test_potential.dir/test_potential.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_potential.dir/build.make test/CMakeFiles/test_potential.dir/test_potential.cpp.i
 .PHONY : test_potential.cpp.i
 
 test_potential.s: test_potential.cpp.s
@@ -521,7 +521,7 @@ test_potential.s: test_potential.cpp.s
 
 # target to generate assembly for a file
 test_potential.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_potential.dir/build.make test/CMakeFiles/test_potential.dir/test_potential.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_potential.dir/build.make test/CMakeFiles/test_potential.dir/test_potential.cpp.s
 .PHONY : test_potential.cpp.s
 
 test_transforms.o: test_transforms.cpp.o
@@ -529,7 +529,7 @@ test_transforms.o: test_transforms.cpp.o
 
 # target to build an object file
 test_transforms.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_transforms.dir/build.make test/CMakeFiles/test_transforms.dir/test_transforms.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_transforms.dir/build.make test/CMakeFiles/test_transforms.dir/test_transforms.cpp.o
 .PHONY : test_transforms.cpp.o
 
 test_transforms.i: test_transforms.cpp.i
@@ -537,7 +537,7 @@ test_transforms.i: test_transforms.cpp.i
 
 # target to preprocess a source file
 test_transforms.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_transforms.dir/build.make test/CMakeFiles/test_transforms.dir/test_transforms.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_transforms.dir/build.make test/CMakeFiles/test_transforms.dir/test_transforms.cpp.i
 .PHONY : test_transforms.cpp.i
 
 test_transforms.s: test_transforms.cpp.s
@@ -545,7 +545,7 @@ test_transforms.s: test_transforms.cpp.s
 
 # target to generate assembly for a file
 test_transforms.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_transforms.dir/build.make test/CMakeFiles/test_transforms.dir/test_transforms.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_transforms.dir/build.make test/CMakeFiles/test_transforms.dir/test_transforms.cpp.s
 .PHONY : test_transforms.cpp.s
 
 test_utils.o: test_utils.cpp.o
@@ -553,7 +553,7 @@ test_utils.o: test_utils.cpp.o
 
 # target to build an object file
 test_utils.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_utils.dir/build.make test/CMakeFiles/test_utils.dir/test_utils.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_utils.dir/build.make test/CMakeFiles/test_utils.dir/test_utils.cpp.o
 .PHONY : test_utils.cpp.o
 
 test_utils.i: test_utils.cpp.i
@@ -561,7 +561,7 @@ test_utils.i: test_utils.cpp.i
 
 # target to preprocess a source file
 test_utils.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_utils.dir/build.make test/CMakeFiles/test_utils.dir/test_utils.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_utils.dir/build.make test/CMakeFiles/test_utils.dir/test_utils.cpp.i
 .PHONY : test_utils.cpp.i
 
 test_utils.s: test_utils.cpp.s
@@ -569,7 +569,7 @@ test_utils.s: test_utils.cpp.s
 
 # target to generate assembly for a file
 test_utils.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_utils.dir/build.make test/CMakeFiles/test_utils.dir/test_utils.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_utils.dir/build.make test/CMakeFiles/test_utils.dir/test_utils.cpp.s
 .PHONY : test_utils.cpp.s
 
 test_wavefunction.o: test_wavefunction.cpp.o
@@ -577,7 +577,7 @@ test_wavefunction.o: test_wavefunction.cpp.o
 
 # target to build an object file
 test_wavefunction.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_wavefunction.dir/build.make test/CMakeFiles/test_wavefunction.dir/test_wavefunction.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_wavefunction.dir/build.make test/CMakeFiles/test_wavefunction.dir/test_wavefunction.cpp.o
 .PHONY : test_wavefunction.cpp.o
 
 test_wavefunction.i: test_wavefunction.cpp.i
@@ -585,7 +585,7 @@ test_wavefunction.i: test_wavefunction.cpp.i
 
 # target to preprocess a source file
 test_wavefunction.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_wavefunction.dir/build.make test/CMakeFiles/test_wavefunction.dir/test_wavefunction.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_wavefunction.dir/build.make test/CMakeFiles/test_wavefunction.dir/test_wavefunction.cpp.i
 .PHONY : test_wavefunction.cpp.i
 
 test_wavefunction.s: test_wavefunction.cpp.s
@@ -593,7 +593,7 @@ test_wavefunction.s: test_wavefunction.cpp.s
 
 # target to generate assembly for a file
 test_wavefunction.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_wavefunction.dir/build.make test/CMakeFiles/test_wavefunction.dir/test_wavefunction.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_wavefunction.dir/build.make test/CMakeFiles/test_wavefunction.dir/test_wavefunction.cpp.s
 .PHONY : test_wavefunction.cpp.s
 
 # Help Target
@@ -665,6 +665,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

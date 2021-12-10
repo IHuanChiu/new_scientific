@@ -61,6 +61,8 @@ void test_fit(){
      f1->Write();
      f2->Write();
      f3->Write();
+ 
+     std::cout << " a : "<< f1->GetParameter(1)  << " b : " << f1->GetParameter(0) << std::endl;
   }
 
   for(int i = 0;i< 20; i++){
@@ -68,11 +70,11 @@ void test_fit(){
     hhnew[i]->Write(); 
   }
 
-  std::cout << "CON:" << f1->GetParameter(0) << " MEAN : " << f1->GetParameter(1) << " #sigma : " << f1->GetParameter(2) << std::endl;
+//  std::cout << "CON:" << f1->GetParameter(0) << " MEAN : " << f1->GetParameter(1) << " #sigma : " << f1->GetParameter(2) << std::endl;
   int down = hh->GetXaxis()->FindBin(f1->GetParameter(1)-3*f1->GetParameter(2));
   int up = hh->GetXaxis()->FindBin(f1->GetParameter(1)+3*f1->GetParameter(2));
   int sum = hh->Integral(down,up);
-  std::cout << "peak1 : " << sum << std::endl;
+//  std::cout << "peak1 : " << sum << std::endl;
 
-  std::cout << "f1 : " << f1->Integral(f1->GetParameter(1)-3*f1->GetParameter(2), f1->GetParameter(1)+3*f1->GetParameter(2)) << std::endl;
+//  std::cout << "f1 : " << f1->Integral(f1->GetParameter(1)-3*f1->GetParameter(2), f1->GetParameter(1)+3*f1->GetParameter(2)) << std::endl;
 }

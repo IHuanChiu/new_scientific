@@ -57,10 +57,10 @@ RM = /usr/local/Cellar/cmake/3.20.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac
+CMAKE_SOURCE_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build
+CMAKE_BINARY_DIR = /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -97,14 +97,14 @@ test/fast: test
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/bin//CMakeFiles/progress.marks
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/CMakeFiles 0
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/bin//CMakeFiles/progress.marks
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/clean
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/clean
 .PHONY : clean
 
 # The main clean target
@@ -113,22 +113,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/preinstall
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/preinstall
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 bin/CMakeFiles/mudirac.dir/rule:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/CMakeFiles/mudirac.dir/rule
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bin/CMakeFiles/mudirac.dir/rule
 .PHONY : bin/CMakeFiles/mudirac.dir/rule
 
 # Convenience name for target.
@@ -137,7 +137,7 @@ mudirac: bin/CMakeFiles/mudirac.dir/rule
 
 # fast build rule for target.
 mudirac/fast:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f bin/CMakeFiles/mudirac.dir/build.make bin/CMakeFiles/mudirac.dir/build
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f bin/CMakeFiles/mudirac.dir/build.make bin/CMakeFiles/mudirac.dir/build
 .PHONY : mudirac/fast
 
 mudirac.o: mudirac.cpp.o
@@ -145,7 +145,7 @@ mudirac.o: mudirac.cpp.o
 
 # target to build an object file
 mudirac.cpp.o:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f bin/CMakeFiles/mudirac.dir/build.make bin/CMakeFiles/mudirac.dir/mudirac.cpp.o
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f bin/CMakeFiles/mudirac.dir/build.make bin/CMakeFiles/mudirac.dir/mudirac.cpp.o
 .PHONY : mudirac.cpp.o
 
 mudirac.i: mudirac.cpp.i
@@ -153,7 +153,7 @@ mudirac.i: mudirac.cpp.i
 
 # target to preprocess a source file
 mudirac.cpp.i:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f bin/CMakeFiles/mudirac.dir/build.make bin/CMakeFiles/mudirac.dir/mudirac.cpp.i
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f bin/CMakeFiles/mudirac.dir/build.make bin/CMakeFiles/mudirac.dir/mudirac.cpp.i
 .PHONY : mudirac.cpp.i
 
 mudirac.s: mudirac.cpp.s
@@ -161,7 +161,7 @@ mudirac.s: mudirac.cpp.s
 
 # target to generate assembly for a file
 mudirac.cpp.s:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(MAKE) $(MAKESILENT) -f bin/CMakeFiles/mudirac.dir/build.make bin/CMakeFiles/mudirac.dir/mudirac.cpp.s
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(MAKE) $(MAKESILENT) -f bin/CMakeFiles/mudirac.dir/build.make bin/CMakeFiles/mudirac.dir/mudirac.cpp.s
 .PHONY : mudirac.cpp.s
 
 # Help Target
@@ -188,6 +188,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/chiu.i-huan/Desktop/new_scientific/muDirac/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/chiu.i-huan/Desktop/new_scientific/mudirac/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

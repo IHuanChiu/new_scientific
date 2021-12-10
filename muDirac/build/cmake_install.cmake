@@ -1,4 +1,4 @@
-# Install script for directory: /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac
+# Install script for directory: /Users/chiu.i-huan/Desktop/new_scientific/mudirac
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,9 +39,9 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/lib/cmake_install.cmake")
-  include("/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/bin/cmake_install.cmake")
-  include("/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/test/cmake_install.cmake")
+  include("/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/lib/cmake_install.cmake")
+  include("/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/bin/cmake_install.cmake")
+  include("/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/test/cmake_install.cmake")
 
 endif()
 
@@ -53,5 +53,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/chiu.i-huan/Desktop/new_scientific/muDirac/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/chiu.i-huan/Desktop/new_scientific/mudirac/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

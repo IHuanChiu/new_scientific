@@ -1,6 +1,6 @@
 lib/CMakeFiles/input.dir/input.cpp.o: \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/input.cpp \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/input.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/input.cpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/input.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__config \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/pthread.h \
@@ -236,9 +236,9 @@ lib/CMakeFiles/input.dir/input.cpp.o: \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stack \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/deque \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iomanip \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/utils.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/utils.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cmath \
-  /Users/chiu.i-huan/Desktop/new_scientific/muDirac/mudirac/lib/../vendor/aixlog/aixlog.hpp \
+  /Users/chiu.i-huan/Desktop/new_scientific/mudirac/lib/../vendor/aixlog/aixlog.hpp \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iostream \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/sstream \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/include/os/log.h \
