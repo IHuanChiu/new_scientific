@@ -193,39 +193,39 @@ if __name__=="__main__":
 #   show(s1,s2,s3,s4,mslices,__doc__, axes=1)
 
    # == paper plot ==
-   cam = dict(pos=(-60, 80, 100),
-           focalPoint=(15, 15, 15),
-           distance=100.94)
-   cam2 = dict(pos=(10, 120, 25),
-           focalPoint=(15, 15, 15),
-           distance=100)
-   plt=show(s1,s2,s3,s4, vol, mslices, __doc__, axes=1,camera=cam,interactive=False)#no interactive
-   io.screenshot(filename="/Users/chiu.i-huan/Desktop/vedo3Dplot_1.png")
-   plt2=show(s1,s2,s3,s4, vol,mslices, __doc__, axes=1,camera=cam2,interactive=False)#no interactive
-   io.screenshot(filename="/Users/chiu.i-huan/Desktop/vedo3Dplot_2.png")
+#   cam = dict(pos=(-60, 80, 100),
+#           focalPoint=(15, 15, 15),
+#           distance=100.94)
+#   cam2 = dict(pos=(10, 120, 25),
+#           focalPoint=(15, 15, 15),
+#           distance=100)
+#   plt=show(s1,s2,s3,s4, vol, mslices, __doc__, axes=1,camera=cam,interactive=False)#no interactive
+#   io.screenshot(filename="/Users/chiu.i-huan/Desktop/vedo3Dplot_1.png")
+#   plt2=show(s1,s2,s3,s4, vol,mslices, __doc__, axes=1,camera=cam2,interactive=False)#no interactive
+#   io.screenshot(filename="/Users/chiu.i-huan/Desktop/vedo3Dplot_2.png")
 
    # == video 2 ==
-#   plt = Plotter(axes=1, offscreen=True)
-#   video = Video("video_rot.mp4", duration=24,backend='opencv')
-#   _angle=2
-#   _inver,to_angle=-1,0
-#   for i in range(int(360/_angle)):
-#      plt.camera.Azimuth(-_angle)
-#      plt.show(s1,s2,s3,s4,vol,mslices)
-#      video.addFrame()
-#   for i in range(int((170)/_angle)):
-#      #to_angle+=_angle
-#      if i >= int((170/2.)/_angle): _inver=1
-#      plt.camera.Elevation(_inver*_angle*(-1))
-#      plt.show(s1,s2,s3,s4,vol,mslices)
-#      video.addFrame()
-#   for i in range(int((170)/_angle)):
-#      #to_angle+=_angle
-#      if i >= int((170/2.)/_angle): _inver=-1
-#      plt.camera.Elevation(_inver*_angle*(-1))
-#      plt.show(s1,s2,s3,s4,vol,mslices)
-#      video.addFrame()
-#   video.close()
+   plt = Plotter(axes=1, offscreen=True)
+   video = Video("video_rot.mp4", duration=24,backend='opencv')
+   _angle=2
+   _inver,to_angle=-1,0
+   for i in range(int(360/_angle)):
+      plt.camera.Azimuth(-_angle)
+      plt.show(s1,s2,s3,s4,vol,mslices)
+      video.addFrame()
+   for i in range(int((170)/_angle)):
+      #to_angle+=_angle
+      if i >= int((170/2.)/_angle): _inver=1
+      plt.camera.Elevation(_inver*_angle*(-1))
+      plt.show(s1,s2,s3,s4,vol,mslices)
+      video.addFrame()
+   for i in range(int((170)/_angle)):
+      #to_angle+=_angle
+      if i >= int((170/2.)/_angle): _inver=-1
+      plt.camera.Elevation(_inver*_angle*(-1))
+      plt.show(s1,s2,s3,s4,vol,mslices)
+      video.addFrame()
+   video.close()
 
    # == video (rotated objects) ==
    #cam = dict(pos=(4.14, -4.25, 2.35),
