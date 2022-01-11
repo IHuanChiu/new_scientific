@@ -20,6 +20,8 @@ ANLNext
 DSDAnalysisTools
 other
 GeAnalysis/scripts/outputs
+GeAnalysis/scripts/psicode/pha
+GeAnalysis/scripts/psicode/data
 imageAna/run/root
 imageAna/run/log
 imageAna/run/*.py
