@@ -4,7 +4,7 @@
 
 std::vector<TString> vRootFileNames;
 std::vector<TString> vRootFileComments;
-int num_det=3;
+int num_det=8;
 
 void ReadRootFileList();
 
@@ -49,16 +49,16 @@ void SummedSpectrumToTextSpilt()
 
         //TH3F *hGermaniumEnergyVsTimeFine1 = (TH3F *)(f1->FindObjectAny("hGermaniumEnergyVsTimeUltraFine"));
         TH3F *hGermaniumEnergyVsTimeFine1 = (TH3F *)(f1->FindObjectAny("hGermaniumEnergyVsTimeFine"));
-        TH1F *hMuonEventStats1 = (TH1F *)(f1->FindObjectAny("hMuonStats"));
-        TH2F *hMuonEnergy1 = (TH2F *)(f1->FindObjectAny("hMuonEnergy"));
-        TH1F *hGeEnergykeV = (TH1F *)(f1->FindObjectAny("hGeEnergykeV"));
+        //TH1F *hMuonEventStats1 = (TH1F *)(f1->FindObjectAny("hMuonStats"));
+        //TH2F *hMuonEnergy1 = (TH2F *)(f1->FindObjectAny("hMuonEnergy"));
+        //TH1F *hGeEnergykeV = (TH1F *)(f1->FindObjectAny("hGeEnergykeV"));
 
         // projection histograms vector
         std::vector<TH1F *> hMergedSpectrum;
 
         // transfer time cuts
-        double upperTimeCut = 50;
-        Int_t timeBinMin = hGermaniumEnergyVsTimeFine1->GetXaxis()->FindBin(-50);
+        double upperTimeCut = 500;
+        Int_t timeBinMin = hGermaniumEnergyVsTimeFine1->GetXaxis()->FindBin(-500);
         Int_t timeBinMax = hGermaniumEnergyVsTimeFine1->GetXaxis()->FindBin(upperTimeCut);
         Double_t timeCutRangeMin = hGermaniumEnergyVsTimeFine1->GetXaxis()->GetBinLowEdge(timeBinMin);
         Double_t timeCutRangeMax = hGermaniumEnergyVsTimeFine1->GetXaxis()->GetBinLowEdge(timeBinMax) + hGermaniumEnergyVsTimeFine1->GetXaxis()->GetBinWidth(timeBinMax);
@@ -66,18 +66,14 @@ void SummedSpectrumToTextSpilt()
 
         // hMergedSpectrum[0] is with cuts for prompt peaks
 		for(int idet = 1 ; idet < num_det+1; idet++){
-           hMergedSpectrum.push_back((TH1F *)(hGermaniumEnergyVsTimeFine1->ProjectionZ(Form("proj01_%d",idet), timeBinMin, timeBinMax, idet, idet)));   // MB14C for now has bad timing 1~8
-//           hMergedSpectrum.push_back((TH1F *)(hGermaniumEnergyVsTimeFine1->ProjectionZ("proj11", timeBinMin, timeBinMax, 11, 11))); // MB18A2 is not accounted
-//           hMergedSpectrum.push_back((TH1F *)(hGermaniumEnergyVsTimeFine1->ProjectionZ("proj21", timeBinMin, timeBinMax, 13, 14))); // Ge11 is not added as it is the low energy detector
-//           hMergedSpectrum.push_back((TH1F *)(hGermaniumEnergyVsTimeFine1->ProjectionZ("proj31", timeBinMin, timeBinMax, 16, 18))); // MB16C is dead
-//           hMergedSpectrum.push_back((TH1F *)(hGermaniumEnergyVsTimeFine1->ProjectionZ("proj41", timeBinMin, timeBinMax, 20, 22))); // MB18A has double peaks, also it was ramping up during some runs
-//           hMergedSpectrum.push_back((TH1F *)(hGermaniumEnergyVsTimeFine1->ProjectionZ("proj51", timeBinMin, timeBinMax, 24, 27))); // MB22B is dead
+           hMergedSpectrum.push_back((TH1F *)(hGermaniumEnergyVsTimeFine1->ProjectionZ(Form("proj01_%d",idet), timeBinMin, timeBinMax, idet, idet)));  
 		}
+        //Sum ; IH
+        hMergedSpectrum.push_back((TH1F *)(hGermaniumEnergyVsTimeFine1->ProjectionZ(Form("proj01_%s","ALL"), timeBinMin, timeBinMax, 0, 8)));
+
 //        hMergedSpectrum[0]->Add(hMergedSpectrum[1], 1);
 //        hMergedSpectrum[0]->Add(hMergedSpectrum[2], 1);
 //        hMergedSpectrum[0]->Add(hMergedSpectrum[3], 1);
-//        hMergedSpectrum[0]->Add(hMergedSpectrum[4], 1);
-//        hMergedSpectrum[0]->Add(hMergedSpectrum[5], 1);
 
         // hMergedSpectrumVsTime[0]
         std::vector<TH2F *> hMergedSpectrumVsTime;
@@ -112,7 +108,7 @@ void SummedSpectrumToTextSpilt()
         hMergedSpectrumVsTime[0]->Add(hMergedSpectrumVsTime[5], 1);
 
         // muon
-        auto hisMuonEnt1 = (TH1F *)(hMuonEnergy1->ProjectionX("ppp", 1, 1));
+        //auto hisMuonEnt1 = (TH1F *)(hMuonEnergy1->ProjectionX("ppp", 1, 1));
 
 #define MAKE_PHADATA 1
 #ifdef MAKE_PHADATA
@@ -121,15 +117,15 @@ void SummedSpectrumToTextSpilt()
         //----------------------------------------------------
 		for (int ih = 0; ih < hMergedSpectrum.size(); ih++){
            TString phaDataName(vRootFileNames[fileID].Data());
-           phaDataName.ReplaceAll(".root", Form("_pha_Det%s.dat",hGermaniumEnergyVsTimeFine1->GetYaxis()->GetBinLabel(ih+1)));
+           if(ih == hMergedSpectrum.size()-1){phaDataName.ReplaceAll(".root", "_pha_Det_Sum.dat");
+           }else{phaDataName.ReplaceAll(".root", Form("_pha_Det%s.dat",hGermaniumEnergyVsTimeFine1->GetYaxis()->GetBinLabel(ih+1)));}
            phaDataName.ReplaceAll("data", "pha");
            ofstream phaDataFile(phaDataName.Data());
            cout << "pha data: " << phaDataName.Data() << endl;
            TDatime now;
-           phaDataFile << "# PHA DATA for PSI muX-2019-Nov created by Akira Sato" << endl;
+           phaDataFile << "# PHA DATA for PSI muX-2021-Dec created by I-Huan Chiu" << endl;
            phaDataFile << "# Date: " << now.AsSQLString() << endl;
            phaDataFile << "# Root file: " << vRootFileNames[fileID].Data() << endl;
-   //        phaDataFile << "# Number of muons: " << Form("%.0f", muon_num_cut1) << endl;
            phaDataFile << "# Time cut range (ns): " << Form("%.1f - %.1f", timeCutRangeMin, timeCutRangeMax) << endl;
            phaDataFile << "# PHA data format: binID, energy(keV) at the bin center, content" << endl;
            Int_t nbin = hMergedSpectrum[ih]->GetNbinsX();
@@ -169,7 +165,6 @@ void SummedSpectrumToTextSpilt()
         TCanvas *cMu = new TCanvas("cMu", "cMu");
         hisMuonEnt1->GetXaxis()->SetRangeUser(0, 700);
         hisMuonEnt1->Draw();
-//        cout << "Number of muons (from integral) 1 = " << muon_num_cut1 << endl;
 #endif
     }
 }
@@ -177,7 +172,7 @@ void SummedSpectrumToTextSpilt()
 //=================================================================
 void ReadRootFileList()
 {
-    std::ifstream runListFile("data_list.txt");
+    std::ifstream runListFile("data_list_2021Dec.txt");
     if (!runListFile)
     {
         return 1;

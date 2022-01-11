@@ -206,7 +206,7 @@ if __name__=="__main__":
 
    # == video 2 ==
    plt = Plotter(axes=1, offscreen=True)
-   video = Video("video_rot.mp4", duration=24,backend='opencv')
+   video = Video("video_rot.mov", duration=24,backend='opencv')
    _angle=2
    _inver,to_angle=-1,0
    for i in range(int(360/_angle)):
