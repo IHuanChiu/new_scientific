@@ -9,11 +9,17 @@ ROOT.SetAtlasStyle()
 #data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/Black/203086_beam.root" #black
 #data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007/203079_beam.root" #dew
 #data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007_bar/203089_beam.root" #dewbar
-data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007_bar_35MeV/203095_beam.root" #dewbar35
+#data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007_bar_35MeV/203095_beam.root" #dewbar35
+
 
 #Si3-2, Al4-3, Al4-2, Fe5-4, Fe4-3, Ca4-3, Mg3-2, Cu4-3
-overall_range_down=[74,22,88,42,90,54,55.5,113]
-overall_range_up=[79,23.5,91,44,93.5,55.6,57.5,119]
+#overall_range_down=[74,22,88,42,90,54,55.5,113]
+#overall_range_up=[79,23.5,91,44,93.5,55.6,57.5,119]
+
+#for Fe gamma-rays
+data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/Fe/203082_beam.root" #Fe
+overall_range_down=[125,54,153]
+overall_range_up=[127,56,157]
 
 nbins=int(6800)
 
