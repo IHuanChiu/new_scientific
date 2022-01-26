@@ -5,21 +5,22 @@ __location__ = os.path.realpath(
 ROOT.gROOT.LoadMacro( __location__+'/AtlasStyle/AtlasStyle.C')
 ROOT.SetAtlasStyle()
 
-#data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/White/203084_beam.root" #white
 #data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/Black/203086_beam.root" #black
 #data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007/203079_beam.root" #dew
 #data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007_bar/203089_beam.root" #dewbar
 #data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007_bar_35MeV/203095_beam.root" #dewbar35
+data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/White/203084_beam.root" #white
 
 
-#Si3-2, Al4-3, Al4-2, Fe5-4, Fe4-3, Ca4-3, Mg3-2, Cu4-3
-#overall_range_down=[74,22,88,42,90,54,55.5,113]
-#overall_range_up=[79,23.5,91,44,93.5,55.6,57.5,119]
+name_list=["Si32", "Al43", "Al42", "Fe54", "Fe43", "Ca43", "Ca32", "Mg32", "Cu43", "Fegamma"]
+overall_range_down=[74,22,88,42,90,54,155,55.5,113,125]
+overall_range_up=[79,23.5,91,44,93.5,55.6,157.5,57.5,119,127]
 
 #for Fe gamma-rays
-data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/Fe/203082_beam.root" #Fe
-overall_range_down=[125,54,153]
-overall_range_up=[127,56,157]
+#data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/Fe/203082_beam.root" #Fe
+#name_list=["Fegamma_1", "Fegamma_2", "Fegamma_3"]
+#overall_range_down=[125,54,153]
+#overall_range_up=[127,56,157]
 
 nbins=int(6800)
 
@@ -34,7 +35,8 @@ def getLatex(ch, x = 0.85, y = 0.85):
 
 def fit(_h,outname):
     three_peaks=[] 
-    count_list=[]
+    three_sigmas=[] 
+    count_list, error_list=[],[]
     par0,par1,par2,par3,par4 = map(ctypes.c_double, (0,0,0,0,0))
    
     for _ip in range(len(overall_range_down)):
@@ -59,9 +61,11 @@ def fit(_h,outname):
        bkg.SetParameters(par3,par4)
        
        three_peaks.append(par1)#peak
+       three_sigmas.append(par2)#sigma
        _bindown, _binup=_htemp.GetXaxis().FindBin(par1-3*par2), _htemp.GetXaxis().FindBin(par1+3*par2)
        _binwidth=_htemp.GetBinWidth(1)
        count_list.append(peak.Integral(par1-3*par2,par1+3*par2)/_binwidth)
+       error_list.append(peak.IntegralError(par1-3*par2,par1+3*par2)/_binwidth)
        print("Signal+bkg : ",_htemp.Integral(_bindown,_binup), " Signal : ", peak.Integral(par1-3*par2,par1+3*par2)/_binwidth)
 
        c=ROOT.TCanvas("c{}".format(_ip),"c{}".format(_ip),1200,800)
@@ -74,9 +78,9 @@ def fit(_h,outname):
        peak.Draw("same")
        total.Draw("same")
        bkg.Draw("same")
-       c.SaveAs("/Users/chiu.i-huan/Desktop/c_fit_peak{0}_{1}.png".format(_ip,outname))
+       c.SaveAs("/Users/chiu.i-huan/Desktop/c_fit_peak_{0}_{1}.png".format(name_list[_ip],outname))
        
-    return three_peaks, count_list
+    return three_peaks, three_sigmas, count_list, error_list
 
 if __name__=="__main__":
 
@@ -88,9 +92,9 @@ if __name__=="__main__":
 
   h_data.SetLineColorAlpha(2,0.9)
   
-  _peak, _cout = fit(h_data,outname="data")
+  _peak, _sigma, _cout, _error = fit(h_data,outname="data")
   print("===============================================")
   print("Data:")
   for ip in range(len(_peak)):
-     print("Peak : {:.2f}".format(_peak[ip]), " Intensity : {:.1f}".format(_cout[ip]))
+     print("{0} | Peak : {1:.2f} | Sigma : {2:.2f} | Intensity : {3:.1f} | Error : {4:.1f}".format(name_list[ip],_peak[ip], _sigma[ip], _cout[ip], _error[ip]))
 

@@ -33,7 +33,8 @@ void mk_correlation_fitting(){
    double black_al42 = 1518.6;
    double black_fe54 = 9446.9;
    double black_fe43 = 18239.3;
-   double black_ca43 = 10419.0;
+   double black_ca43 = 9143;
+   double black_ca32 = 3265;
    double black_mg32 = 5802.4;
    double black_si32_error = sqrt(black_si32);
    double black_al43_error = sqrt(black_al43);
@@ -41,6 +42,7 @@ void mk_correlation_fitting(){
    double black_fe54_error = sqrt(black_fe54);
    double black_fe43_error = sqrt(black_fe43);
    double black_ca43_error = sqrt(black_ca43);
+   double black_ca32_error = sqrt(black_ca32);
    double black_mg32_error = sqrt(black_mg32);
 
    double white_si32 = 12959.0;
@@ -48,7 +50,8 @@ void mk_correlation_fitting(){
    double white_al42 = 1919.4;
    double white_fe54 = 1168.7;
    double white_fe43 = 1587.5;
-   double white_ca43 = 9645.5;
+   double white_ca43 = 9544;
+   double white_ca32 = 2931;
    double white_mg32 = 2210.8;
    double white_si32_error = sqrt(white_si32); 
    double white_al43_error = sqrt(white_al43);
@@ -56,6 +59,7 @@ void mk_correlation_fitting(){
    double white_fe54_error = sqrt(white_fe54);
    double white_fe43_error = sqrt(white_fe43);
    double white_ca43_error = sqrt(white_ca43);
+   double white_ca32_error = sqrt(white_ca32);
    double white_mg32_error = sqrt(white_mg32);
 
    double dew_si32 = 10996.0;
@@ -63,7 +67,8 @@ void mk_correlation_fitting(){
    double dew_al42 = 1120.3;
    double dew_fe54 = 2091.7;
    double dew_fe43 = 4478.6;
-   double dew_ca43 = 5498.9;
+   double dew_ca43 = 5202;
+   double dew_ca32 = 2118;
    double dew_mg32 = 2378.9;
    double dew_si32_error = sqrt(dew_si32); 
    double dew_al43_error = sqrt(dew_al43); 
@@ -71,6 +76,7 @@ void mk_correlation_fitting(){
    double dew_fe54_error = sqrt(dew_fe54); 
    double dew_fe43_error = sqrt(dew_fe43); 
    double dew_ca43_error = sqrt(dew_ca43); 
+   double dew_ca32_error = sqrt(dew_ca32); 
    double dew_mg32_error = sqrt(dew_mg32); 
 
    double dewbar_si32 = 28941.7; 
@@ -78,7 +84,8 @@ void mk_correlation_fitting(){
    double dewbar_al42 = 2948.0;
    double dewbar_fe54 = 5633.8;
    double dewbar_fe43 = 11903.6;
-   double dewbar_ca43 = 14066.6;
+   double dewbar_ca43 = 13266;
+   double dewbar_ca32 = 5408;
    double dewbar_mg32 = 6855.0;
    double dewbar_si32_error = sqrt(dewbar_si32); 
    double dewbar_al43_error = sqrt(dewbar_al43); 
@@ -86,6 +93,7 @@ void mk_correlation_fitting(){
    double dewbar_fe54_error = sqrt(dewbar_fe54); 
    double dewbar_fe43_error = sqrt(dewbar_fe43); 
    double dewbar_ca43_error = sqrt(dewbar_ca43); 
+   double dewbar_ca32_error = sqrt(dewbar_ca32); 
    double dewbar_mg32_error = sqrt(dewbar_mg32); 
 
    double dewbar35_si32 = 19771.5;
@@ -93,7 +101,8 @@ void mk_correlation_fitting(){
    double dewbar35_al42 = 2094.6;
    double dewbar35_fe54 = 3242.9;
    double dewbar35_fe43 = 8463.4;
-   double dewbar35_ca43 = 9110.7;
+   double dewbar35_ca43 = 8566;
+   double dewbar35_ca32 = 4467;
    double dewbar35_mg32 = 4576.8;
    double dewbar35_si32_error = sqrt(dewbar35_si32); 
    double dewbar35_al43_error = sqrt(dewbar35_al43); 
@@ -101,6 +110,7 @@ void mk_correlation_fitting(){
    double dewbar35_fe54_error = sqrt(dewbar35_fe54); 
    double dewbar35_fe43_error = sqrt(dewbar35_fe43); 
    double dewbar35_ca43_error = sqrt(dewbar35_ca43); 
+   double dewbar35_ca32_error = sqrt(dewbar35_ca32); 
    double dewbar35_mg32_error = sqrt(dewbar35_mg32); 
 
    //reference
@@ -286,7 +296,27 @@ void mk_correlation_fitting(){
    ye[3]=dewbar_ca43/dewbar_si32*(sqrt(pow(dewbar_ca43_error/dewbar_ca43,2)+pow(dewbar_si32_error/dewbar_si32,2)));
    ye[2]=dewbar35_ca43/dewbar35_si32*(sqrt(pow(dewbar35_ca43_error/dewbar35_ca43,2)+pow(dewbar35_si32_error/dewbar35_si32,2)));
    ye[1]=white_ca43/white_si32*(sqrt(pow(white_ca43_error/white_ca43,2)+pow(white_si32_error/white_si32,2)));
+   x[5]=black_ca32/black_si32;
+   xe[5]=black_ca32/black_si32*(sqrt(pow(black_ca32_error/black_ca32,2)+pow(black_si32_error/black_si32,2)));
+   x[4] =dew_ca32/dew_si32;
+   xe[4]=dew_ca32/dew_si32*(sqrt(pow(dew_ca32_error/dew_ca32,2)+pow(dew_si32_error/dew_si32,2)));
+   x[3] =dewbar_ca32/dewbar_si32;
+   xe[3]=dewbar_ca32/dewbar_si32*(sqrt(pow(dewbar_ca32_error/dewbar_ca32,2)+pow(dewbar_si32_error/dewbar_si32,2)));
+   x[2] =dewbar35_ca32/dewbar35_si32;
+   xe[2]=dewbar35_ca32/dewbar35_si32*(sqrt(pow(dewbar35_ca32_error/dewbar35_ca32,2)+pow(dewbar35_si32_error/dewbar35_si32,2)));
+   x[1] =white_ca32/white_si32;
+   xe[1]=white_ca32/white_si32*(sqrt(pow(white_ca32_error/white_ca32,2)+pow(white_si32_error/white_si32,2)));
 #if defined(__reference__)
+   y[5]=black_ca32/black_si32;
+   y[4]=dew_ca32/dew_si32;
+   y[3]=dewbar_ca32/dewbar_si32;
+   y[2]=dewbar35_ca32/dewbar35_si32;
+   y[1]=white_ca32/white_si32;
+   ye[5]=black_ca32/black_si32*(sqrt(pow(black_ca32_error/black_ca32,2)+pow(black_si32_error/black_si32,2)));
+   ye[4]=dew_ca32/dew_si32*(sqrt(pow(dew_ca32_error/dew_ca32,2)+pow(dew_si32_error/dew_si32,2)));
+   ye[3]=dewbar_ca32/dewbar_si32*(sqrt(pow(dewbar_ca32_error/dewbar_ca32,2)+pow(dewbar_si32_error/dewbar_si32,2)));
+   ye[2]=dewbar35_ca32/dewbar35_si32*(sqrt(pow(dewbar35_ca32_error/dewbar35_ca32,2)+pow(dewbar35_si32_error/dewbar35_si32,2)));
+   ye[1]=white_ca32/white_si32*(sqrt(pow(white_ca32_error/white_ca32,2)+pow(white_si32_error/white_si32,2)));
    x[5]=black_casi_ref;
    x[4]=dew_casi_ref;
    x[3]=dewbar_casi_ref;
@@ -302,14 +332,21 @@ void mk_correlation_fitting(){
    gr3->SetMarkerStyle(8);
    gr3->SetMarkerSize(1);
    gr3->SetMarkerColor(4);
-   gr3->SetTitle(";Ca/Si ref.;Ca(4-3)/Si(3-2)");
-   gr3->GetXaxis()->CenterTitle("Ca/Si ref."); gr3->GetYaxis()->CenterTitle("Ca(4-3)/Si(3-2)");
+#if not defined(__reference__)
+   gr3->SetTitle(";Ca(3-2)/Si(3-2);Ca(4-3)/Si(3-2)");
+   gr3->GetXaxis()->CenterTitle(); gr3->GetYaxis()->CenterTitle();
+#else
+   gr3->SetTitle(";Ca/Si ref.;Ca(3-2)/Si(3-2)");
+   gr3->GetXaxis()->CenterTitle(); gr3->GetYaxis()->CenterTitle();
+#endif
    gr3->Draw("AP");
    auto grfit3 = new TGraph(np,x,y);
    std::cout << " Ca fitting " << std::endl;
    grfit3->Fit("fline","n");
    fline->Draw("same");
    c3->SaveAs(Form("/Users/chiu.i-huan/Desktop/integ_ca%s.pdf",h_addname));
+   std::cout << "Ca | Y | " << " black " << y[5] << " dew " << y[4] << " dewbar " << y[3] << " dewbar35 " << y[2] << " white " << y[1] << std::endl;
+   std::cout << "Ca | X | " << " black " << x[5] << " dew " << x[4] << " dewbar " << x[3] << " dewbar35 " << x[2] << " white " << x[1] << std::endl;
 
    TCanvas *c4 = new TCanvas("c4","c4",0,0,1000,800);
    y[5]=black_mg32/black_si32;
@@ -322,7 +359,6 @@ void mk_correlation_fitting(){
    ye[3]=dewbar_mg32/dewbar_si32*(sqrt(pow(dewbar_mg32_error/dewbar_mg32,2)+pow(dewbar_si32_error/dewbar_si32,2)));
    ye[2]=dewbar35_mg32/dewbar35_si32*(sqrt(pow(dewbar35_mg32_error/dewbar35_mg32,2)+pow(dewbar35_si32_error/dewbar35_si32,2)));
    ye[1]=white_mg32/white_si32*(sqrt(pow(white_mg32_error/white_mg32,2)+pow(white_si32_error/white_si32,2)));
-#if defined(__reference__)
    x[5]=black_mgsi_ref;
    x[4]=dew_mgsi_ref;
    x[3]=dewbar_mgsi_ref;
@@ -333,7 +369,6 @@ void mk_correlation_fitting(){
    xe[3]=dewbar_mgsi_ref_error;
    xe[2]=dewbar35_mgsi_ref_error;
    xe[1]=white_mgsi_ref_error;
-#endif
    auto gr4 = new TGraphAsymmErrors(np,x,y,xe,xe,ye,ye);
    gr4->SetMarkerStyle(8);
    gr4->SetMarkerSize(1);
