@@ -40,16 +40,17 @@ void test_fit(){
   TH1F* hh;
   TH1F* hhnew[100];
   TF1* f1, *f2, *f3;
-  for (int idet = 1; idet < 4 ; idet++){
+  for (int idet = 1; idet < 2 ; idet++){
      hh = (TH1F*)h3->ProjectionZ(Form("hh_%d",idet),0,1000,idet,idet);
    
-     f1 = new TF1(Form("f1_%d",idet),"gaus",1240,1270);
+     f1 = new TF1(Form("f1_%d",idet),"gausn",1240,1270);
      f2 = new TF1(Form("f2_%d",idet),"gaus",505,515);
      f3 = new TF1(Form("f3_%d",idet),"gaus",264,267);
      
-     hh->Fit(Form("f1_%d",idet),"QR");
+     hh->Fit(Form("f1_%d",idet),"R");
      hh->Fit(Form("f2_%d",idet),"QR");
      hh->Fit(Form("f3_%d",idet),"QR");
+//     std::cout << f1->
    
      gPad->SetLogy(1);
      hh->Draw();

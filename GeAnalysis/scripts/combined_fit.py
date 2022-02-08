@@ -64,9 +64,11 @@ def fit(_h,outname):
        three_sigmas.append(par2)#sigma
        _bindown, _binup=_htemp.GetXaxis().FindBin(par1-3*par2), _htemp.GetXaxis().FindBin(par1+3*par2)
        _binwidth=_htemp.GetBinWidth(1)
-       count_list.append(peak.Integral(par1-3*par2,par1+3*par2)/_binwidth)
-       error_list.append(peak.IntegralError(par1-3*par2,par1+3*par2)/_binwidth)
-       print("Signal+bkg : ",_htemp.Integral(_bindown,_binup), " Signal : ", peak.Integral(par1-3*par2,par1+3*par2)/_binwidth)
+       count_list.append(peak.Integral(par1-3*par2,par1+3*par2)/_binwidth)#gaus fit
+       #TODO fix error
+       _error_temp=ctypes.c_double(0);_sum_temp=_htemp.IntegralAndError(_bindown,_binup,_error_temp,"error")
+       error_list.append(_error_temp.value)
+       print("Signal+bkg : ",_htemp.Integral(_bindown,_binup), " Signal : {:.2f}".format(peak.Integral(par1-3*par2,par1+3*par2)/_binwidth), " Chisquare : {:.2f}".format(total.GetChisquare()))
 
        c=ROOT.TCanvas("c{}".format(_ip),"c{}".format(_ip),1200,800)
        _hdraw.SetLineColor(1)
@@ -87,7 +89,7 @@ if __name__=="__main__":
   f_data=ROOT.TFile(data_file,"read")
 
   t_data=f_data.Get("tree")
-  t_data.Draw("energy >> h_data({},10,180)".format(nbins))
+  t_data.Draw("energy >> h_data({},10,180)".format(nbins),"detID == {}".format(1),"")
   h_data=ROOT.gDirectory.Get("h_data")
 
   h_data.SetLineColorAlpha(2,0.9)
