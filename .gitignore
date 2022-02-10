@@ -7,6 +7,9 @@ GeAnalysis/scripts/edb_analysis/root
 GeAnalysis/scripts/*/edb
 GeAnalysis/scripts/*/csv
 GeAnalysis/scripts/*/root
+GeAnalysis/scripts/*.root
+GeAnalysis/scripts/*/*.root
+GeAnalysis/scripts/*/*/*.root
 *.pdf
 *.pyc
 *.npy

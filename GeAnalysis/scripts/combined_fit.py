@@ -1,3 +1,6 @@
+"""
+Fit peaks and do the correlation based on MC
+"""
 import os,ROOT,ctypes
 ROOT.gErrorIgnoreLevel = ROOT.kFatal
 __location__ = os.path.realpath(
