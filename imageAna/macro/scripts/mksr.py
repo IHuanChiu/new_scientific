@@ -322,8 +322,11 @@ class MLEM():
           self.npixels=npixels
           self.object_range=20 #mm
           self.moveshift=1.25# [mm], 1mm for 4 bin 
-          self._xdownbin ,self._xupbin = 37, 93 # -7 < x < 7
-          self._ydownbin ,self._yupbin = 17-int(self.moveshift*4), 113-int(self.moveshift*4) # -12 < y < 12
+          #self._xdownbin ,self._xupbin = 37, 93 # -7 < x < 7
+          #self._ydownbin ,self._yupbin = 17-int(self.moveshift*4), 113-int(self.moveshift*4) # -12 < y < 12
+          #NOTE for MC
+          self._xdownbin ,self._xupbin = 35, 95 # -7.5 < x < 7.5
+          self._ydownbin ,self._yupbin = 15, 115 # -12.5 < y < 12.5
           # === class members ===
           self.mlemhist_list,self.mlem3Dhist_list,self.mlemhist_proje_list,self.mlemratio_list,self.h_data_list=[],[],[],[],[]
           self.source_intensity = 363.1*1000 #Bq, Am-241
@@ -343,7 +346,8 @@ class MLEM():
       def movemeasurement(self,_harray):
           _image=np.zeros((self.nbins,self.nbins),dtype=float)
           image=np.zeros((self.nbins,self.nbins),dtype=float)
-          xmov,ymov=0,10+int(self.moveshift*4)# bins, 4 bins for 1mm in the images # y:x plots (starndard : y move 2.46 mm)
+          #xmov,ymov=0,10+int(self.moveshift*4)# bins, 4 bins for 1mm in the images # y:x plots (starndard : y move 2.46 mm)
+          xmov,ymov=0,0# NOTE for MC
           for i in range(self.nbins-xmov):
              _image[i]=_harray[i+xmov]
           for j in range(self.nbins-ymov):
@@ -357,7 +361,8 @@ class MLEM():
 
           # J-PARC 2020 March data
           fint=ROOT.TFile(inputname,"read")
-          n_angles=16 # always 16 for J-PARC data, related to angle
+          #n_angles=16 # always 16 for J-PARC data, related to angle
+          n_angles=8 # NOTE for MC
           
           maxentries=0.# apply correction factor to all hist.
           for i in range(n_angles):
@@ -720,9 +725,9 @@ class MLEM():
       def updateImage(self,_object,_nevproc,prog):
           # === rotate matrix to make the images at the different angles ===
           _image_update=np.zeros((self.nbins,self.nbins),dtype=float)
-          # TODO - only loop selected region
           #for imx in range(self.nbins):
           #   for imy in range(self.nbins):
+          # only loop selected region
           for imx in range(self._xdownbin, self._xupbin):
              for imy in range(self._ydownbin, self._yupbin):
                 _nevproc+=1
