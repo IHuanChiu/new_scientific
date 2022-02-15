@@ -117,4 +117,4 @@ OUTNAME="test1020"
 #python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/new_scientific/imageAna/run/figs/repro_3Dimage.CdTe_30MeV_forpaper.root -o 30MeV_mlem_forpaper -l 100 -t mlem
 
 #mc
-python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/geant4WS/geant4-xrayimage/macro/root/repro_MC.root -o mc_test -l 10 -t mlem
+python3 mksr.py --imageinput /Users/chiu.i-huan/Desktop/geant4WS/geant4-xrayimage/macro/root/repro_MC.root -o mc_test -l 20 -t mlem

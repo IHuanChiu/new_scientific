@@ -9,10 +9,10 @@ from array import array
 #y_ch3=array("d",[30.9,34.9,39.5,40.1,45.4,81,121.8]) #energy
 #new ri data
 n_points=3
-x_ch2=array("d",[1.85921e+03,2.10264e+03,5.64173e+03]) #channel
-y_ch2=array("d",[40.1,45.4,121.8]) #energy
-x_ch3=array("d",[1.57017e+03,1.77635e+03,4.76144e+03]) #channel
-y_ch3=array("d",[40.1,45.4,121.8]) #energy
+x_ch2=array("d",[1.85921e+03,2.10264e+03,5.64173e+03]) #fitted channel
+y_ch2=array("d",[40.118,45.4,121.78]) #energy
+x_ch3=array("d",[1.57017e+03,1.77635e+03,4.76144e+03]) #fitted channel
+y_ch3=array("d",[40.118,45.4,121.78]) #energy
 
 if __name__=="__main__":
    fout=ROOT.TFile("./ge_calfunc_1210_new.root","recreate")

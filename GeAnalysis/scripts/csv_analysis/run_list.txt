@@ -1,0 +1,10 @@
+1. check "data_list_new.txt" for samples
+2. run csv2root for saving channel
+root csv2root_RIosaka_v1.C
+3. fit channel peaks
+4. input the fitting result & run calibration.py
+python calibration.py
+5. run csv2root for storing energy
+6. check calibration result
+python check_cali.py
+6. final root files are in "root" folder

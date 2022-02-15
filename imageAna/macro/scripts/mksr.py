@@ -325,7 +325,7 @@ class MLEM():
           #self._xdownbin ,self._xupbin = 37, 93 # -7 < x < 7
           #self._ydownbin ,self._yupbin = 17-int(self.moveshift*4), 113-int(self.moveshift*4) # -12 < y < 12
           #NOTE for MC
-          self._xdownbin ,self._xupbin = 35, 95 # -7.5 < x < 7.5
+          self._xdownbin ,self._xupbin = 29, 95 # -9 < x < 7.5
           self._ydownbin ,self._yupbin = 15, 115 # -12.5 < y < 12.5
           # === class members ===
           self.mlemhist_list,self.mlem3Dhist_list,self.mlemhist_proje_list,self.mlemratio_list,self.h_data_list=[],[],[],[],[]
@@ -388,7 +388,8 @@ class MLEM():
              for c in range(self._yupbin,127):
                 _harray[:,c]=0# y_up
              _mlist.append(_harray)          
-             _anglelist.append((-1)*i*(360/n_angles))# use Angle for ratation, not Radian
+             #_anglelist.append((-1)*i*(360/n_angles))# use Angle for ratation, not Radian
+             _anglelist.append((1)*i*(360/n_angles))# NOTE for MC
              _namelist.append(_h.GetName())
              hmov=ROOT.TH2D(_h.GetName(),_h.GetName(),128,-16,16,128,-16,16)
              hmov.SetDirectory(0)
