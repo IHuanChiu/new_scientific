@@ -15,6 +15,7 @@ GeAnalysis/scripts/*/*/*.root
 *.npy
 *.swp
 *.dSYM
+*.mp4
 .DS_Store
 CdTe123/*.xlsx
 CdTe123/*.pdf

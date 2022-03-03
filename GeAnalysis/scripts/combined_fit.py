@@ -11,15 +11,15 @@ ROOT.SetAtlasStyle()
 correction_file="./output_eff_plots.root"
 Correction=True
 
-Sample_name="black" #black, white, dew, dewbar, dew_35
+Sample_name="white" #black, dew, dewbar, dew_35, white
 
-data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/Black/203086_beam.root" #black
+#data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/Black/203086_beam.root" #black
 #data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007/203079_beam.root" #dew
 #data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007_bar/203089_beam.root" #dewbar
-#data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007_bar_35MeV/203095_beam.root" #dewbar35
-#data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/White/203084_beam.root" #white
+#data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/DEW12007_bar_35MeV/203095_beam.root" #dew_35
+data_file="/Users/chiu.i-huan/Desktop/new_scientific/GeAnalysis/data/JPARC_2021Apri_Terada/White/203084_beam.root" #white
 
-name_list=["Si32", "Al43", "Al42", "Fe54", "Fe43", "Ca43", "Ca32", "Mg32", "Cu43", "Fegamma"]
+name_list=["Si32", "Al43", "Al42", "Fe54", "Fe43", "Ca43", "Ca32", "Mg32", "Cu43", "Fegamma"]# bin index
 overall_range_down=[74,22,88,42,92,54,155,55.5,113,125]
 overall_range_up=[79,23.5,91,44,93.5,55.6,157.5,57.5,119,127]
 
@@ -93,7 +93,9 @@ def fit(_h,outname):
        else:
           count_list.append(peak.Integral(par1-3*par2,par1+3*par2)/_binwidth)#gaus fit
        #TODO error is not used
-       _error_temp=ctypes.c_double(0);_sum_temp=_htemp.IntegralAndError(_bindown,_binup,_error_temp,"error")
+       #error_list.append(peak.IntegralError(par1-3*par2,par1+3*par2)/_binwidth)
+       _error_temp=ctypes.c_double(0)
+       _sum_temp=_htemp.IntegralAndError(_bindown,_binup,_error_temp,"error")
        error_list.append(_error_temp.value)
 
        c=ROOT.TCanvas("c{}".format(_ip),"c{}".format(_ip),1200,800)
@@ -135,10 +137,12 @@ if __name__=="__main__":
      for ip in range(len(_peak)):
         if Correction:
            print("{0} | Peak : {1:.2f} | Sigma : {2:.2f} | Intensity : {3:.1f} | Corr. Inten. : {4:.1f} | Error : {5:.1f}".format(name_list[ip],_peak[ip], _sigma[ip], _cout[ip], _cout_corr[ip], _error[ip]))
-           hout.Fill(ip,_cout_corr[ip])
+           hout.SetBinContent(ip+1,_cout_corr[ip])
+           hout.SetBinError(ip+1,_error[ip])
         else:
            print("{0} | Peak : {1:.2f} | Sigma : {2:.2f} | Intensity : {3:.1f} | Error : {4:.1f}".format(name_list[ip],_peak[ip], _sigma[ip], _cout[ip], _error[ip]))
-           hout.Fill(ip,_cout[ip])
+           hout.SetBinContent(ip+1,_cout[ip])
+           hout.SetBinError(ip+1,_error[ip])
 
      f_out.cd()
      hout.Write()
